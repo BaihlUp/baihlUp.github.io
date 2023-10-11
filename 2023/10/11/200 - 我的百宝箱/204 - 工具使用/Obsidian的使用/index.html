@@ -6,44 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Kubernetes中的Calico网络 | Hexo</title>
+  <title>Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="[toc] 1 介绍Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。下边实践一下Calico网络的两种模式：  IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发 BGP：直接  2 环境部署在Kuberntes环境里部署calico网络，下载calico.yaml安装脚本如下： 12345678910#!&#x2F;b">
+  <meta name="description" content="介绍Obsidian的插件和使用方法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Kubernetes中的Calico网络">
-<meta property="og:url" content="http://example.com/2023/09/18/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/10/11/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Obsidian%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="[toc] 1 介绍Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。下边实践一下Calico网络的两种模式：  IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发 BGP：直接  2 环境部署在Kuberntes环境里部署calico网络，下载calico.yaml安装脚本如下： 12345678910#!&#x2F;b">
+<meta property="og:description" content="介绍Obsidian的插件和使用方法">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409142459.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143036.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143451.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143833.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144135.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144703.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150453.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150751.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150912.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409151347.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153955.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153349.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155716.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155352.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155514.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155805.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160033.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160227.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160444.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160906.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409161220.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230414155625.png">
-<meta property="article:published_time" content="2023-09-18T16:27:41.000Z">
+<meta property="article:published_time" content="2023-10-11T08:35:53.983Z">
 <meta property="article:modified_time" content="2023-10-11T08:35:53.983Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="Kubernetes">
-<meta property="article:tag" content="Calico">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409142459.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -179,88 +154,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-250 - 虚拟化&amp;云计算/251 - 学习笔记/Kubernetes中的Calico网络" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-200 - 我的百宝箱/204 - 工具使用/Obsidian的使用" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Kubernetes中的Calico网络
-    </h1>
-  
-
-        
-        <a href="/2023/09/18/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/" class="archive-article-date">
-  	<time datetime="2023-09-18T16:27:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-09-18</time>
-</a>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>[toc]</p>
-<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。<br>下边实践一下Calico网络的两种模式：</p>
-<ul>
-<li>IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发</li>
-<li>BGP：直接</li>
-</ul>
-<h1 id="2-环境部署"><a href="#2-环境部署" class="headerlink" title="2 环境部署"></a>2 环境部署</h1><p>在Kuberntes环境里部署calico网络，下载<a target="_blank" rel="noopener" href="https://github.com/chronolaw/k8s_study/blob/master/calico/calico.yaml">calico.yaml</a><br>安装脚本如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#</span><br><span class="line"># wget https://projectcalico.docs.tigera.io/manifests/calico.yaml</span><br><span class="line"></span><br><span class="line"># preload cni calico</span><br><span class="line">docker pull calico/cni:v3.23.1</span><br><span class="line">docker pull calico/node:v3.23.1</span><br><span class="line">docker pull calico/kube-controllers:v3.23.1</span><br><span class="line"></span><br><span class="line">kubectl apply -f calico.yaml</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409142459.png" alt="20230409142459"></p>
-<h2 id="3-IPIP模式"><a href="#3-IPIP模式" class="headerlink" title="3 IPIP模式"></a>3 IPIP模式</h2><h3 id="3-1-测试环境"><a href="#3-1-测试环境" class="headerlink" title="3.1 测试环境"></a>3.1 测试环境</h3><p>为了模拟两个POD跨node通信，我们创建两个pod，分别部署在master和node节点。下边以两个nginx的pod为例：<br>在master节点上部署：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-master-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">nodeSelector:</span></span><br><span class="line">        <span class="attr">kubernetes.io/hostname:</span> <span class="string">baihl-master</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:alpine</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">      <span class="attr">tolerations:</span> </span><br><span class="line">      <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line">        <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line">        <span class="attr">operator:</span> <span class="string">Exists</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>Pod中增加容忍master节点的node-role.kubernetes.io&#x2F;master:NoSchedule 污点，否则Pod无法在master节点上运行。</p>
+        <blockquote>
+<p>介绍Obsidian的插件和使用方法</p>
 </blockquote>
-<p>node节点上也部署一下nginx，记得把tolerations删掉。</p>
-<p>查看两个pod的执行情况：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143036.png" alt="20230409143036"><br>两个pod分别运行在mster和node节点上，ip地址分别为10.10.40.129和10.10.194.134。</p>
-<p>在master节点上的pod1中执行ping node节点的pod2：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143451.png" alt="20230409143451"><br>网络互通性没有问题。</p>
-<h3 id="3-2-ping包网络转发"><a href="#3-2-ping包网络转发" class="headerlink" title="3.2 ping包网络转发"></a>3.2 ping包网络转发</h3><p>在master节点上的pod1怎么ping通的node节点上的pod2，分析整个网络转发过程，可以从头开始看，先看ping是怎么从pod1中出去的，在pod1中查看路由信息：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143833.png" alt="20230409143833"><br>根据路由表信息，ping 10.10.194.134，应该匹配到第一条路由，去往任何网络都先到网关169.254.1.1，从eth0网卡出去。</p>
-<p>然后我们看下master节点上的路由信息：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144135.png" alt="20230409144135"><br>当数据包到达master节点时，会匹配到红色框住的路由，去往10.10.194.192&#x2F;26网段的数据包，都走到tunl0上，并且网关是192.168.170.138（node节点IP）。所以数据包就通过tunl0到达了node节点。</p>
-<p>数据包到达了node节点，看下node节点的路由信息：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144703.png" alt="20230409144703"><br>数据包到达node节点后会匹配上上边红线框的路由，到达10.10.194.134的数据包都走calie1e27109044。<br>calie1e27109044是veth pair的一端，另一端就是10.10.194.134的pod2，可以验证下，在pod2中使用ethtool命令查看：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150453.png" alt="20230409150453"><br>在pod2中执行ethtool命令报错，原因应该是pod中没有此命令，或者执行权限不够。下边使用nsenter命令实现在主机上调试容器。步骤如下：</p>
-<ol>
-<li>首先获取pod所在容器的id</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150751.png" alt="20230409150751"></p>
-<ol start="2">
-<li>根据容器ID，查看容器进程</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150912.png" alt="20230409150912"><br>注意：因为容器是运行在node节点上的，要在node节点上执行以上命令，可以看到获取到的PID为535135。</p>
-<ol start="3">
-<li>使用nsenter命令进入进程的名字空间</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@baihl-node:/home/baihl# nsenter -t 535135 -n</span><br><span class="line">root@baihl-node:/home/baihl# ethtool -S eth0</span><br><span class="line">NIC statistics:</span><br><span class="line">     peer_ifindex: 71</span><br></pre></td></tr></table></figure>
-<p>可以看到，pod2中eth0网卡的另一端设备号是71，在node节点上查看编号为71的网卡就是calie1e27109044：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409151347.png" alt="20230409151347"><br>到此为止，在node上的路由表明，发送到calie1e27109044的数据其实就是发送到pod2网卡中，ping包就到达了目的地。</p>
-<p>下边是整个网络的结构图：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153955.png" alt="20230409153955"></p>
-<p>在master节点进行抓包分析，ping的数据包：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153349.png" alt="20230409153349"><br>打开上边的一个ICMP包，可以看到数据包有5层，其中有两个IP层，分别是pod之间的网络和主机之间的网络封装。</p>
-<h2 id="4-BGP模式"><a href="#4-BGP模式" class="headerlink" title="4 BGP模式"></a>4 BGP模式</h2><h3 id="4-1-测试环境"><a href="#4-1-测试环境" class="headerlink" title="4.1 测试环境"></a>4.1 测试环境</h3><p>在安装calico网络时，默认安装是IPIP网络。calico.yaml文件中，将CALICO_IPV4POOL_IPIP的值修改成 “off”，就能够替换成BGP网络。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CALICO_IPV4POOL_IPIP</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;off&quot;</span></span><br></pre></td></tr></table></figure>
-<p>修改完成后重新部署。<br>使用BGP模式后，首先变化是节点上不再有tunl0设备：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155716.png" alt="20230409155716"></p>
-<p>同样重新在master和node节点部署两个pod。如下：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155352.png" alt="20230409155352"><br>两个pod的ip地址分别为10.10.40.129和10.10.194.128。<br>同样的操作在pod1 10.10.40.129中ping pod2的10.10.194.128：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155514.png" alt="20230409155514"></p>
-<h3 id="4-2-ping网络转发"><a href="#4-2-ping网络转发" class="headerlink" title="4.2 ping网络转发"></a>4.2 ping网络转发</h3><p>pod1中ping pod2首先pod1中的路由表：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155805.png" alt="20230409155805"></p>
-<p>根据pod1中的路由信息，ping包通过eth0网卡到master节点。master节点上根据路由信息，到10.10.194.128的数据包匹配到下边红框中的路由，直接发送到了192.168.170.138（node节点），从ens33网卡出去。</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160033.png" alt="20230409160033"><br>node节点上的路由信息如下：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160227.png" alt="20230409160227"><br>ping包到达node节点，匹配上红框中的路由信息，直接发送到了pod2的veth pair的一端，数据就直接到了pod2的网卡。<br>如果ping包回应pod1的 10.10.40.129，则在node节点上匹配到：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160444.png" alt="20230409160444"><br>直接到达了master节点192.168.170.137，后边的流程不再赘述。</p>
-<p>同样下表在master上抓包看一下：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160906.png" alt="20230409160906"></p>
-<p>通过上边的流程发现，BGP的模式不再基于IPIP进行封装，也没有了tunl0设备做转发，而是通过路由表，直接转到了节点的网卡上转发出去。</p>
-<p>BGP模式下的整个网络的结构图：</p>
-<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409161220.png" alt="20230409161220"></p>
-<h3 id="4-3-VXLAN模式"><a href="#4-3-VXLAN模式" class="headerlink" title="4.3 VXLAN模式"></a>4.3 VXLAN模式</h3><p>在IP层上边又包含了二层网路结构<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230414155625.png" alt="20230414155625"></p>
-<h2 id="5-两种模式对比"><a href="#5-两种模式对比" class="headerlink" title="5 两种模式对比"></a>5 两种模式对比</h2><p>IPIP网络：需要tunl0设备封装数据，形成隧道，承载流量，需要tunl0设备封装效率略低。<br>BGP模式：使用路由引导流量转发，比IPIP效率更高。</p>
-<p>本文参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/goldsunshine/p/10701242.html">https://www.cnblogs.com/goldsunshine/p/10701242.html</a></p>
 
       
 
@@ -290,21 +191,6 @@
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Kubernetes</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Calico</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
 
       
@@ -355,7 +241,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2023/09/18/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2023/10/11/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Obsidian%E7%9A%84%E4%BD%BF%E7%94%A8/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -369,7 +255,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2023/10/11/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Obsidian%E7%9A%84%E4%BD%BF%E7%94%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2023/10/11/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/%E6%9C%AA%E5%91%BD%E5%90%8D/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -379,8 +265,8 @@
     </a>
   
   
-    <a href="/2023/09/16/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes-v1.26.1%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Kubernetes-v1.26.1部署指南</div>
+    <a href="/2023/09/18/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Kubernetes中的Calico网络</div>
       <i class="icon-circle-right"></i>
     </a>
   
