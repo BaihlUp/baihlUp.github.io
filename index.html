@@ -157,7 +157,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>[[01 - Python–基础篇]]<br>[[02 - Python–进阶篇]]<br>[[03 - Python–分布式爬虫]]</p>
+        <p>[[01 - Python–基础篇]]<br>[[03 - Python–进阶篇]]<br>[[05 - Python–分布式爬虫]]</p>
 
       
 
@@ -251,7 +251,86 @@
 
 
   
-    <article id="post-220 - 程序设计/223 - Go &amp; Python/03 - Python--分布式爬虫" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-220 - 程序设计/223 - Go &amp; Python/02 - Python--面向对象" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="6-类"><a href="#6-类" class="headerlink" title="6 类"></a>6 类</h1><h2 id="6-1-类的定义和使用"><a href="#6-1-类的定义和使用" class="headerlink" title="6.1 类的定义和使用"></a>6.1 类的定义和使用</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">class</span> <span class="title class_">Dog</span>:</span><br><span class="line">     <span class="string">&quot;&quot;&quot;一次模拟小狗的简单尝试。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">     <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, age</span>):</span><br><span class="line">          <span class="string">&quot;&quot;&quot;初始化属性name和age。&quot;&quot;&quot;</span></span><br><span class="line">         self.name = name</span><br><span class="line">         self.age = age</span><br><span class="line">         self.<span class="built_in">type</span> = <span class="number">1</span>  <span class="comment"># 给属性指定默认值</span></span><br><span class="line">          </span><br><span class="line"></span><br><span class="line">     <span class="keyword">def</span> <span class="title function_">sit</span>(<span class="params">self</span>):</span><br><span class="line">          <span class="string">&quot;&quot;&quot;模拟小狗收到命令时蹲下。&quot;&quot;&quot;</span></span><br><span class="line">          <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;self.name&#125;</span> is now sitting.&quot;</span>)</span><br><span class="line"></span><br><span class="line">      <span class="keyword">def</span> <span class="title function_">roll_over</span>(<span class="params">self</span>):</span><br><span class="line">          <span class="string">&quot;&quot;&quot;模拟小狗收到命令时打滚。&quot;&quot;&quot;</span></span><br><span class="line">          <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;self.name&#125;</span> rolled over!&quot;</span>)</span><br><span class="line"></span><br><span class="line">my_dog = Dog(<span class="string">&#x27;Willie&#x27;</span>, <span class="number">6</span>)</span><br><span class="line">my_dog.name</span><br><span class="line">my_dog.sit()</span><br><span class="line">my_dog.roll_over()</span><br></pre></td></tr></table></figure>
+
+<p>创建实例时，有些属性无须通过形参来定义，可在方法__init__() 中为其指定默认值。</p>
+<h2 id="6-2-init-方法"><a href="#6-2-init-方法" class="headerlink" title="6.2 __init__ 方法"></a>6.2 <code>__init__</code> 方法</h2><p><code>__init__</code> 方法是类的特殊方法之一，它用于初始化类的实例。</p>
+<ul>
+<li>通过默认参数给属性提供默认值</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name=<span class="string">&quot;Unknown&quot;</span>, age=<span class="number">0</span></span>):</span><br><span class="line">        self.name = name</span><br><span class="line">        self.age = age</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建 Person 类的实例</span></span><br><span class="line">person1 = Person()</span><br><span class="line">person2 = Person(<span class="string">&quot;Bob&quot;</span>, <span class="number">25</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>做其他初始化工作</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">FileHandler</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, filename, mode</span>):</span><br><span class="line">        self.filename = filename</span><br><span class="line">        self.mode = mode</span><br><span class="line">        self.file = <span class="built_in">open</span>(filename, mode)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">close</span>(<span class="params">self</span>):</span><br><span class="line">        self.file.close()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建 FileHandler 类的实例</span></span><br><span class="line">file_handler = FileHandler(<span class="string">&quot;example.txt&quot;</span>, <span class="string">&quot;w&quot;</span>)</span><br><span class="line">file_handler.file.write(<span class="string">&quot;Hello, World!&quot;</span>)</span><br><span class="line">file_handler.close()</span><br></pre></td></tr></table></figure>
+<p>以上示例中在 <code>__init__</code> 方法中进行文件打开。</p>
+<h2 id="6-2-继承和混入"><a href="#6-2-继承和混入" class="headerlink" title="6.2 继承和混入"></a>6.2 继承和混入</h2><ul>
+<li><strong>子类调用父类使用 <code>super()</code></strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Father</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;run in father&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Son</span>(<span class="title class_ inherited__">Father</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().run()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;run in son&quot;</span>)</span><br><span class="line"></span><br><span class="line">obj2 = Son()  </span><br><span class="line">obj2.run()</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">run in father</span><br><span class="line">run in son</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>多继承和混入</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">JSONMixin</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">to_json</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> json.dumps(self.__dict__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, age</span>):</span><br><span class="line">        self.name = name</span><br><span class="line">        self.age = age</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">JSONPerson</span>(Person, JSONMixin):</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">person = JSONPerson(<span class="string">&quot;Alice&quot;</span>, <span class="number">30</span>)</span><br><span class="line">json_data = person.to_json()</span><br><span class="line"><span class="built_in">print</span>(json_data)  <span class="comment"># 输出 &#x27;&#123;&quot;name&quot;: &quot;Alice&quot;, &quot;age&quot;: 30&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>在上面的示例中，<code>JSONPerson</code> 类继承了 <code>Person</code> 类和 <code>JSONMixin</code> 类。通过混入，<code>JSONPerson</code> 类获得了 <code>to_json</code> 方法，可以将其属性转换为 JSON 字符串。</p>
+<blockquote>
+<ol>
+<li>多继承可以在某些情况下提供灵活性，但要小心避免菱形继承问题（即多个父类共同继承同一个祖先类，可能导致方法冲突）。</li>
+<li>混入通常用于将通用功能添加到多个类中，提供代码重用和模块化。混入类通常不应该实例化，而应该与其他类一起使用。</li>
+</ol>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/10/26/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/02%20-%20Python--%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-220 - 程序设计/223 - Go &amp; Python/05 - Python--分布式爬虫" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
     <div class="article-entry" itemprop="articleBody">
@@ -643,19 +722,125 @@
 
 
 
-<h1 id="3-Scrapy-的使用"><a href="#3-Scrapy-的使用" class="headerlink" title="3 Scrapy 的使用"></a>3 Scrapy 的使用</h1><h2 id="3-1-安装配置"><a href="#3-1-安装配置" class="headerlink" title="3.1 安装配置"></a>3.1 安装配置</h2><h2 id="3-2-Scrapy介绍"><a href="#3-2-Scrapy介绍" class="headerlink" title="3.2 Scrapy介绍"></a>3.2 Scrapy介绍</h2><ol>
-<li>scrapy shell 命令进行调试</li>
+<h1 id="3-Scrapy-的应用"><a href="#3-Scrapy-的应用" class="headerlink" title="3 Scrapy 的应用"></a>3 Scrapy 的应用</h1><p><strong>Scrapy使用手册：</strong> <a target="_blank" rel="noopener" href="https://www.osgeo.cn/scrapy/">https://www.osgeo.cn/scrapy/</a></p>
+<h2 id="3-1-安装配置"><a href="#3-1-安装配置" class="headerlink" title="3.1 安装配置"></a>3.1 安装配置</h2><ul>
+<li><strong>Ubuntu安装方式</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python-dev python-pip libxml2-dev libxslt1-dev zlib1g-dev libffi-dev libssl-dev</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通过pip安装 Scrapy 框架</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pip install scrapy</span><br></pre></td></tr></table></figure>
+
+<p>安装后，在终端执行scrapy，如下：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231026094902.png"></p>
+<h2 id="3-2-Scrapy介绍"><a href="#3-2-Scrapy介绍" class="headerlink" title="3.2 Scrapy介绍"></a>3.2 Scrapy介绍</h2><h3 id="3-2-1-Scrapy架构"><a href="#3-2-1-Scrapy架构" class="headerlink" title="3.2.1 Scrapy架构"></a>3.2.1 Scrapy架构</h3><p><strong>Scrapy架构图（绿线是数据流向）：</strong></p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231026093935.png"></p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/Pasted%20image%2020231024191715.png"></p>
+<ul>
+<li><strong>Scrapy Engine(引擎)</strong>: 负责Spider、ItemPipeline、Downloader、Scheduler中间的通讯，信号、数据传递等。</li>
+<li><strong>Scheduler(调度器)</strong>: 它负责接受引擎发送过来的Request请求，并按照一定的方式进行整理排列，入队，当引擎需要时，交还给引擎。</li>
+<li><strong>Downloader（下载器）</strong>：负责下载Scrapy Engine(引擎)发送的所有Requests请求，并将其获取到的Responses交还给Scrapy Engine(引擎)，由引擎交给Spider来处理，</li>
+<li><strong>Spider（爬虫）</strong>：它负责处理所有Responses,从中分析提取数据，获取Item字段需要的数据，并将需要跟进的URL提交给引擎，再次进入Scheduler(调度器).</li>
+<li>**Item Pipeline(管道)**：它负责处理Spider中获取到的Item，并进行进行后期处理（详细分析、过滤、存储等）的地方。</li>
+<li><strong>Downloader Middlewares（下载中间件）</strong>：你可以当作是一个可以自定义扩展下载功能的组件。</li>
+<li><strong>Spider Middlewares（Spider中间件）</strong>：你可以理解为是一个可以自定扩展和操作引擎和Spider中间通信的功能组件（比如进入Spider的Responses;和从Spider出去的Requests）</li>
+</ul>
+<h3 id="3-2-2-Scrapy的运行流程"><a href="#3-2-2-Scrapy的运行流程" class="headerlink" title="3.2.2 Scrapy的运行流程"></a>3.2.2 Scrapy的运行流程</h3><p>代码写好，程序开始运行…</p>
+<ul>
+<li>1 引擎：Hi！Spider, 你要处理哪一个网站？</li>
+<li>2 Spider：老大要我处理xxxx.com。</li>
+<li>3 引擎：你把第一个需要处理的URL给我吧。</li>
+<li>4 Spider：给你，第一个URL是xxxxxxx.com。</li>
+<li>5 引擎：Hi！调度器，我这有request请求你帮我排序入队一下。</li>
+<li>6 调度器：好的，正在处理你等一下。</li>
+<li>7 引擎：Hi！调度器，把你处理好的request请求给我。</li>
+<li>8 调度器：给你，这是我处理好的request</li>
+<li>9 引擎：Hi！下载器，你按照老大的下载中间件的设置帮我下载一下这个request请求</li>
+<li>10 下载器：好的！给你，这是下载好的东西。（如果失败：sorry，这个request下载失败了。然后引擎告诉调度器，这个request下载失败了，你记录一下，我们待会儿再下载）</li>
+<li>11 引擎：Hi！Spider，这是下载好的东西，并且已经按照老大的下载中间件处理过了，你自己处理一下（注意！这儿responses默认是交给def parse()这个函数处理的）</li>
+<li>12 Spider：（处理完毕数据之后对于需要跟进的URL），Hi！引擎，我这里有两个结果，这个是我需要跟进的URL，还有这个是我获取到的Item数据。</li>
+<li>13 引擎：Hi ！管道 我这儿有个item你帮我处理一下！调度器！这是需要跟进URL你帮我处理下。然后从第四步开始循环，直到获取完老大需要全部信息。</li>
+<li>14 管道调度器：好的，现在就做！</li>
+</ul>
+<blockquote>
+<p>注意！只有当调度器中不存在任何request了，整个程序才会停止，（也就是说，对于下载失败的URL，Scrapy也会重新下载。）</p>
+</blockquote>
+<ul>
+<li><strong>制作Scrapy爬虫一共需要4步：</strong></li>
+</ul>
+<ol>
+<li>新建项目 (scrapy startproject xxx)：新建一个新的爬虫项目</li>
+<li>明确目标 （编写items.py）：明确你想要抓取的目标</li>
+<li>制作爬虫 （spiders&#x2F;xxspider.py）：制作爬虫开始爬取网页</li>
+<li>存储内容 （pipelines.py）：设计管道存储爬取内容</li>
 </ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Obey robots.txt rules  </span></span><br><span class="line">ROBOTSTXT_OBEY = <span class="literal">False</span></span><br></pre></td></tr></table></figure>
-<p>创建爬虫：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy genspider jobbole new.cnblogs.com</span><br></pre></td></tr></table></figure>
+<h2 id="3-3-Scrapy入门"><a href="#3-3-Scrapy入门" class="headerlink" title="3.3 Scrapy入门"></a>3.3 Scrapy入门</h2><h3 id="3-3-1-新建项目（scrapy-startproject）"><a href="#3-3-1-新建项目（scrapy-startproject）" class="headerlink" title="3.3.1 新建项目（scrapy startproject）"></a>3.3.1 新建项目（scrapy startproject）</h3><p>创建一个新的Scrapy项目：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy startproject mySpider</span><br></pre></td></tr></table></figure>
 
+<p>其中， mySpider 为项目名称，可以看到将会创建一个 mySpider 文件夹，目录结构大致如下，下面来简单介绍一下各个主要文件的作用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mySpider/</span><br><span class="line">    scrapy.cfg</span><br><span class="line">    mySpider/</span><br><span class="line">        __init__.py</span><br><span class="line">        items.py</span><br><span class="line">        pipelines.py</span><br><span class="line">        settings.py</span><br><span class="line">        spiders/</span><br><span class="line">            __init__.py</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
+<ul>
+<li>scrapy.cfg: 项目的配置文件。</li>
+<li>mySpider&#x2F;: 项目的Python模块，将会从这里引用代码。</li>
+<li>mySpider&#x2F;items.py: 项目的目标文件。</li>
+<li>mySpider&#x2F;pipelines.py: 项目的管道文件。</li>
+<li>mySpider&#x2F;settings.py: 项目的设置文件。</li>
+<li>mySpider&#x2F;spiders&#x2F;: 存储爬虫代码目录。</li>
+</ul>
+<h3 id="3-3-2-明确目标（mySpider-items-py）"><a href="#3-3-2-明确目标（mySpider-items-py）" class="headerlink" title="3.3.2 明确目标（mySpider&#x2F;items.py）"></a>3.3.2 明确目标（mySpider&#x2F;items.py）</h3><p>打算抓取 <strong><a target="_blank" rel="noopener" href="http://www.itcast.cn/channel/teacher.shtml">http://www.itcast.cn/channel/teacher.shtml</a></strong> 网站里的所有讲师的姓名、职称和个人信息。</p>
+<ol>
+<li>打开 mySpider 目录下的 items.py。</li>
+<li>Item 定义结构化数据字段，用来保存爬取到的数据，有点像 Python 中的 dict，但是提供了一些额外的保护减少错误。</li>
+<li>可以通过创建一个 scrapy.Item 类， 并且定义类型为 scrapy.Field 的类属性来定义一个 Item（可以理解成类似于 ORM 的映射关系）。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ItcastItem</span>(scrapy.Item):</span><br><span class="line">   name = scrapy.Field()</span><br><span class="line">   title = scrapy.Field()</span><br><span class="line">   info = scrapy.Field()</span><br></pre></td></tr></table></figure>
 
-<h2 id="机器学习识别"><a href="#机器学习识别" class="headerlink" title="机器学习识别"></a>机器学习识别</h2><p>EasyDL</p>
-<h2 id="8-Scrapy突破反爬的限制"><a href="#8-Scrapy突破反爬的限制" class="headerlink" title="8 Scrapy突破反爬的限制"></a>8 Scrapy突破反爬的限制</h2><p>![[Pasted image 20231024200047.png]]</p>
-<p>网站数据动态填充</p>
-<p>![[Pasted image 20231024190906.png]]</p>
-<p>![[Pasted image 20231024191715.png]]</p>
+<h3 id="3-3-3-制作爬虫（spiders-itcastSpider-py）"><a href="#3-3-3-制作爬虫（spiders-itcastSpider-py）" class="headerlink" title="3.3.3 制作爬虫（spiders&#x2F;itcastSpider.py）"></a>3.3.3 制作爬虫（spiders&#x2F;itcastSpider.py）</h3><ol>
+<li>生成爬虫</li>
+</ol>
+<p>在当前目录下输入命令，将在mySpider&#x2F;spider目录下创建一个名为itcast的爬虫，并指定爬取域的范围：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy genspider itcast <span class="string">&quot;itcast.cn&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>打开 mySpider&#x2F;spider目录里的 itcast.py，默认增加了下列代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ItcastSpider</span>(scrapy.Spider):</span><br><span class="line">    name = <span class="string">&quot;itcast&quot;</span></span><br><span class="line">    allowed_domains = [<span class="string">&quot;itcast.cn&quot;</span>]</span><br><span class="line">    start_urls = (</span><br><span class="line">        <span class="string">&#x27;http://www.itcast.cn/&#x27;</span>,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, response</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>要建立一个Spider， 你必须用scrapy.Spider类创建一个子类，并确定了三个强制的属性 和 一个方法。</li>
+<li>name &#x3D; “” ：这个爬虫的识别名称，必须是唯一的，在不同的爬虫必须定义不同的名字。</li>
+<li>allow_domains &#x3D; [] 是搜索的域名范围，也就是爬虫的约束区域，规定爬虫只爬取这个域名下的网页，不存在的URL会被忽略。</li>
+<li>start_urls &#x3D; () ：爬取的URL元祖&#x2F;列表。爬虫从这里开始抓取数据，所以，第一次下载的数据将会从这些urls开始。其他子URL将会从这些起始URL中继承性生成。</li>
+<li>parse(self, response) ：解析的方法，每个初始URL完成下载后将被调用，调用的时候传入从每一个URL传回的Response对象来作为唯一参数，主要作用如下：</li>
+<li>负责解析返回的网页数据(response.body)，提取结构化数据(生成item)</li>
+</ul>
+<p>生成需要下一页的URL请求。将start_urls的值修改为需要爬取的第一个url：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start_urls = (<span class="string">&quot;http://www.itcast.cn/channel/teacher.shtml&quot;</span>,)</span><br></pre></td></tr></table></figure>
+
+<p>修改parse()方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, response</span>):</span><br><span class="line">    filename = <span class="string">&quot;teacher.html&quot;</span></span><br><span class="line">    <span class="built_in">open</span>(filename, <span class="string">&#x27;w&#x27;</span>).write(response.body)</span><br></pre></td></tr></table></figure>
+<p>然后运行一下看看，在mySpider目录下执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl itcast</span><br></pre></td></tr></table></figure>
+<p><code>itcast</code>是<code>scrapy genspider</code>命令命名的唯一爬虫名。</p>
+<ol start="2">
+<li>取数据</li>
+</ol>
+<p>取数据可以通过XPath等方式解析响应的页面，提取需要的数据。之前在 mySpider&#x2F;items.py 里定义了一个 ItcastItem 类。 这里引入进来：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from mySpider.items import ItcastItem</span><br></pre></td></tr></table></figure>
+
+<p>将得到的数据封装到一个 ItcastItem 对象中，可以保存每个老师的属性：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> mySpider.items <span class="keyword">import</span> ItcastItem</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, response</span>):</span><br><span class="line">    <span class="comment">#open(&quot;teacher.html&quot;,&quot;wb&quot;).write(response.body).close()</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 存放老师信息的集合</span></span><br><span class="line">    items = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> each <span class="keyword">in</span> response.xpath(<span class="string">&quot;//div[@class=&#x27;li_txt&#x27;]&quot;</span>):</span><br><span class="line">        <span class="comment"># 将我们得到的数据封装到一个 `ItcastItem` 对象</span></span><br><span class="line">        item = ItcastItem()</span><br><span class="line">        <span class="comment">#extract()方法返回的都是unicode字符串</span></span><br><span class="line">        name = each.xpath(<span class="string">&quot;h3/text()&quot;</span>).extract()</span><br><span class="line">        title = each.xpath(<span class="string">&quot;h4/text()&quot;</span>).extract()</span><br><span class="line">        info = each.xpath(<span class="string">&quot;p/text()&quot;</span>).extract()</span><br><span class="line"></span><br><span class="line">        <span class="comment">#xpath返回的是包含一个元素的列表</span></span><br><span class="line">        item[<span class="string">&#x27;name&#x27;</span>] = name[<span class="number">0</span>]</span><br><span class="line">        item[<span class="string">&#x27;title&#x27;</span>] = title[<span class="number">0</span>]</span><br><span class="line">        item[<span class="string">&#x27;info&#x27;</span>] = info[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">        items.append(item)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 直接返回最后数据</span></span><br><span class="line">    <span class="keyword">return</span> items</span><br></pre></td></tr></table></figure>
+<p>Item中的数据可以通过管道（Pipeline）进行处理。</p>
+<h3 id="3-3-4-保存数据"><a href="#3-3-4-保存数据" class="headerlink" title="3.3.4 保存数据"></a>3.3.4 保存数据</h3><p>scrapy保存信息的最简单的方法主要有四种，-o 输出指定格式的文件，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl itcast -o teachers.json</span><br></pre></td></tr></table></figure>
+
+<p>csv 逗号表达式，可用Excel打开：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl itcast -o teachers.csv</span><br></pre></td></tr></table></figure>
+
+<p>xml格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl itcast -o teachers.xml</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-Scrapy各组件"><a href="#3-4-Scrapy各组件" class="headerlink" title="3.4 Scrapy各组件"></a>3.4 Scrapy各组件</h2><h3 id="3-4-1-Spider"><a href="#3-4-1-Spider" class="headerlink" title="3.4.1 Spider"></a>3.4.1 Spider</h3><p>通过Scrapy创建的不同的爬虫项目，都有一个唯一的名字，</p>
+<h3 id="3-4-2-Items"><a href="#3-4-2-Items" class="headerlink" title="3.4.2 Items"></a>3.4.2 Items</h3><h3 id="3-4-3-Item-Loaders"><a href="#3-4-3-Item-Loaders" class="headerlink" title="3.4.3 Item Loaders"></a>3.4.3 Item Loaders</h3><h3 id="3-4-4-Item-Pipeline"><a href="#3-4-4-Item-Pipeline" class="headerlink" title="3.4.4 Item Pipeline"></a>3.4.4 Item Pipeline</h3><h3 id="3-4-5-Feed-exports"><a href="#3-4-5-Feed-exports" class="headerlink" title="3.4.5 Feed exports"></a>3.4.5 Feed exports</h3><h1 id="CrawlSpider"><a href="#CrawlSpider" class="headerlink" title="CrawlSpider"></a>CrawlSpider</h1><h2 id="机器学习识别"><a href="#机器学习识别" class="headerlink" title="机器学习识别"></a>机器学习识别</h2><p>EasyDL</p>
+<h2 id="8-Scrapy突破反爬的限制"><a href="#8-Scrapy突破反爬的限制" class="headerlink" title="8 Scrapy突破反爬的限制"></a>8 Scrapy突破反爬的限制</h2><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/Pasted%20image%2020231024200047.png"></p>
 
       
 
@@ -668,7 +853,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2023/10/26/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/03%20-%20Python--%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB/">展开全文 >></a>
+          <a class="article-more-a" href="/2023/10/26/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/05%20-%20Python--%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB/">展开全文 >></a>
         </p>
       
 
@@ -698,7 +883,7 @@
 
 
   
-    <article id="post-220 - 程序设计/223 - Go &amp; Python/02 - Python--进阶篇" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-220 - 程序设计/223 - Go &amp; Python/03 - Python--进阶篇" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
     <div class="article-entry" itemprop="articleBody">
@@ -1146,7 +1331,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2023/10/26/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/02%20-%20Python--%E8%BF%9B%E9%98%B6%E7%AF%87/">展开全文 >></a>
+          <a class="article-more-a" href="/2023/10/26/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/03%20-%20Python--%E8%BF%9B%E9%98%B6%E7%AF%87/">展开全文 >></a>
         </p>
       
 
