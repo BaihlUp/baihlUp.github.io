@@ -1235,7 +1235,7 @@
 <li>如果是 I&#x2F;O bound，但是 I&#x2F;O 操作很快，只需要有限数量的任务 &#x2F; 线程，那么使用多线程就可以了。</li>
 <li>如果是 CPU bound，则需要使用多进程来提高程序运行效率，使用多线程是无效的。</li>
 </ul>
-<h1 id="2-8-GIL（全局解释器锁）"><a href="#2-8-GIL（全局解释器锁）" class="headerlink" title="2.8  GIL（全局解释器锁）"></a>2.8  GIL（全局解释器锁）</h1><h2 id="8-1-什么是GIL"><a href="#8-1-什么是GIL" class="headerlink" title="8.1 什么是GIL"></a>8.1 什么是GIL</h2><p>GIL，是最流行的 Python 解释器 CPython 中的一个技术术语。它的意思是全局解释器锁，本质上是类似操作系统的 Mutex。每一个 Python 线程，在 CPython 解释器中执行时，都会先锁住自己的线程，阻止别的线程执行。CPython会轮流执行Python线程，这样一来，用户看到的就是“伪并行”——Python 线程在交错执行，来模拟真正并行的线程。</p>
+<h1 id="8-GIL（全局解释器锁）"><a href="#8-GIL（全局解释器锁）" class="headerlink" title="8  GIL（全局解释器锁）"></a>8  GIL（全局解释器锁）</h1><h2 id="8-1-什么是GIL"><a href="#8-1-什么是GIL" class="headerlink" title="8.1 什么是GIL"></a>8.1 什么是GIL</h2><p>GIL，是最流行的 Python 解释器 CPython 中的一个技术术语。它的意思是全局解释器锁，本质上是类似操作系统的 Mutex。每一个 Python 线程，在 CPython 解释器中执行时，都会先锁住自己的线程，阻止别的线程执行。CPython会轮流执行Python线程，这样一来，用户看到的就是“伪并行”——Python 线程在交错执行，来模拟真正并行的线程。</p>
 <ul>
 <li>为什么需要GIL？</li>
 </ul>
