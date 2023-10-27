@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Kubernetes中的Calico网络 | Hexo</title>
+  <meta name="keywords" content=" Kubernetes , Calico ">
+  <meta name="description" content="Kubernetes中的Calico网络 | Hexo">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="1 参考资料1.1 预备知识 html css xpath 正则表达式  chromedriver地址：https:&#x2F;&#x2F;chromedriver.chromium.org&#x2F;downloadshttps:&#x2F;&#x2F;www.lfd.uci.edu&#x2F;~gohlke&#x2F;pythonlibs&#x2F; 2 基础知识2.1 XPath 选择器2.1.1 XPath 语法 测试样本  123456789101112131415">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/10/27/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/05%20-%20Python--%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1 参考资料1.1 预备知识 html css xpath 正则表达式  chromedriver地址：https:&#x2F;&#x2F;chromedriver.chromium.org&#x2F;downloadshttps:&#x2F;&#x2F;www.lfd.uci.edu&#x2F;~gohlke&#x2F;pythonlibs&#x2F; 2 基础知识2.1 XPath 选择器2.1.1 XPath 语法 测试样本  123456789101112131415">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231026094902.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231026093935.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/Pasted%20image%2020231024191715.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/Pasted%20image%2020231024200047.png">
+<meta property="article:published_time" content="2023-10-27T08:50:01.975Z">
+<meta property="article:modified_time" content="2023-10-27T08:50:01.975Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231026094902.png">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>John Doe</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="rss"
+               href="/atom.xml"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-rss"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="github"
+               href="https://github.com/yelog"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-github"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="facebook"
+               href="https://www.facebook.com/faker.tops"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-facebook"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+    
+        
+    
+        
+            <a title="instagram"
+               href="https://www.facebook.com/faker.tops"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-instagram"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="reddit"
+               href="https://www.reddit.com/user/yelog/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-reddit"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="weibo"
+               href="http://weibo.com/u/2307534817"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-weibo"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/ff56736de7cf"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/jaytp/activities"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/yelog"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+    
+        
+            <a title="email"
+               href="mailto:jaytp@qq.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="qq"
+               href="http://wpa.qq.com/msgrd?v=3&uin=872336115&site=qq&menu=yes"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-qq"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="kugou"
+               href="https://www.kugou.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-kugou"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="neteasemusic"
+               href="https://music.163.com/#/user/home?id=88151013"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-neteasemusic"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="All">All
+            
+                <small>(7)</small>
+            
+        </div>
+    </li>
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+            <a class="about  hasFriend  site_url"
+               
+               href="/about">About</a>
+        
+        <a style="width: 50%"
+                
+                                           class="friends">Friends</a>
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="7">
+
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Calico</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Kubernetes</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="All "
+           href="/2023/10/27/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/05%20-%20Python--%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2023-10-27 08:50:01">2023/10/27</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2023/10/27/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/00%20-%20%E7%9B%AE%E5%BD%95/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2023-10-27 08:50:01">2023/10/27</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2023/10/27/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Obsidian%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2023-10-27 08:50:01">2023/10/27</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2023/10/27/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/02%20-%20Python--%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2023-10-27 08:50:01">2023/10/27</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2023/10/27/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/03%20-%20Python--%E8%BF%9B%E9%98%B6%E7%AF%87/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2023-10-27 08:50:01">2023/10/27</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2023/09/18/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/"
+           data-tag="Kubernetes,Calico"
+           data-author="" >
+            <span class="post-title" title="Kubernetes中的Calico网络">Kubernetes中的Calico网络</span>
+            <span class="post-date" title="2023-09-18 16:27:41">2023/09/18</span>
+        </a>
+        
+        
+        <a  class="All "
+           href="/2023/09/16/250%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/251%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes-v1.26.1%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/"
+           data-tag="Kubernetes"
+           data-author="" >
+            <span class="post-title" title="Kubernetes-v1.26.1部署指南">Kubernetes-v1.26.1部署指南</span>
+            <span class="post-date" title="2023-09-16 16:27:41">2023/09/16</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-250 - 虚拟化&amp;云计算/251 - 学习笔记/Kubernetes中的Calico网络" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Kubernetes中的Calico网络</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">Kubernetes</a>
+            
+            <a class="color2">Calico</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2023-10-27 08:50:01'>2023-09-18 16:27</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="toc-text">1 介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="toc-text">2 环境部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-IPIP%E6%A8%A1%E5%BC%8F"><span class="toc-text">3 IPIP模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-text">3.1 测试环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ping%E5%8C%85%E7%BD%91%E7%BB%9C%E8%BD%AC%E5%8F%91"><span class="toc-text">3.2 ping包网络转发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-BGP%E6%A8%A1%E5%BC%8F"><span class="toc-text">4 BGP模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-text">4.1 测试环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-ping%E7%BD%91%E7%BB%9C%E8%BD%AC%E5%8F%91"><span class="toc-text">4.2 ping网络转发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-VXLAN%E6%A8%A1%E5%BC%8F"><span class="toc-text">4.3 VXLAN模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-text">5 两种模式对比</span></a></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><div class='inner-toc'><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="toc-text">1 介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="toc-text">2 环境部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-IPIP%E6%A8%A1%E5%BC%8F"><span class="toc-text">3 IPIP模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-text">3.1 测试环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ping%E5%8C%85%E7%BD%91%E7%BB%9C%E8%BD%AC%E5%8F%91"><span class="toc-text">3.2 ping包网络转发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-BGP%E6%A8%A1%E5%BC%8F"><span class="toc-text">4 BGP模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-text">4.1 测试环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-ping%E7%BD%91%E7%BB%9C%E8%BD%AC%E5%8F%91"><span class="toc-text">4.2 ping网络转发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-VXLAN%E6%A8%A1%E5%BC%8F"><span class="toc-text">4.3 VXLAN模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-text">5 两种模式对比</span></a></li></ol></li></ol></div></p>
+<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。<br>下边实践一下Calico网络的两种模式：</p>
+<ul>
+<li>IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发</li>
+<li>BGP：直接</li>
+</ul>
+<h1 id="2-环境部署"><a href="#2-环境部署" class="headerlink" title="2 环境部署"></a>2 环境部署</h1><p>在Kuberntes环境里部署calico网络，下载<a target="_blank" rel="noopener" href="https://github.com/chronolaw/k8s_study/blob/master/calico/calico.yaml">calico.yaml</a><br>安装脚本如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#</span><br><span class="line"># wget https://projectcalico.docs.tigera.io/manifests/calico.yaml</span><br><span class="line"></span><br><span class="line"># preload cni calico</span><br><span class="line">docker pull calico/cni:v3.23.1</span><br><span class="line">docker pull calico/node:v3.23.1</span><br><span class="line">docker pull calico/kube-controllers:v3.23.1</span><br><span class="line"></span><br><span class="line">kubectl apply -f calico.yaml</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409142459.png" alt="20230409142459"></p>
+<h2 id="3-IPIP模式"><a href="#3-IPIP模式" class="headerlink" title="3 IPIP模式"></a>3 IPIP模式</h2><h3 id="3-1-测试环境"><a href="#3-1-测试环境" class="headerlink" title="3.1 测试环境"></a>3.1 测试环境</h3><p>为了模拟两个POD跨node通信，我们创建两个pod，分别部署在master和node节点。下边以两个nginx的pod为例：<br>在master节点上部署：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-master-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">nodeSelector:</span></span><br><span class="line">        <span class="attr">kubernetes.io/hostname:</span> <span class="string">baihl-master</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:alpine</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">      <span class="attr">tolerations:</span> </span><br><span class="line">      <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line">        <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line">        <span class="attr">operator:</span> <span class="string">Exists</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Pod中增加容忍master节点的node-role.kubernetes.io&#x2F;master:NoSchedule 污点，否则Pod无法在master节点上运行。</p>
+</blockquote>
+<p>node节点上也部署一下nginx，记得把tolerations删掉。</p>
+<p>查看两个pod的执行情况：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143036.png" alt="20230409143036"><br>两个pod分别运行在mster和node节点上，ip地址分别为10.10.40.129和10.10.194.134。</p>
+<p>在master节点上的pod1中执行ping node节点的pod2：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143451.png" alt="20230409143451"><br>网络互通性没有问题。</p>
+<h3 id="3-2-ping包网络转发"><a href="#3-2-ping包网络转发" class="headerlink" title="3.2 ping包网络转发"></a>3.2 ping包网络转发</h3><p>在master节点上的pod1怎么ping通的node节点上的pod2，分析整个网络转发过程，可以从头开始看，先看ping是怎么从pod1中出去的，在pod1中查看路由信息：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143833.png" alt="20230409143833"><br>根据路由表信息，ping 10.10.194.134，应该匹配到第一条路由，去往任何网络都先到网关169.254.1.1，从eth0网卡出去。</p>
+<p>然后我们看下master节点上的路由信息：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144135.png" alt="20230409144135"><br>当数据包到达master节点时，会匹配到红色框住的路由，去往10.10.194.192&#x2F;26网段的数据包，都走到tunl0上，并且网关是192.168.170.138（node节点IP）。所以数据包就通过tunl0到达了node节点。</p>
+<p>数据包到达了node节点，看下node节点的路由信息：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144703.png" alt="20230409144703"><br>数据包到达node节点后会匹配上上边红线框的路由，到达10.10.194.134的数据包都走calie1e27109044。<br>calie1e27109044是veth pair的一端，另一端就是10.10.194.134的pod2，可以验证下，在pod2中使用ethtool命令查看：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150453.png" alt="20230409150453"><br>在pod2中执行ethtool命令报错，原因应该是pod中没有此命令，或者执行权限不够。下边使用nsenter命令实现在主机上调试容器。步骤如下：</p>
+<ol>
+<li>首先获取pod所在容器的id</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150751.png" alt="20230409150751"></p>
+<ol start="2">
+<li>根据容器ID，查看容器进程</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150912.png" alt="20230409150912"><br>注意：因为容器是运行在node节点上的，要在node节点上执行以上命令，可以看到获取到的PID为535135。</p>
+<ol start="3">
+<li>使用nsenter命令进入进程的名字空间</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@baihl-node:/home/baihl# nsenter -t 535135 -n</span><br><span class="line">root@baihl-node:/home/baihl# ethtool -S eth0</span><br><span class="line">NIC statistics:</span><br><span class="line">     peer_ifindex: 71</span><br></pre></td></tr></table></figure>
+<p>可以看到，pod2中eth0网卡的另一端设备号是71，在node节点上查看编号为71的网卡就是calie1e27109044：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409151347.png" alt="20230409151347"><br>到此为止，在node上的路由表明，发送到calie1e27109044的数据其实就是发送到pod2网卡中，ping包就到达了目的地。</p>
+<p>下边是整个网络的结构图：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153955.png" alt="20230409153955"></p>
+<p>在master节点进行抓包分析，ping的数据包：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153349.png" alt="20230409153349"><br>打开上边的一个ICMP包，可以看到数据包有5层，其中有两个IP层，分别是pod之间的网络和主机之间的网络封装。</p>
+<h2 id="4-BGP模式"><a href="#4-BGP模式" class="headerlink" title="4 BGP模式"></a>4 BGP模式</h2><h3 id="4-1-测试环境"><a href="#4-1-测试环境" class="headerlink" title="4.1 测试环境"></a>4.1 测试环境</h3><p>在安装calico网络时，默认安装是IPIP网络。calico.yaml文件中，将CALICO_IPV4POOL_IPIP的值修改成 “off”，就能够替换成BGP网络。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CALICO_IPV4POOL_IPIP</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;off&quot;</span></span><br></pre></td></tr></table></figure>
+<p>修改完成后重新部署。<br>使用BGP模式后，首先变化是节点上不再有tunl0设备：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155716.png" alt="20230409155716"></p>
+<p>同样重新在master和node节点部署两个pod。如下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155352.png" alt="20230409155352"><br>两个pod的ip地址分别为10.10.40.129和10.10.194.128。<br>同样的操作在pod1 10.10.40.129中ping pod2的10.10.194.128：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155514.png" alt="20230409155514"></p>
+<h3 id="4-2-ping网络转发"><a href="#4-2-ping网络转发" class="headerlink" title="4.2 ping网络转发"></a>4.2 ping网络转发</h3><p>pod1中ping pod2首先pod1中的路由表：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155805.png" alt="20230409155805"></p>
+<p>根据pod1中的路由信息，ping包通过eth0网卡到master节点。master节点上根据路由信息，到10.10.194.128的数据包匹配到下边红框中的路由，直接发送到了192.168.170.138（node节点），从ens33网卡出去。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160033.png" alt="20230409160033"><br>node节点上的路由信息如下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160227.png" alt="20230409160227"><br>ping包到达node节点，匹配上红框中的路由信息，直接发送到了pod2的veth pair的一端，数据就直接到了pod2的网卡。<br>如果ping包回应pod1的 10.10.40.129，则在node节点上匹配到：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160444.png" alt="20230409160444"><br>直接到达了master节点192.168.170.137，后边的流程不再赘述。</p>
+<p>同样下表在master上抓包看一下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160906.png" alt="20230409160906"></p>
+<p>通过上边的流程发现，BGP的模式不再基于IPIP进行封装，也没有了tunl0设备做转发，而是通过路由表，直接转到了节点的网卡上转发出去。</p>
+<p>BGP模式下的整个网络的结构图：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409161220.png" alt="20230409161220"></p>
+<h3 id="4-3-VXLAN模式"><a href="#4-3-VXLAN模式" class="headerlink" title="4.3 VXLAN模式"></a>4.3 VXLAN模式</h3><p>在IP层上边又包含了二层网路结构<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230414155625.png" alt="20230414155625"></p>
+<h2 id="5-两种模式对比"><a href="#5-两种模式对比" class="headerlink" title="5 两种模式对比"></a>5 两种模式对比</h2><p>IPIP网络：需要tunl0设备封装数据，形成隧道，承载流量，需要tunl0设备封装效率略低。<br>BGP模式：使用路由引导流量转发，比IPIP效率更高。</p>
+<p>本文参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/goldsunshine/p/10701242.html">https://www.cnblogs.com/goldsunshine/p/10701242.html</a></p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 Yelog
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
