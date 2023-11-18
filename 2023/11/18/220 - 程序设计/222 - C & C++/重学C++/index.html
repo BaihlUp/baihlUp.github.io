@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Hexo | Hexo</title><meta name="author" content="John Doe"><meta name="copyright" content="John Doe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C++程序存储区域划分存储区域划分为：  栈区 堆区 全局未初始化变量 全局初始化变量 代码区在内存中分配区域时，按上图中的箭头方向，申请的变量位于栈区时，从高地址往低地址分配，堆区相反。   栈区和堆区对比    全局静态存储区和常量存储区对比   C++中的智能指针auto_ptr由new expression 获得对象，在auto_ptr 对象销毁时，他所管理的对象也会自动被 delete">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/222%20-%20C%20&%20C++/%E9%87%8D%E5%AD%A6C++/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="C++程序存储区域划分存储区域划分为：  栈区 堆区 全局未初始化变量 全局初始化变量 代码区在内存中分配区域时，按上图中的箭头方向，申请的变量位于栈区时，从高地址往低地址分配，堆区相反。   栈区和堆区对比    全局静态存储区和常量存储区对比   C++中的智能指针auto_ptr由new expression 获得对象，在auto_ptr 对象销毁时，他所管理的对象也会自动被 delete">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-11-18T08:55:07.661Z">
+<meta property="article:modified_time" content="2023-11-18T08:55:07.661Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/222%20-%20C%20&amp;%20C++/%E9%87%8D%E5%AD%A6C++/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hexo',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-11-18 08:55:07'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Untitled</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-11-18T08:55:07.661Z" title="Created 2023-11-18 08:55:07">2023-11-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-11-18T08:55:07.661Z" title="Updated 2023-11-18 08:55:07">2023-11-18</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="C-程序存储区域划分"><a href="#C-程序存储区域划分" class="headerlink" title="C++程序存储区域划分"></a>C++程序存储区域划分</h2><p>存储区域划分为：</p>
+<ol>
+<li>栈区</li>
+<li>堆区</li>
+<li>全局未初始化变量</li>
+<li>全局初始化变量</li>
+<li>代码区<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/1.png"><br>在内存中分配区域时，按上图中的箭头方向，申请的变量位于栈区时，从高地址往低地址分配，堆区相反。</li>
+</ol>
+<ul>
+<li><strong>栈区和堆区对比</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231117212913.png"></p>
+<ul>
+<li><strong>全局静态存储区和常量存储区对比</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231117213238.png"></p>
+<h2 id="C-中的智能指针"><a href="#C-中的智能指针" class="headerlink" title="C++中的智能指针"></a>C++中的智能指针</h2><h3 id="auto-ptr"><a href="#auto-ptr" class="headerlink" title="auto_ptr"></a>auto_ptr</h3><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231117213609.png"><br>由new expression 获得对象，在auto_ptr 对象销毁时，他所管理的对象也会自动被 delete 掉。</p>
+<p><strong>所有权转移:</strong> 不小心把它传递给另外的智能指针，原来的指针就不再拥有这个对象了在拷贝&#x2F;赋值过程中，会直接剥夺指针对原对象对内存的控制权，转交给新对象，然后再将原对象指针置为空。</p>
+<blockquote>
+<p>auto_prt 在C++17 以后已经作废，不建议在真实项目中使用</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">auto_ptr_test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="function">auto_ptr&lt;<span class="type">int</span>&gt; <span class="title">pl</span><span class="params">(<span class="keyword">new</span> <span class="type">int</span>(<span class="number">10</span>))</span></span>;</span><br><span class="line">    cout &lt;&lt; *pl &lt;&lt; endl; <span class="comment">// 10</span></span><br><span class="line"></span><br><span class="line">    auto_ptr&lt;string&gt; languages[<span class="number">5</span>] = &#123;</span><br><span class="line">            <span class="built_in">auto_ptr</span>&lt;string&gt;(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;C&quot;</span>)),</span><br><span class="line">            <span class="built_in">auto_ptr</span>&lt;string&gt;(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;Java&quot;</span>)),</span><br><span class="line">            <span class="built_in">auto_ptr</span>&lt;string&gt;(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;C++&quot;</span>)),</span><br><span class="line">            <span class="built_in">auto_ptr</span>&lt;string&gt;(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;Python&quot;</span>)),</span><br><span class="line">            <span class="built_in">auto_ptr</span>&lt;string&gt;(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">&quot;Rust&quot;</span>)),</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    for (const auto &amp; language : languages) &#123;</span></span><br><span class="line"><span class="comment">//        cout &lt;&lt; *language &lt;&lt; endl;</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// languages[2] 将所有权转让给pC，此时languages[2]不再引用该字符串，从而变成空指针</span></span><br><span class="line">    auto_ptr&lt;string&gt; pC = languages[<span class="number">2</span>];</span><br><span class="line">    cout &lt;&lt; *pC &lt;&lt; endl;  <span class="comment">// C++</span></span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;is: &quot;</span> &lt;&lt; *languages[<span class="number">2</span>] &lt;&lt; endl; <span class="comment">// is:</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">auto_ptr_test</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h3><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231117205001.png"><br><code>unique_ptr</code>是专属所有权，所以<code>unique_ptr</code>管理的内存，只能被一个对象持有不支持复制和赋值。<br><strong>移动语义</strong>：<code>unique _ptr</code> 禁止了拷贝语义，但有时我们也需要能够转移所有权，于是提供了移动语义，即可以使用<code>std::move()</code>进行控制所有权的转移。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">unique_ptr_test</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">auto</span> w = std::<span class="built_in">make_unique</span>&lt;<span class="type">int</span>&gt;(<span class="number">10</span>);  </span><br><span class="line">    cout &lt;&lt; *(w.<span class="built_in">get</span>()) &lt;&lt; endl;   <span class="comment">// 10</span></span><br><span class="line"><span class="comment">//    auto w2 = w; // 编译报错，不可以复制  </span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">// unique_ptr 只支持移动语义  </span></span><br><span class="line">    <span class="keyword">auto</span> w2 = std::<span class="built_in">move</span>(w);  </span><br><span class="line">    cout &lt;&lt; (w.<span class="built_in">get</span>() != <span class="literal">nullptr</span> ? *w.<span class="built_in">get</span>() : <span class="number">-1</span>) &lt;&lt; endl;  <span class="comment">// -1</span></span><br><span class="line">    cout &lt;&lt; (w2.<span class="built_in">get</span>() != <span class="literal">nullptr</span> ? *w2.<span class="built_in">get</span>() : <span class="number">-1</span>) &lt;&lt; endl; <span class="comment">// 10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="shared-ptr-和-weak-ptr"><a href="#shared-ptr-和-weak-ptr" class="headerlink" title="shared_ptr 和 weak_ptr"></a>shared_ptr 和 weak_ptr</h3><ul>
+<li><strong>shared_ptr</strong></li>
+</ul>
+<p>shared_ptr通过一个引用计数共享一个对象，shared_ptr为了解决auto_ptr在对象所有权上的局限性，通过使用引用计数的机制，提供了可以共享所有权的智能指针。<br>当引用计数为0时，该对象没有被使用，可以进行析构。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">shared_ptr_test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// shared_ptr 代表共享所有权，多个 shared_ptr 可以共享同一块内存</span></span><br><span class="line">    <span class="keyword">auto</span> wA = std::<span class="built_in">make_shared</span>&lt;<span class="type">int</span>&gt;(<span class="number">20</span>);</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">auto</span> wA2 = wA;</span><br><span class="line">        cout &lt;&lt; (wA2.<span class="built_in">get</span>() != <span class="literal">nullptr</span> ? *wA2.<span class="built_in">get</span>() : <span class="number">-1</span>) &lt;&lt; endl;  <span class="comment">// 20</span></span><br><span class="line">        cout &lt;&lt; (wA.<span class="built_in">get</span>() != <span class="literal">nullptr</span> ? *wA.<span class="built_in">get</span>() : <span class="number">-1</span>) &lt;&lt; endl;  <span class="comment">// 20</span></span><br><span class="line">        cout &lt;&lt; wA2.<span class="built_in">use_count</span>() &lt;&lt; endl;  <span class="comment">// 2</span></span><br><span class="line">        cout &lt;&lt; wA.<span class="built_in">use_count</span>() &lt;&lt; endl;  <span class="comment">// 2</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; wA.<span class="built_in">use_count</span>() &lt;&lt; endl;  <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> wAA = std::<span class="built_in">make_shared</span>&lt;<span class="type">int</span>&gt;(<span class="number">30</span>);</span><br><span class="line">    <span class="keyword">auto</span> wAA2 = std::<span class="built_in">move</span>(wAA);</span><br><span class="line">    cout &lt;&lt; (wAA.<span class="built_in">get</span>() != <span class="literal">nullptr</span> ? *wAA.<span class="built_in">get</span>() : <span class="number">-1</span>) &lt;&lt; endl;  <span class="comment">// -1</span></span><br><span class="line">    cout &lt;&lt; (wAA2.<span class="built_in">get</span>() != <span class="literal">nullptr</span> ? *wAA2.<span class="built_in">get</span>() : <span class="number">-1</span>) &lt;&lt; endl;  <span class="comment">// 30</span></span><br><span class="line">    cout &lt;&lt; wAA.<span class="built_in">use_count</span>() &lt;&lt; endl;  <span class="comment">// 0</span></span><br><span class="line">    cout &lt;&lt; wAA2.<span class="built_in">use_count</span>() &lt;&lt; endl;  <span class="comment">// 1</span></span><br><span class="line">    <span class="comment">// 将wAA 对象 move 给 wAA2，意味着 wAA 放弃了对内存的所有权和管理，此时 wAA2 对象等于 nullptr</span></span><br><span class="line">    <span class="comment">// 而wAA2 获得了对象所有权，但因为wAA已不再持有对象，因此wAA2的引用计数为1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>weak_ptr</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20231117211444.png"><br>循环引用导致引用计数永远不为0，会导致堆里的内存无法正常回收，造成内存泄漏。</p>
+<p>weak_ptr 与 shared_ptr 共同工作，用一种观察者模式工作，协助 shared_ptr 工作。<br>weak_ptr 只对 shared_ptr进行引用，不改变其引用计数，当被观察的shared_ptr失效后，相应的 weak_ptr 也相应失效。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span>  </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span>  </span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">B</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span> &#123;</span><br><span class="line">    shared_ptr&lt;B&gt; pb;</span><br><span class="line">    ~<span class="built_in">A</span>()&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~A()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">B</span> &#123;</span><br><span class="line">    shared_ptr&lt;A&gt; pa;</span><br><span class="line">    ~<span class="built_in">B</span>()&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~B()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="function">shared_ptr&lt;A&gt; <span class="title">tA</span><span class="params">(<span class="keyword">new</span> A())</span></span>;</span><br><span class="line">    <span class="function">shared_ptr&lt;B&gt; <span class="title">tB</span><span class="params">(<span class="keyword">new</span> B())</span></span>;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; tA.<span class="built_in">use_count</span>() &lt;&lt; endl;  <span class="comment">// 1</span></span><br><span class="line">    cout &lt;&lt; tB.<span class="built_in">use_count</span>() &lt;&lt; endl; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">    tA-&gt;pb = tB;</span><br><span class="line">    tB-&gt;pa = tA;</span><br><span class="line">    cout &lt;&lt; tA.<span class="built_in">use_count</span>() &lt;&lt; endl; <span class="comment">// 2</span></span><br><span class="line">    cout &lt;&lt; tB.<span class="built_in">use_count</span>() &lt;&lt; endl; <span class="comment">// 2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">Test</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+<p>以上出现循环引用，最后没有输出析构函数的操作。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span>  </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span>  </span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">BW</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">AW</span> &#123;</span><br><span class="line">    shared_ptr&lt;BW&gt; pb;</span><br><span class="line">    ~<span class="built_in">AW</span>()&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~AW()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">BW</span> &#123;</span><br><span class="line">    weak_ptr&lt;AW&gt; pa;</span><br><span class="line">    ~<span class="built_in">BW</span>()&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~BW()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Test2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="function">shared_ptr&lt;AW&gt; <span class="title">tA</span><span class="params">(<span class="keyword">new</span> AW())</span></span>;</span><br><span class="line">    <span class="function">shared_ptr&lt;BW&gt; <span class="title">tB</span><span class="params">(<span class="keyword">new</span> BW())</span></span>;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; tA.<span class="built_in">use_count</span>() &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; tB.<span class="built_in">use_count</span>() &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    tA-&gt;pb = tB;</span><br><span class="line">    tB-&gt;pa = tA;</span><br><span class="line">    cout &lt;&lt; tA.<span class="built_in">use_count</span>() &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; tB.<span class="built_in">use_count</span>() &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">Test2</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">1</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">~AW()</span><br><span class="line">~BW()</span><br></pre></td></tr></table></figure>
+<p>通过使用 weak_ptr ，程序正常执行了 析构函数。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">John Doe</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/222%20-%20C%20&amp;%20C++/%E9%87%8D%E5%AD%A6C++/">http://example.com/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/222%20-%20C%20&amp;%20C++/%E9%87%8D%E5%AD%A6C++/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/18/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Obsidian%E7%9A%84%E4%BD%BF%E7%94%A8/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/06%20-%20Python--%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E5%8C%85/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info"></div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%A8%8B%E5%BA%8F%E5%AD%98%E5%82%A8%E5%8C%BA%E5%9F%9F%E5%88%92%E5%88%86"><span class="toc-number">1.</span> <span class="toc-text">C++程序存储区域划分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E4%B8%AD%E7%9A%84%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="toc-number">2.</span> <span class="toc-text">C++中的智能指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#auto-ptr"><span class="toc-number">2.1.</span> <span class="toc-text">auto_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unique-ptr"><span class="toc-number">2.2.</span> <span class="toc-text">unique_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shared-ptr-%E5%92%8C-weak-ptr"><span class="toc-number">2.3.</span> <span class="toc-text">shared_ptr 和 weak_ptr</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/00%20-%20%E7%9B%AE%E5%BD%95/" title="Untitled">Untitled</a><time datetime="2023-11-18T08:55:07.661Z" title="Created 2023-11-18 08:55:07">2023-11-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/18/255%20-%20%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;%E5%A4%A7%E6%95%B0%E6%8D%AE/01%20-%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0--%E5%9F%BA%E7%A1%80%E7%AF%87/" title="Untitled">Untitled</a><time datetime="2023-11-18T08:55:07.661Z" title="Created 2023-11-18 08:55:07">2023-11-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/18/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/JetBrains%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/" title="Untitled">Untitled</a><time datetime="2023-11-18T08:55:07.661Z" title="Created 2023-11-18 08:55:07">2023-11-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/18/200%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/Obsidian%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Untitled">Untitled</a><time datetime="2023-11-18T08:55:07.661Z" title="Created 2023-11-18 08:55:07">2023-11-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/18/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/222%20-%20C%20&amp;%20C++/%E9%87%8D%E5%AD%A6C++/" title="Untitled">Untitled</a><time datetime="2023-11-18T08:55:07.661Z" title="Created 2023-11-18 08:55:07">2023-11-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
