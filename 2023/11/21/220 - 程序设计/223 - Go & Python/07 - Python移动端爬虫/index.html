@@ -1,0 +1,465 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Hexo | Hexo</title><meta name="author" content="John Doe"><meta name="copyright" content="John Doe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0 参考资料0.1 开源库uiautomator2：https:&#x2F;&#x2F;github.com&#x2F;openatx&#x2F;uiautomator2 1 环境部署1.1 工具需要依赖以下工具：  模拟器：夜神模拟器：开启桥接模式，让手机和PC在同一个网段 抓包工具：Fiddler、mitmproxy、packet capture（手机端） adb工具 Uiautomator2、Appium：用于执行自动化移动应用程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/11/21/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&%20Python/07%20-%20Python%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%88%AC%E8%99%AB/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="0 参考资料0.1 开源库uiautomator2：https:&#x2F;&#x2F;github.com&#x2F;openatx&#x2F;uiautomator2 1 环境部署1.1 工具需要依赖以下工具：  模拟器：夜神模拟器：开启桥接模式，让手机和PC在同一个网段 抓包工具：Fiddler、mitmproxy、packet capture（手机端） adb工具 Uiautomator2、Appium：用于执行自动化移动应用程">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-11-21T13:31:00.854Z">
+<meta property="article:modified_time" content="2023-11-21T13:31:00.854Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2023/11/21/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/07%20-%20Python%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%88%AC%E8%99%AB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hexo',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-11-21 13:31:00'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Untitled</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-11-21T13:31:00.854Z" title="Created 2023-11-21 13:31:00">2023-11-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-11-21T13:31:00.854Z" title="Updated 2023-11-21 13:31:00">2023-11-21</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="0-参考资料"><a href="#0-参考资料" class="headerlink" title="0 参考资料"></a>0 参考资料</h1><h2 id="0-1-开源库"><a href="#0-1-开源库" class="headerlink" title="0.1 开源库"></a>0.1 开源库</h2><p><strong>uiautomator2</strong>：<a target="_blank" rel="noopener" href="https://github.com/openatx/uiautomator2">https://github.com/openatx/uiautomator2</a></p>
+<h1 id="1-环境部署"><a href="#1-环境部署" class="headerlink" title="1 环境部署"></a>1 环境部署</h1><h2 id="1-1-工具"><a href="#1-1-工具" class="headerlink" title="1.1 工具"></a>1.1 工具</h2><p><strong>需要依赖以下工具：</strong></p>
+<ol>
+<li>模拟器：夜神模拟器：开启桥接模式，让手机和PC在同一个网段</li>
+<li>抓包工具：Fiddler、mitmproxy、packet capture（手机端）</li>
+<li>adb工具</li>
+<li>Uiautomator2、Appium：用于执行自动化移动应用程序测试的工具</li>
+</ol>
+<h2 id="1-2-Android调试桥（adb）"><a href="#1-2-Android调试桥（adb）" class="headerlink" title="1.2 Android调试桥（adb）"></a>1.2 Android调试桥（adb）</h2><p>使用adb工具可以连接手机，通过PC操作手机，进行调试。adb是一个C&#x2F;S架构，如下：<br>adb clilent：命令行程序“adb” 用于从shell或脚本中运行adb命令<br>adb server：ADB Server是运行在PC上的一个后台进程</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u010610691/article/details/77663770">adb使用-详细教程（Awesome Adb）</a></p>
+<ul>
+<li><strong>adb相关命令</strong></li>
+</ul>
+<p>adb kill-server ：关闭adb server<br>adb start-server：启动adb server<br>adb devices：展示adb中连接的手机，默认展示本地环境中的手机<br>adb shell pm list packages：展示手机中安装的包<br>adb install&#x2F;uninstall ：使用adb在手机中安装apk<br>adb -s [设备号] shell ：进入手机底层系统<br>adb push [文件路径] [手机存储位置] ：从PC传文件到手机<br>adb pull [手机存储位置] [文件路径] ：从手机传文件到PC<br>adb screencap &#x2F;sdcard&#x2F;test.png ：手机截图</p>
+<ul>
+<li><strong>adb命令执行后，看不到手机，可能原因如下</strong>：</li>
+</ul>
+<ol>
+<li>需要在手机中打开USB调试和开发者模式，设置-&gt;关于手机-&gt;版本号（多次点击）</li>
+<li>检查adb版本，安卓版本在4.x上的版本都要求adb版本必须是1.0.31版本及以上</li>
+<li>若连接电脑本地的模拟器也是无法连接的话，可以查看下模拟器的adb.exe和电脑环境配置的adb.exe文件的版本是不是一致的(查看adb版本：adb version)</li>
+<li>修改手机型号，然后重启，多试几次</li>
+</ol>
+<ul>
+<li><strong>ubuntu安装Adb工具</strong></li>
+</ul>
+<p>在PC上开启tcpip模式：<code>adb tcpip 5555</code> 设置tcp连接模式和端口<br>在Ubuntu上进行连接：<code>adb connect 192.168.1.8:5555</code> 通过IP连接手机</p>
+<h2 id="1-3-Uiautomator2使用"><a href="#1-3-Uiautomator2使用" class="headerlink" title="1.3 Uiautomator2使用"></a>1.3 Uiautomator2使用</h2><h3 id="1-3-2-介绍"><a href="#1-3-2-介绍" class="headerlink" title="1.3.2 介绍"></a>1.3.2 介绍</h3><ul>
+<li><strong>UIAutomator2</strong></li>
+</ul>
+<ol>
+<li><strong>专注于Android平台</strong>：UIAutomator2是由Google提供的Android平台上的UI自动化测试框架，专门用于测试Android应用程序。</li>
+<li><strong>直接操作底层</strong>：UIAutomator2能够直接与Android设备交互，可以访问应用程序的任何元素，包括应用外部的系统应用和通知栏。</li>
+<li><strong>基于Java</strong>：UIAutomator2主要使用Java编写，对于使用Java语言的开发者来说，学习和使用起来比较自然。</li>
+<li><strong>仅限于Android 7.0以上</strong>：UIAutomator2支持Android 7.0及更高版本。之前版本的UIAutomator框架有一些限制。</li>
+</ol>
+<ul>
+<li><strong>Appium</strong></li>
+</ul>
+<ol>
+<li><strong>跨平台兼容</strong>：Appium是一种跨平台的自动化测试工具，可以测试多种移动平台，包括Android和iOS。</li>
+<li><strong>支持多种语言</strong>：Appium支持多种编程语言，如Java、Python、JavaScript等，这使得开发者可以根据自己的偏好选择合适的语言进行测试脚本编写。</li>
+<li><strong>使用WebDriver协议</strong>：Appium使用WebDriver协议来执行测试，这意味着熟悉WebDriver的开发人员可以很容易地迁移到Appium。</li>
+<li><strong>更广泛的设备支持</strong>：由于其跨平台性质，Appium可以测试多种设备和模拟器，而不仅仅是Android设备。</li>
+</ol>
+<h3 id="1-3-3-Uiautomator2安装"><a href="#1-3-3-Uiautomator2安装" class="headerlink" title="1.3.3 Uiautomator2安装"></a>1.3.3 Uiautomator2安装</h3><p>uiautomator2是一个自动化测试开源工具，仅支持Android平台的原生应用测试。它本来是Google提供的一个自动化测试的Java库，后来发展了python-uiautomator2，封装了谷歌自带的uiautomator测试框架，提供便利的python接口，用它可以很便捷的编写python脚本来实现app的自动化测试<br>原理解析：</p>
+<ul>
+<li>python端：运行脚本，往移动端发送HTTP请求</li>
+<li>移动端：安装atx-agent，然后atx-agent启动uiautomator2服务进行监听，并识别python脚本，转换为uiautomator2的代码。</li>
+</ul>
+<blockquote>
+<p>移动设备通过WIFI(同一网段)或USB接收到PC上发来的HTTP请求，执行制定的操作</p>
+</blockquote>
+<ol>
+<li>下载Android SDK，里边有adb工具</li>
+<li>安装uiautomator2：<code>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple uiautomator2</code></li>
+<li>使用 <code>adb devices</code> 查看本地手机设备</li>
+<li>对手机进行初始化，就是在手机上安装 atx-agent，执行 <code>python -m uiautomator2 init</code>，手机上会提示安装操作，最后会有一个ATX的app在手机中，打开ATX，开启UIAUTOMATOR和ATXAGENT</li>
+<li>ATX app加入开机启动，并设置可以后台运行</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151048977.png"></p>
+<blockquote>
+<p>以上<code>python -m uiautomator2 init</code>操作会安装u2包，安装了如下程序：<br>uiautomator-server：就是谷歌原生的uiautomator<br>atx-agent：uiautomator守护进程<br>atx-agent增加远程控制的功能，依赖minicap和minitouch这两个工具<br>以上工具安装后，放在PC的家目录下的 <code>.uiautomator</code>目录下</p>
+</blockquote>
+<p>包括uiautomatorviewer、uiautomator<br>用来做UI测试，点击控件看是否符合预期。</p>
+<p>可以定位手机界面的元素</p>
+<p>替换使用：高级版uiautomatorviewer-master</p>
+<p>可以使用uiautomatorviewer定位手机的元素</p>
+<h3 id="1-3-4-Uiautomator2操作手机"><a href="#1-3-4-Uiautomator2操作手机" class="headerlink" title="1.3.4 Uiautomator2操作手机"></a>1.3.4 Uiautomator2操作手机</h3><ul>
+<li>Uiautomator2服务</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2  </span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">d = u2.connect_usb(<span class="string">&quot;127.0.0.1:62025&quot;</span>)</span><br><span class="line"><span class="comment"># 通过start方法启动uiautomator服务  </span></span><br><span class="line">d.service(<span class="string">&quot;uiautomator&quot;</span>).start()  </span><br><span class="line"><span class="comment"># time.sleep(2)  </span></span><br><span class="line"><span class="built_in">print</span>(d.service(<span class="string">&quot;uiautomator&quot;</span>).running())</span><br><span class="line"><span class="comment"># 停止服务  </span></span><br><span class="line">d.service(<span class="string">&quot;uiautomator&quot;</span>).stop()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看atx-agent运行状态,如果atx-agent真的停止了，我们可以通过connect来唤醒atx-agent服务  </span></span><br><span class="line"><span class="built_in">print</span>(d.agent_alive)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通过python脚本，对手机进行操控：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2  </span><br><span class="line"><span class="keyword">import</span> time  </span><br><span class="line">  </span><br><span class="line"><span class="comment">#当前的网络环境需要在一个局域网里面  </span></span><br><span class="line"><span class="comment">#通过手机WIFI来进行连接,需要查看手机的IP地址  </span></span><br><span class="line">d = u2.connect_wifi(<span class="string">&quot;192.168.1.7&quot;</span>)  </span><br><span class="line"><span class="comment"># print(d.info)  </span></span><br><span class="line"><span class="comment"># 通过手机的序列号  </span></span><br><span class="line">d = u2.connect_usb(<span class="string">&quot;4bf05af7&quot;</span>)  </span><br><span class="line"><span class="comment"># print(d.info)  </span></span><br><span class="line"><span class="comment">#通过adb wifi也就是adb tcpip模式,注意不要丢掉端口号  </span></span><br><span class="line">d = u2.connect_adb_wifi(<span class="string">&quot;192.168.1.7:5555&quot;</span>)  </span><br><span class="line"><span class="comment">#device_info可以获取详细的设备信息  </span></span><br><span class="line"><span class="built_in">print</span>(d.device_info)  </span><br><span class="line"><span class="comment"># 查看获取到的wifi地址  </span></span><br><span class="line"><span class="built_in">print</span>(d.wlan_ip)</span><br><span class="line"><span class="comment"># 查看设备的分辨率  </span></span><br><span class="line"><span class="built_in">print</span>(d.window_size())</span><br><span class="line"></span><br><span class="line"><span class="comment">#启动手机上的app,通过aapt工具（在夜神模拟器中包含）来获取包名  </span></span><br><span class="line"><span class="comment">#appt获取包名的时候，在aapt dump badging xxx.apk,命令输出的第一行，有个package，获取到的是包名  </span></span><br><span class="line">d.app_start(<span class="string">&quot;com.ss.android.ugc.aweme&quot;</span>)  </span><br><span class="line"><span class="comment">#运行七秒  </span></span><br><span class="line">time.sleep(<span class="number">7</span>)  </span><br><span class="line"><span class="comment">#停止抖音app  </span></span><br><span class="line">d.app_stop(<span class="string">&quot;com.ss.android.ugc.aweme&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>启动手机APP，需要安装 aapt工具，通过aapt工具执行命令 <code>aapt dump badging xxx.apk</code> 获取包名。</p>
+<ul>
+<li>操作APP，安装APP，清除缓存</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># 通过USB进行连接  </span></span><br><span class="line">d = u2.connect_usb(<span class="string">&quot;127.0.0.1:62025&quot;</span>)  </span><br><span class="line"><span class="comment"># 通过app_install方法安装apk，path=&quot;xxx.apk&quot;  </span></span><br><span class="line">d.app_install(<span class="string">&quot;./imooc7.3.410102001android.apk&quot;</span>)  </span><br><span class="line"><span class="comment"># 启动app  </span></span><br><span class="line">d.app_start(package_name=<span class="string">&quot;cn.com.open.mooc&quot;</span>)  </span><br><span class="line"><span class="comment"># 获取当前前台运行的app的信息  </span></span><br><span class="line"><span class="built_in">print</span>(d.app_current())  </span><br><span class="line">d.app_stop(<span class="string">&quot;cn.com.open.mooc&quot;</span>)  </span><br><span class="line"><span class="comment"># 获取app详细信息  </span></span><br><span class="line"><span class="built_in">print</span>(d.app_info(<span class="string">&quot;cn.com.open.mooc&quot;</span>))  </span><br><span class="line"><span class="comment"># 清除app缓存  </span></span><br><span class="line"><span class="comment"># 尤其是我们后面要进行的视频数据抓取，会产生一定的缓存  </span></span><br><span class="line">d.app_clear(<span class="string">&quot;cn.com.open.mooc&quot;</span>)  </span><br><span class="line"><span class="comment"># 卸载app  </span></span><br><span class="line">d.app_uninstall(<span class="string">&quot;cn.com.open.mooc&quot;</span>)  </span><br><span class="line"><span class="comment"># 获取所有app列表  </span></span><br><span class="line"><span class="built_in">print</span>(d.app_list())  </span><br><span class="line"><span class="comment"># 获取所有正在运行的app的列表  </span></span><br><span class="line"><span class="built_in">print</span>(d.app_list_running())  </span><br><span class="line"><span class="comment"># 停止所有app  </span></span><br><span class="line">d.app_stop_all()  </span><br><span class="line"><span class="comment"># 卸载所有app,卸载所有第三方app,u2项目包不会卸载&#x27;pm&#x27;, &#x27;list&#x27;, &#x27;packages&#x27;, &#x27;-3  </span></span><br><span class="line"><span class="comment"># d.app_uninstall_all()</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-4-Weditor使用"><a href="#1-4-Weditor使用" class="headerlink" title="1.4 Weditor使用"></a>1.4 Weditor使用</h2><h3 id="1-4-1-什么是weditor"><a href="#1-4-1-什么是weditor" class="headerlink" title="1.4.1 什么是weditor"></a>1.4.1 什么是weditor</h3><p>定位app控件的一种工具，相当于selenium，可以快速定位app以及清晰的看到他们之间的层级关系，抓取app数据之前可以通过它先了解app的结构以及一些信息(就相当于饭前洗手虽然没有必要关联，但是有助于你的健康)它虽然对抓取app数据没太大相关，但可以帮助了解app的组成以及实现它的逻辑</p>
+<h3 id="1-4-2-怎么使用weditor"><a href="#1-4-2-怎么使用weditor" class="headerlink" title="1.4.2 怎么使用weditor"></a>1.4.2 怎么使用weditor</h3><ol>
+<li>安装adb</li>
+<li>安装uiautomator2以及weditor</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade --pre uiautomator2</span><br><span class="line">pip install weditor</span><br></pre></td></tr></table></figure>
+
+<p>在Windows环境下安装Weditor报错，需要设置下边环境变量：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151420469.png"></p>
+<ol start="3">
+<li>初始化移动端设备安装插件python -m uiautomator2 init</li>
+<li>连接手机(打开模拟器)DOS中输入adb devices</li>
+<li>DOS中输入weditor连接浏览器中就会弹出元素定位工具</li>
+</ol>
+<h3 id="1-4-3-weditor页面介绍"><a href="#1-4-3-weditor页面介绍" class="headerlink" title="1.4.3 weditor页面介绍"></a>1.4.3 weditor页面介绍</h3><p>一共有四个区域：移动设备选取区域、控件属性区域、代码展示区域、层级关系和结果展示区域。有了这个定位工具就方便我们测试app以及定位等操作(更加轻便，模拟多种状态，快速定位)</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151236590.png"></p>
+<h3 id="1-4-4-定位控件"><a href="#1-4-4-定位控件" class="headerlink" title="1.4.4 定位控件"></a>1.4.4 定位控件</h3><p>用u2连接手机，普通只能通过查找包名来定位现在可以通过weditor来定位更加方便和快捷<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151237045.png"><br>使用adb devices获取手机设备，填入Connect，进行连接。</p>
+<ul>
+<li>text：全文本匹配</li>
+<li>textContains：文本包含匹配(注意要唯一才能够操作)</li>
+<li>textMatches：正则表达式匹配</li>
+<li>textStartsWith：起始文本匹配</li>
+<li>ClassName：如果有多个要根据索引值限定(注意层级关系)</li>
+<li>classNameMatches：正则表达式匹配</li>
+<li>resourceId：资源Id匹配如果有多个要根据索引值限定(注意层级关系)</li>
+<li>resourceIdMatches：正则表达式(可能定位多个，用混合使用避免定位不到)</li>
+</ul>
+<p>坐标点定位：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151238052.png"></p>
+<p>ClassName有多个层级：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151238062.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator <span class="keyword">as</span> u2</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">d = u2.connect_usb(<span class="string">&#x27;127.0.0.1:62001&#x27;</span>)</span><br><span class="line">d.app_start(<span class="string">&#x27;com.baidu.searchbox&#x27;</span>) <span class="comment"># 通过weditor更加快速定位，想开启谁去找就好了</span></span><br><span class="line">time.sleep(<span class="number">2</span>) <span class="comment"># 防止页面跳转之后控件没有加载出来而造成找不到的情况</span></span><br><span class="line">d(text=<span class="string">&quot;登录并进入百度APP&quot;</span>).click(timeout=<span class="number">4</span>) <span class="comment"># 在weditor中找到text定位超过4秒就抛出异常</span></span><br><span class="line">d(text=<span class="string">&quot;登录并进入百度APP&quot;</span>).click_exists(timeout=<span class="number">4</span>) <span class="comment"># 判断text存不存在，不存在就直接跳过</span></span><br><span class="line"><span class="built_in">print</span>(d(text=<span class="string">&#x27;登录并进入百度APP&#x27;</span>).exists) <span class="comment"># 判断是否有此控件</span></span><br><span class="line">d(textContains=<span class="string">&#x27;并进&#x27;</span>).click()</span><br><span class="line">d(textMatches=<span class="string">&#x27;.&#123;2&#125;APP&#x27;</span>).click()</span><br><span class="line">d(textStartsWith=<span class="string">&#x27;登录并&#x27;</span>).click()</span><br><span class="line">d(className=<span class="string">&#x27;android.widget.TextView&#x27;</span>)[<span class="number">2</span>].click()</span><br><span class="line">d(className=<span class="string">&#x27;android.widget.TextView&#x27;</span>, instance=<span class="number">2</span>).click() <span class="comment"># 跟上一种方法一样</span></span><br><span class="line">d(classNameMatches=<span class="string">&#x27;.\w&#123;2&#125;APP&#x27;</span>, text=<span class="string">&#x27;登录并进入百度APP&#x27;</span>).click()</span><br><span class="line">d(resourceId=<span class="string">&#x27;com.baidu.searchbox:id/login&#x27;</span>)[<span class="number">0</span>].click()</span><br><span class="line">d(resourceId=<span class="string">&#x27;com.baidu.searchbox:id/login&#x27;</span>, instance=<span class="number">0</span>).click() <span class="comment"># 跟上一种方法一样</span></span><br><span class="line">d(resourceIdMatches=<span class="string">&#x27;.*?\/login&#x27;</span>, text=<span class="string">&#x27;登录并进入百度APP&#x27;</span>).click()</span><br><span class="line">d(resourceId=<span class="string">&#x27;com.baidu.searchbox:id/login&#x27;</span>, text=<span class="string">&#x27;	登录并进入百度APP&#x27;</span>).click() <span class="comment"># 混合使用</span></span><br><span class="line"><span class="comment"># 混合定位之链式定位,不推荐使用</span></span><br><span class="line">d(className=<span class="string">&#x27;android.widget.TextView&#x27;</span>).child(text=<span class="string">&#x27;登录并进入百度APP&#x27;</span>).click()</span><br><span class="line">d(className=<span class="string">&#x27;android.widget.TextView&#x27;</span>).child_by_text(<span class="string">&#x27;登录并进入百度APP&#x27;</span>).click() <span class="comment"># 意义同上定位控件</span></span><br><span class="line">d.click(<span class="number">533</span>, <span class="number">687</span>) <span class="comment"># 将坐标点写入</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-5-解锁图案验证"><a href="#1-4-5-解锁图案验证" class="headerlink" title="1.4.5 解锁图案验证"></a>1.4.5 解锁图案验证</h3><p>常用操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2  </span><br><span class="line">  </span><br><span class="line">d = u2.connect_usb(<span class="string">&quot;127.0.0.1:62025&quot;</span>)  </span><br><span class="line">d.service(<span class="string">&quot;uiautomator&quot;</span>).start()  </span><br><span class="line"><span class="built_in">print</span>(d.service(<span class="string">&quot;uiautomator&quot;</span>).running())  </span><br><span class="line"><span class="comment"># 滑动解锁操作  </span></span><br><span class="line"><span class="comment"># 息屏  </span></span><br><span class="line">d.screen_off()  </span><br><span class="line"><span class="comment"># 点亮屏幕  </span></span><br><span class="line">d.screen_on()  </span><br><span class="line"><span class="comment"># 解锁  </span></span><br><span class="line">d.unlock()  </span><br><span class="line"><span class="comment"># 获取屏幕状态  </span></span><br><span class="line"><span class="built_in">print</span>(d.info.get(<span class="string">&quot;screenOn&quot;</span>))  </span><br><span class="line">d.unlock()  </span><br><span class="line"><span class="comment"># home键  </span></span><br><span class="line">d.press(<span class="string">&quot;home&quot;</span>)  </span><br><span class="line"><span class="comment"># 返回键  </span></span><br><span class="line">d.press(<span class="string">&quot;back&quot;</span>)  </span><br><span class="line">  </span><br><span class="line">d.swipe_ext(<span class="string">&quot;left&quot;</span>)  </span><br><span class="line">d.swipe_ext(<span class="string">&quot;right&quot;</span>)  </span><br><span class="line"><span class="comment"># 滑动解锁  </span></span><br><span class="line"><span class="comment"># swipe_points  </span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># 先解锁调出九宫格界面  </span></span><br><span class="line"><span class="comment"># 0.224, 0.393  </span></span><br><span class="line"><span class="comment"># (0.493, 0.395)  </span></span><br><span class="line"><span class="comment"># (0.781, 0.396)  </span></span><br><span class="line"><span class="comment"># (0.501, 0.551)  </span></span><br><span class="line"><span class="comment"># (0.218, 0.705)  </span></span><br><span class="line"><span class="comment"># (0.501, 0.703)  </span></span><br><span class="line"><span class="comment"># (0.773, 0.703)  </span></span><br><span class="line"><span class="comment"># duration0.2 是0.2秒  </span></span><br><span class="line">d.unlock()  </span><br><span class="line">d.swipe_points(points=[  </span><br><span class="line">		(<span class="number">0.224</span>, <span class="number">0.393</span>),  </span><br><span class="line">		(<span class="number">0.493</span>, <span class="number">0.395</span>),  </span><br><span class="line">		(<span class="number">0.781</span>, <span class="number">0.396</span>),  </span><br><span class="line">		(<span class="number">0.501</span>, <span class="number">0.551</span>),  </span><br><span class="line">		(<span class="number">0.218</span>, <span class="number">0.705</span>),  </span><br><span class="line">		(<span class="number">0.501</span>, <span class="number">0.703</span>),  </span><br><span class="line">		(<span class="number">0.773</span>, <span class="number">0.703</span>)  </span><br><span class="line">		], duration=<span class="number">0.2</span>)  </span><br><span class="line">d.screen_off()</span><br></pre></td></tr></table></figure>
+
+<p>通过坐标定位模拟人的行为给手机解锁(图案锁)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2</span><br><span class="line"></span><br><span class="line">d = u2.connect_usb(<span class="string">&#x27;127.0.0.1:62001&#x27;</span>)</span><br><span class="line"><span class="comment"># 将坐标点以列表方式传入，0.2毫秒延迟</span></span><br><span class="line">d.swipe_points(points=[(<span class="number">10</span>,<span class="number">20</span>),(<span class="number">30</span>,<span class="number">40</span>),(<span class="number">40</span>,<span class="number">50</span>)],duration=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>获取控件源代码（html）</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2  </span><br><span class="line">  </span><br><span class="line">d = u2.connect_usb(<span class="string">&quot;127.0.0.1:62025&quot;</span>)  </span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;phone.file&quot;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:  </span><br><span class="line">	<span class="comment"># 通过这个方法来获取到控件的源代码文件  </span></span><br><span class="line">	f.write(d.dump_hierarchy())  </span><br><span class="line">d.xpath(<span class="string">&#x27;//*[@text=&quot;蓝牙&quot;]&#x27;</span>).click()</span><br></pre></td></tr></table></figure>
+<p>通过XPath定位元素。</p>
+<h3 id="1-4-6-模拟登录并操作考研帮"><a href="#1-4-6-模拟登录并操作考研帮" class="headerlink" title="1.4.6 模拟登录并操作考研帮"></a>1.4.6 模拟登录并操作考研帮</h3><p>熟悉通过python操作app各种控件，模拟人的行为，为以后爬取app数据做铺垫</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HandleKaoyanbang</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, apk, serial=<span class="string">&quot;127.0.0.1:62025&quot;</span></span>):</span><br><span class="line">        <span class="comment"># 当前是通过usb的方法来连接移动设备的</span></span><br><span class="line">        self.d = u2.connect_usb(serial=serial)</span><br><span class="line">        app_list = self.d.app_list()</span><br><span class="line">        <span class="comment"># 如果APP已安装，则跳过</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;com.tal.kaoyan&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> app_list:</span><br><span class="line">            self.d.app_install(apk)</span><br><span class="line">        self.size = self.get_windowsize()</span><br><span class="line">        self.handle_watcher()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">handle_watcher</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;定义一个监控器&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 监控器会单独的起一个线程</span></span><br><span class="line">        <span class="comment"># 允许权限</span></span><br><span class="line">        self.d.watcher.when(<span class="string">&#x27;//*[@resource-id=&quot;com.android.packageinstaller:id/permission_allow_button&quot;]&#x27;</span>).click()</span><br><span class="line">        <span class="comment"># 用户隐私协议</span></span><br><span class="line">        self.d.watcher.when(<span class="string">&#x27;//*[@resource-id=&quot;com.tal.kaoyan:id/tip_commit&quot;]&#x27;</span>).click()</span><br><span class="line">        <span class="comment"># 广告</span></span><br><span class="line">        self.d.watcher.when(<span class="string">&#x27;//*[@resource-id=&quot;com.tal.kaoyan:id/tv_skip&quot;]&#x27;</span>).click()</span><br><span class="line">        <span class="comment"># 监控器写好之后，要通过start方法来启动</span></span><br><span class="line">        self.d.watcher.start()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_windowsize</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取手机屏幕的大小&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.d.window_size()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">close_app</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 监控器关闭</span></span><br><span class="line">        self.d.watcher.stop()</span><br><span class="line">        <span class="comment"># 停止考研帮app</span></span><br><span class="line">        self.d.app_stop(<span class="string">&quot;com.tal.kaoyan&quot;</span>)</span><br><span class="line">        <span class="comment"># 清理缓存</span></span><br><span class="line">        self.d.app_clear(<span class="string">&quot;com.tal.kaoyan&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">handle_kaoyanbang_app</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;启动考研帮app,并实现自动化操作&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># aapt这个工具</span></span><br><span class="line">        <span class="comment"># 通过weditor</span></span><br><span class="line">        self.d.app_start(package_name=<span class="string">&quot;com.tal.kaoyan&quot;</span>)</span><br><span class="line">        <span class="comment"># 在点击之前需要判断是否有这个控件</span></span><br><span class="line">        self.d(text=<span class="string">&quot;密码登录&quot;</span>).click_exists(timeout=<span class="number">10</span>)</span><br><span class="line">        <span class="comment"># 通过找到相关控件之后,文本控件，set_text这个方法来输入文字</span></span><br><span class="line">        self.d(resourceId=<span class="string">&quot;com.tal.kaoyan:id/login_email_edittext&quot;</span>).set_text(<span class="string">&quot;450120127@163.com&quot;</span>)</span><br><span class="line">        <span class="comment"># 输入密码</span></span><br><span class="line">        self.d(resourceId=<span class="string">&quot;com.tal.kaoyan:id/login_password_edittext&quot;</span>).set_text(<span class="string">&quot;abcd1234&quot;</span>)</span><br><span class="line">        <span class="comment"># self.d(resourceId=&quot;com.tal.kaoyan:id/login_login_btn&quot;).click()</span></span><br><span class="line">        self.d(text=<span class="string">&quot;登录&quot;</span>).click()</span><br><span class="line">        <span class="comment"># 在10秒钟如果这个界面启动了</span></span><br><span class="line">        <span class="keyword">if</span> self.d.wait_activity(<span class="string">&quot;com.tal.kaoyan.ui.activity.HomeTabActivity&quot;</span>, timeout=<span class="number">10</span>):</span><br><span class="line">            self.d(text=<span class="string">&quot;研讯&quot;</span>).click_exists(timeout=<span class="number">10</span>)</span><br><span class="line">            <span class="comment"># 获取到屏幕的中心点，x轴</span></span><br><span class="line">            <span class="comment"># 在获取到y轴远方点，获取到y轴近点</span></span><br><span class="line">            x1 = <span class="built_in">int</span>(self.size[<span class="number">0</span>] * <span class="number">0.5</span>)</span><br><span class="line">            y1 = <span class="built_in">int</span>(self.size[<span class="number">1</span>] * <span class="number">0.9</span>)</span><br><span class="line">            y2 = <span class="built_in">int</span>(self.size[<span class="number">1</span>] * <span class="number">0.15</span>)</span><br><span class="line">            <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                <span class="comment"># get toast，是安卓系统系统的一个信息提示操作</span></span><br><span class="line">                <span class="keyword">if</span> self.d.toast.get_message(<span class="number">0</span>) == <span class="string">&quot;内容已经全部加载完了&quot;</span>:</span><br><span class="line">                    self.close_app()</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                <span class="comment"># 开始滑动研讯</span></span><br><span class="line">                self.d.swipe(x1, y1, x1, y2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    k = HandleKaoyanbang(<span class="string">&quot;./kaoyanbang_3.5.6.272.apk&quot;</span>)</span><br><span class="line">    k.handle_kaoyanbang_app()</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="1-7-Appium使用"><a href="#1-7-Appium使用" class="headerlink" title="1.7 Appium使用"></a>1.7 Appium使用</h2><p>appium类库封装了标准Selenium客户端类库。是一个开源测试自动化框架<br>是个C&#x2F;S架构</p>
+<p>bootstrap.jar</p>
+<ul>
+<li>inspector菜单<br>  Automatic Server<br>  desired capability</li>
+</ul>
+<p>获取appPackage、appActivity<br>执行：<code>aapt.exe dump badging [APP安装包]</code><br>使用adb shell获取</p>
+<p>使用docker部署 Appium<br>在PC上通过命令 <code>adb -s [设备ID] tcpip 5555</code> 修改为网络连接模式</p>
+<h2 id="1-6-抓包工具"><a href="#1-6-抓包工具" class="headerlink" title="1.6 抓包工具"></a>1.6 抓包工具</h2><h3 id="1-6-1-Fiddler安装和使用"><a href="#1-6-1-Fiddler安装和使用" class="headerlink" title="1.6.1 Fiddler安装和使用"></a>1.6.1 Fiddler安装和使用</h3><p>是一个Web调试代理平台，可以监控和修改web数据流</p>
+<p>安装证书后，配置代理<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311131750472.png"><br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311131754614.png"><br>以上设置完Fiddler证书和代理配置后，重启Fiddler，浏览器中安装switchyOmega 代理软件，基于Fiddler代理访问，如果是手机模拟器中，需要先开启桥接模式，与本机PC处在同一网络，然后在手机中设置代理，指定为Fiddler。</p>
+<p>手机浏览器中访问Fiddler:PORT（PC的IP和代理端口），会显示安装 Fiddler 证书的界面，正常安装证书，就可以访问HTTPS网站。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151753051.png"></p>
+<ul>
+<li>Fiddler 工具栏</li>
+</ul>
+<p>打开以下配置：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311131757049.png"></p>
+<ul>
+<li>设置断点</li>
+</ul>
+<p>工具栏中 “规则” 菜单栏下。</p>
+<p>使用命令行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bpu</span><br><span class="line"># 设置响应断点</span><br><span class="line">bpafter https://www.baidu.com</span><br><span class="line"># 取消断点</span><br><span class="line">bpa </span><br></pre></td></tr></table></figure>
+
+<p>在此设置使用本地资源替换掉响应：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311131747379.png"></p>
+<h3 id="1-6-2-mitmproxy安装和使用"><a href="#1-6-2-mitmproxy安装和使用" class="headerlink" title="1.6.2 mitmproxy安装和使用"></a>1.6.2 mitmproxy安装和使用</h3><p>安装完后，有三个工具：mitmproxy、mitmdump（抓取数据写入文件）、mitmweb<br>通过代理截获数据，拦截请求，修改请求，拦截返回，修改返回，<strong>可以载入自定义python脚本</strong><br>通过pip 可以直接安装</p>
+<p>mitmproxy的启动：执行mitmproxy<br>浏览器中输入：mitm.it ，进行证书下载</p>
+<p>mitmproxy是模拟中间人，进行通信，如下：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311151621503.png"></p>
+<ul>
+<li><strong>mitmproxy使用</strong></li>
+</ul>
+<ol>
+<li><p><strong>过滤流量</strong>:</p>
+<ul>
+<li>使用 <code>~b</code> 命令可以进行基于正则表达式的流量过滤。例如，<code>~b example.com</code> 可以仅显示包含 “example.com” 的流量。</li>
+<li><code>~q</code> 命令用于对查询进行过滤，例如 <code>~q POST</code> 可以只显示包含 POST 请求的流量。</li>
+<li>使用 <code>~m</code> 可以根据内容类型进行过滤，例如 <code>~m image</code> 可以只显示图片内容的流量。</li>
+</ul>
+</li>
+<li><p><strong>设置断点</strong>:</p>
+<ul>
+<li>使用 <code>b [pattern]</code> 命令可以设置断点，例如 <code>b example.com</code> 可以使 mitmproxy 在匹配 “example.com” 的请求时暂停。</li>
+<li><code>be</code> 可以设置对响应的断点。</li>
+<li><code>bd</code> 可以删除断点。</li>
+<li><code>bl</code> 可以列出当前所有的断点。</li>
+</ul>
+</li>
+<li><p><strong>查找</strong>:</p>
+<ul>
+<li>使用 <code>/[pattern]</code> 进行内容查找，例如 <code>/login</code> 可以在流量中查找包含 “login” 的内容。</li>
+<li>可以使用 <code>n</code> 和 <code>N</code> 来分别查看下一个和上一个匹配项。</li>
+</ul>
+</li>
+<li><p><strong>修改流量</strong>:</p>
+<ul>
+<li>使用 <code>e</code> 命令可以编辑请求和响应，允许你修改它们。</li>
+<li><code>tab</code> 键可以在请求和响应之间切换，方便修改两者。</li>
+<li>使用 <code>A</code> 来接受修改并应用到流量中。</li>
+</ul>
+</li>
+<li><p><strong>保存和导出</strong>:</p>
+<ul>
+<li>使用 <code>w</code> 命令可以将流量保存到文件中，例如 <code>w filename.txt</code>。</li>
+<li><code>r</code> 命令可以重新加载保存的文件，以便重新查看和修改流量。</li>
+<li>可以使用 <code>--set filter</code> 选项将过滤器应用到加载的文件上。</li>
+</ul>
+</li>
+<li><p><strong>TLS设置</strong>:</p>
+<ul>
+<li>使用 <code>set tls_passthrough [pattern]</code> 可以绕过 TLS，将流量直通而不进行 TLS 解密。这对于特定域的安全连接非常有用。</li>
+</ul>
+</li>
+<li><p><strong>查看详细信息</strong>:</p>
+<ul>
+<li>按下 <code>i</code> 键可以查看关于请求&#x2F;响应的详细信息，包括头部和元数据。</li>
+<li>使用 <code>v</code> 可以查看流量的可视化预览，尤其是图像和其它媒体类型。</li>
+</ul>
+</li>
+<li><p><strong>快捷键和交互</strong>:</p>
+<ul>
+<li><code>:</code> 键可以进入命令行模式，在其中输入 mitmproxy 命令。</li>
+<li>使用 <code>q</code> 键可以退出 mitmproxy。</li>
+</ul>
+</li>
+</ol>
+<p><code>mitmdump -p 8889 -s test.py</code></p>
+<h3 id="1-6-3-packet-capture（移动端）"><a href="#1-6-3-packet-capture（移动端）" class="headerlink" title="1.6.3 packet capture（移动端）"></a>1.6.3 packet capture（移动端）</h3><p>运行在手机上的app，可以捕获http&#x2F;https网络流量</p>
+<h3 id="1-6-4-App无法抓包探秘"><a href="#1-6-4-App无法抓包探秘" class="headerlink" title="1.6.4 App无法抓包探秘"></a>1.6.4 App无法抓包探秘</h3><p><strong>可能有如下原因：</strong></p>
+<ul>
+<li>App限定了系统代理接口</li>
+</ul>
+<p>App通过获取当前代理配置，判断是通过了代理访问，则让无法访问网站。</p>
+<p>有如下三种解决方法：</p>
+<ol>
+<li>通过安装 xposed 框架，编写代码解决。</li>
+<li>使用全局代理 proxydroid 软件，需要root</li>
+<li>使用packet capture，无需root</li>
+</ol>
+<ul>
+<li>App启用了ssl-pinning技术防止中间人攻击</li>
+</ul>
+<p>App中内置了证书，验证服务端的证书，导致无法进行中间人代理。</p>
+<p>解决方法：</p>
+<ol>
+<li>通过安装 xposed 框架，安装 JustTrustMe 模块，屏蔽客户端验证证书</li>
+</ol>
+<ul>
+<li>App采用了双向证书绑定技术</li>
+</ul>
+<p>暂无解决方法，需要破解APP，进行逆向</p>
+<h2 id="1-7-atxserver2-多设备管理"><a href="#1-7-atxserver2-多设备管理" class="headerlink" title="1.7 atxserver2 多设备管理"></a>1.7 atxserver2 多设备管理</h2><h3 id="1-7-1-介绍"><a href="#1-7-1-介绍" class="headerlink" title="1.7.1 介绍"></a>1.7.1 介绍</h3><p>atxserver2 是一个移动设备管理平台，主要是 Python3+NodeJS+RethinkDB开发，项目地址：<a target="_blank" rel="noopener" href="https://github.com/openatx/atxserver2">https://github.com/openatx/atxserver2</a></p>
+<p>通过多设备管理工具，可以同时在PC上实时控制多个手机，并且获取对应手机的信息。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161124217.png"></p>
+<ol>
+<li>RethinkDB：这是一个轻量级的数据库，用来存储数据</li>
+<li>atxserver2：主要负责处理数据，显示与用户的前端交互等等，单独运行atxserver2也可以看到效果</li>
+<li>atxserver2-android-provider：接入安卓系统必须启动的项目，主要负责安卓设备和平台交互</li>
+<li>atxserver2-ios-provider：接入IOS设备必须启动的项目，负责IOS设备和平台的交互工作</li>
+</ol>
+<blockquote>
+<p>也有很多开源的设备控制工具，实现手机的群控功能，如：<a target="_blank" rel="noopener" href="https://github.com/Genymobile/scrcpy">https://github.com/Genymobile/scrcpy</a>，可以多多参考</p>
+</blockquote>
+<p><strong>下边是部署过程：</strong></p>
+<ol>
+<li>安装rethinkdb：<a target="_blank" rel="noopener" href="https://rethinkdb.com/docs/install/">安装手册</a>，修改rethinkdb配置文件 default.conf，bind配置监听 0.0.0.0，拷贝到 instance.id 目录下，通过 <code>rethinkdb --config-file [配置文件]</code>，启动后，通过浏览器访问 <code>http://[IP:8080]</code></li>
+<li>安装 atxserver2：github项目：<a target="_blank" rel="noopener" href="https://github.com/openatx/atxserver2">https://github.com/openatx/atxserver2</a></li>
+<li>安装 atxserver2-android-provider：依赖nodejs，Github项目：<a target="_blank" rel="noopener" href="https://github.com/openatx/atxserver2-android-provider">https://github.com/openatx/atxserver2-android-provider</a></li>
+<li>atxserver2-android-provider 会通过adb track-devices自动发现已经接入的设备，推送以下安装包：<ol>
+<li>minicap</li>
+<li>minitouch</li>
+<li>atx-agent</li>
+<li>app-uiautomator-[test].apk</li>
+<li>whatsinput-apk</li>
+</ol>
+</li>
+<li>启动atxserver2：通过在项目中执行 <code>python main.py</code>，，默认监听4000</li>
+<li>启动provider：在项目中执行 <code>python main.py --server [atxserver2监听地址]</code></li>
+</ol>
+<blockquote>
+<p>官方测试，atxserver2可以同时控制约80台移动设备</p>
+</blockquote>
+<h3 id="1-7-2-atxserver2-安装部署"><a href="#1-7-2-atxserver2-安装部署" class="headerlink" title="1.7.2 atxserver2 安装部署"></a>1.7.2 atxserver2 安装部署</h3><p>下边都是在Ubuntu环境下操作，所以首先要保证，在Ubuntu上是可以通过adb查看到移动设备的，如下：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161618803.png"></p>
+<p>下载项目源代码：<a target="_blank" rel="noopener" href="https://github.com/openatx/atxserver2">https://github.com/openatx/atxserver2</a>，项目目录执行如下命令：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up</span><br></pre></td></tr></table></figure>
+<p>执行完以上命令后，可以看到atxserver2监听在4000端口：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161619857.png"></p>
+<p>通过浏览器访问，此时设备列表为空：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161620713.png"></p>
+<h3 id="1-7-3-atxserver2-android-provider-部署"><a href="#1-7-3-atxserver2-android-provider-部署" class="headerlink" title="1.7.3 atxserver2-android-provider 部署"></a>1.7.3 atxserver2-android-provider 部署</h3><p>通过安装 atxserver2-android-provider 接入安卓设备，通过docker部署，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SERVER_URL=&quot;http://192.168.170.137:4000&quot; # 这个修改成自己的atxserver2地址</span><br><span class="line">IMAGE=&quot;codeskyblue/atxserver2-android-provider&quot;</span><br><span class="line">docker pull $IMAGE</span><br><span class="line">docker run --rm --privileged -v /dev/bus/usb:/dev/bus/usb --net host \</span><br><span class="line">    $&#123;IMAGE&#125; python main.py --allow-remote --server $&#123;SERVER_URL&#125;</span><br></pre></td></tr></table></figure>
+<p>执行后如下：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161622672.png"><br>可以看到发现一个移动设备 <code>10.164.17.39:5555</code>，并且输出了设备的信息。</p>
+<p>刷新浏览器可以看到有一个安卓移动端设备：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161623978.png"></p>
+<p>点击进去以后可以看到界面如下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311161611982.png"></p>
+<h2 id="1-8-连接真实手机"><a href="#1-8-连接真实手机" class="headerlink" title="1.8 连接真实手机"></a>1.8 连接真实手机</h2><p>手机连接到PC后，可能需要安装驱动。连接上以后通过adb查看如果没有显示devices，撤销下USE调试模式，然后再次查看。</p>
+<p>连接真实手机后，使用adb操作，与操作模拟器中的手机一样。</p>
+<ul>
+<li>通过Ubuntu系统连接真实手机</li>
+</ul>
+<p>手机插到PC上，然后连接到Ubuntu虚拟机中，后边的操作与PC上一样。</p>
+<h1 id="2-实战项目"><a href="#2-实战项目" class="headerlink" title="2 实战项目"></a>2 实战项目</h1><h2 id="2-1-抓取抖音数据"><a href="#2-1-抓取抖音数据" class="headerlink" title="2.1 抓取抖音数据"></a>2.1 抓取抖音数据</h2><h3 id="2-1-1-操作APP"><a href="#2-1-1-操作APP" class="headerlink" title="2.1.1 操作APP"></a>2.1.1 操作APP</h3><ol>
+<li>操作APP进行观看短视频</li>
+<li>查看视频作者主页</li>
+<li>操作返回</li>
+<li>滑动到下一个视频</li>
+<li>循环以上操作</li>
+</ol>
+<p><strong>代码如下：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> uiautomator2 <span class="keyword">as</span> u2</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Douyin</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="comment"># 在__init__方法里面连接设备</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, serial=<span class="string">&quot;emulator-5554&quot;</span></span>):</span><br><span class="line">        self.d = u2.connect_usb(serial=serial)</span><br><span class="line">        self.start_app()</span><br><span class="line">        self.handle_watcher()</span><br><span class="line">        self.size = self.get_windowsize()</span><br><span class="line">        <span class="comment"># 是用来获取一个初始时间</span></span><br><span class="line">        self.t0 = time.perf_counter()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">start_app</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;启动app&quot;&quot;&quot;</span></span><br><span class="line">        self.d.app_start(package_name=<span class="string">&quot;com.ss.android.ugc.aweme&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop_app</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;app退出逻辑&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 先关闭监视器</span></span><br><span class="line">        self.d.watcher.stop()</span><br><span class="line">        self.d.app_stop(<span class="string">&quot;com.ss.android.ugc.aweme&quot;</span>)</span><br><span class="line">        self.d.app_clear(<span class="string">&quot;com.ss.android.ugc.aweme&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop_time</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;停止时间&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 时间是秒</span></span><br><span class="line">        <span class="keyword">if</span> time.perf_counter() - self.t0 &gt; <span class="number">50</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">handle_watcher</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;监视器&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 通知权限</span></span><br><span class="line">        self.d.watcher.when(<span class="string">&#x27;//*[@resource-id=&quot;com.ss.android.ugc.aweme:id/a4r&quot;]&#x27;</span>).click()</span><br><span class="line">        <span class="comment"># 发现滑动查看更多</span></span><br><span class="line">        self.d.watcher.when(<span class="string">&#x27;//*[@text=&quot;滑动查看更多&quot;]&#x27;</span>).click()</span><br><span class="line">        <span class="comment"># 添加一个监控器</span></span><br><span class="line">        self.d.watcher.when(<span class="string">&#x27;//*[@text=&quot;快速进入TA的个人中心&quot;]&#x27;</span>).click()</span><br><span class="line">        <span class="comment"># 监控器写好之后，一定要记得启动</span></span><br><span class="line">        self.d.watcher.start(interval=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_windowsize</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取窗口大小&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.d.window_size()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">swipe_douyin</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;滑动抖音视频和点击视频发布者头像的操作&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 来判断是否正常的进入到了视频页面，等待20s</span></span><br><span class="line">        <span class="keyword">if</span> self.d(resourceId=<span class="string">&quot;com.ss.android.ugc.aweme:id/yy&quot;</span>, text=<span class="string">&quot;我&quot;</span>).exists(timeout=<span class="number">20</span>):</span><br><span class="line">            <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                <span class="comment"># 到规定的时间停止循环</span></span><br><span class="line">                <span class="keyword">if</span> self.stop_time():</span><br><span class="line">                    self.stop_app()</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                <span class="comment"># 查看是不是正常的发布者，头像下有个 + 号</span></span><br><span class="line">                <span class="keyword">if</span> self.d(resourceId=<span class="string">&quot;com.ss.android.ugc.aweme:id/u0&quot;</span>).exists:</span><br><span class="line">                    <span class="comment"># 是正常的发布者，点击头像</span></span><br><span class="line">                    self.d(resourceId=<span class="string">&quot;com.ss.android.ugc.aweme:id/tw&quot;</span>).click()</span><br><span class="line">                    <span class="comment"># 返回</span></span><br><span class="line">                    self.d(resourceId=<span class="string">&quot;com.ss.android.ugc.aweme:id/et&quot;</span>).click()</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> self.d(resourceId=<span class="string">&quot;com.ss.android.ugc.aweme:id/yy&quot;</span>, text=<span class="string">&quot;我&quot;</span>).exists <span class="keyword">and</span> \</span><br><span class="line">                        self.d(resourceId=<span class="string">&quot;com.ss.android.ugc.aweme:id/u0&quot;</span>).exists:</span><br><span class="line">                    <span class="comment"># 进入正常的视频页面,开始滑动</span></span><br><span class="line">                    x1 = <span class="built_in">int</span>(self.size[<span class="number">0</span>] * <span class="number">0.5</span>)</span><br><span class="line">                    y1 = <span class="built_in">int</span>(self.size[<span class="number">1</span>] * <span class="number">0.9</span>)</span><br><span class="line">                    y2 = <span class="built_in">int</span>(self.size[<span class="number">1</span>] * <span class="number">0.15</span>)</span><br><span class="line">                    self.d.swipe(x1, y1, x1, y2)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    d = Douyin()</span><br><span class="line">    d.swipe_douyin()</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="2-1-2-解析数据"><a href="#2-1-2-解析数据" class="headerlink" title="2.1.2 解析数据"></a>2.1.2 解析数据</h3><p>使用 Fiddler 抓包看接口，看抖音的数据接口，知道接口以后，编写python脚本，使用mitmdump执行脚本进行数据爬取。<br>执行 <code>mitmdump.exe -s .\decode_douyin.py -p 8888</code>，指定代理端口 8888，在移动端浏览器输入 <code>mitm.it</code> 下载证书并加载。</p>
+<ul>
+<li>decode_douyin.py<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 特别注意：</span></span><br><span class="line"><span class="comment"># 在新版本的抖音中，已经加密，无法获取数据</span></span><br><span class="line"><span class="comment"># 当前使用的是10.0版本的抖音app，大家一定要注意</span></span><br><span class="line"><span class="comment"># 使用抓包工具找到如下接口：</span></span><br><span class="line"><span class="comment"># 个人信息页接口</span></span><br><span class="line"><span class="comment"># https://aweme-eagle.snssdk.com/aweme/v1/user/?user_id</span></span><br><span class="line"><span class="comment"># 滑动视频的接口</span></span><br><span class="line"><span class="comment"># https://aweme-eagle.snssdk.com/aweme/v1/feed</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">response</span>(<span class="params">flow</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;解析10版本抖音app返回数据&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 视频</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;https://aweme-eagle.snssdk.com/aweme/v1/feed&#x27;</span> <span class="keyword">in</span> flow.request.url:</span><br><span class="line">        <span class="comment"># 使用json来loadsresponse.text</span></span><br><span class="line">        video_response = json.loads(flow.response.text)</span><br><span class="line">        video_list = video_response.get(<span class="string">&quot;aweme_list&quot;</span>, [])</span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> video_list:</span><br><span class="line">            <span class="built_in">print</span>(item.get(<span class="string">&quot;desc&quot;</span>), <span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="comment"># 发布者页面</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;https://aweme-eagle.snssdk.com/aweme/v1/user/?user_id&#x27;</span> <span class="keyword">in</span> flow.request.url:</span><br><span class="line">        person_response = json.loads(flow.response.text)</span><br><span class="line">        person_info = person_response.get(<span class="string">&quot;user&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> person_info:</span><br><span class="line">            info = &#123;</span><br><span class="line">                <span class="string">&#x27;nickname&#x27;</span>: person_info.get(<span class="string">&quot;nickname&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">                <span class="string">&#x27;total_favorited&#x27;</span>: person_info.get(<span class="string">&quot;total_favorited&quot;</span>, <span class="number">0</span>),</span><br><span class="line">                <span class="string">&#x27;following_count&#x27;</span>: person_info.get(<span class="string">&quot;following_count&quot;</span>, <span class="number">0</span>),</span><br><span class="line">                <span class="string">&#x27;douyin_id&#x27;</span>: person_info.get(<span class="string">&quot;unique_id&quot;</span>, <span class="string">&quot;&quot;</span>),</span><br><span class="line">                <span class="string">&#x27;follower_count&#x27;</span>: person_info.get(<span class="string">&quot;follower_count&quot;</span>, <span class="number">0</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">print</span>(info)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="App应用数据抓取"><a href="#App应用数据抓取" class="headerlink" title="App应用数据抓取"></a>App应用数据抓取</h2><p>使用Fiddler抓包，然后进行分析<br>编写Python脚本，爬取数据<br>测试APP为 豆果美食</p>
+<p>代码地址：</p>
+<h2 id="移动端自动化控制工具"><a href="#移动端自动化控制工具" class="headerlink" title="移动端自动化控制工具"></a>移动端自动化控制工具</h2><ol>
+<li>安装JDK环境</li>
+<li>安装Android 开发工具：</li>
+</ol>
+<p>Android SDK Tools</p>
+<p>Extras</p>
+<p>[adb工具详讲1]<br>adb start-server</p>
+<blockquote>
+<p>如果出现错误，PC上的跟手机上的adb工具版本不一致，可以使用PC中的adb覆盖模拟器的adb</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">John Doe</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2023/11/21/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/07%20-%20Python%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%88%AC%E8%99%AB/">http://example.com/2023/11/21/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/07%20-%20Python%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%88%AC%E8%99%AB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/21/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/284%20-%20%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98/01%20-%20%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/04%20-%20OpenResty%20%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info"></div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.</span> <span class="toc-text">0 参考资料</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-1-%E5%BC%80%E6%BA%90%E5%BA%93"><span class="toc-number">1.1.</span> <span class="toc-text">0.1 开源库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="toc-number">2.</span> <span class="toc-text">1 环境部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%B7%A5%E5%85%B7"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-Android%E8%B0%83%E8%AF%95%E6%A1%A5%EF%BC%88adb%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 Android调试桥（adb）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-Uiautomator2%E4%BD%BF%E7%94%A8"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 Uiautomator2使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.3.1.</span> <span class="toc-text">1.3.2 介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-Uiautomator2%E5%AE%89%E8%A3%85"><span class="toc-number">2.3.2.</span> <span class="toc-text">1.3.3 Uiautomator2安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-4-Uiautomator2%E6%93%8D%E4%BD%9C%E6%89%8B%E6%9C%BA"><span class="toc-number">2.3.3.</span> <span class="toc-text">1.3.4 Uiautomator2操作手机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-Weditor%E4%BD%BF%E7%94%A8"><span class="toc-number">2.4.</span> <span class="toc-text">1.4 Weditor使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-1-%E4%BB%80%E4%B9%88%E6%98%AFweditor"><span class="toc-number">2.4.1.</span> <span class="toc-text">1.4.1 什么是weditor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-2-%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8weditor"><span class="toc-number">2.4.2.</span> <span class="toc-text">1.4.2 怎么使用weditor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-3-weditor%E9%A1%B5%E9%9D%A2%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.4.3.</span> <span class="toc-text">1.4.3 weditor页面介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-4-%E5%AE%9A%E4%BD%8D%E6%8E%A7%E4%BB%B6"><span class="toc-number">2.4.4.</span> <span class="toc-text">1.4.4 定位控件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-5-%E8%A7%A3%E9%94%81%E5%9B%BE%E6%A1%88%E9%AA%8C%E8%AF%81"><span class="toc-number">2.4.5.</span> <span class="toc-text">1.4.5 解锁图案验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-6-%E6%A8%A1%E6%8B%9F%E7%99%BB%E5%BD%95%E5%B9%B6%E6%93%8D%E4%BD%9C%E8%80%83%E7%A0%94%E5%B8%AE"><span class="toc-number">2.4.6.</span> <span class="toc-text">1.4.6 模拟登录并操作考研帮</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-Appium%E4%BD%BF%E7%94%A8"><span class="toc-number">2.5.</span> <span class="toc-text">1.7 Appium使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6-%E6%8A%93%E5%8C%85%E5%B7%A5%E5%85%B7"><span class="toc-number">2.6.</span> <span class="toc-text">1.6 抓包工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-1-Fiddler%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="toc-number">2.6.1.</span> <span class="toc-text">1.6.1 Fiddler安装和使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-2-mitmproxy%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="toc-number">2.6.2.</span> <span class="toc-text">1.6.2 mitmproxy安装和使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-3-packet-capture%EF%BC%88%E7%A7%BB%E5%8A%A8%E7%AB%AF%EF%BC%89"><span class="toc-number">2.6.3.</span> <span class="toc-text">1.6.3 packet capture（移动端）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-4-App%E6%97%A0%E6%B3%95%E6%8A%93%E5%8C%85%E6%8E%A2%E7%A7%98"><span class="toc-number">2.6.4.</span> <span class="toc-text">1.6.4 App无法抓包探秘</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-atxserver2-%E5%A4%9A%E8%AE%BE%E5%A4%87%E7%AE%A1%E7%90%86"><span class="toc-number">2.7.</span> <span class="toc-text">1.7 atxserver2 多设备管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-1-%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.7.1.</span> <span class="toc-text">1.7.1 介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-2-atxserver2-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2"><span class="toc-number">2.7.2.</span> <span class="toc-text">1.7.2 atxserver2 安装部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-3-atxserver2-android-provider-%E9%83%A8%E7%BD%B2"><span class="toc-number">2.7.3.</span> <span class="toc-text">1.7.3 atxserver2-android-provider 部署</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-8-%E8%BF%9E%E6%8E%A5%E7%9C%9F%E5%AE%9E%E6%89%8B%E6%9C%BA"><span class="toc-number">2.8.</span> <span class="toc-text">1.8 连接真实手机</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AE%9E%E6%88%98%E9%A1%B9%E7%9B%AE"><span class="toc-number">3.</span> <span class="toc-text">2 实战项目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E6%8A%93%E5%8F%96%E6%8A%96%E9%9F%B3%E6%95%B0%E6%8D%AE"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 抓取抖音数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-%E6%93%8D%E4%BD%9CAPP"><span class="toc-number">3.1.1.</span> <span class="toc-text">2.1.1 操作APP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-%E8%A7%A3%E6%9E%90%E6%95%B0%E6%8D%AE"><span class="toc-number">3.1.2.</span> <span class="toc-text">2.1.2 解析数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#App%E5%BA%94%E7%94%A8%E6%95%B0%E6%8D%AE%E6%8A%93%E5%8F%96"><span class="toc-number">3.2.</span> <span class="toc-text">App应用数据抓取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8E%A7%E5%88%B6%E5%B7%A5%E5%85%B7"><span class="toc-number">3.3.</span> <span class="toc-text">移动端自动化控制工具</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/21/255%20-%20%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;%E5%A4%A7%E6%95%B0%E6%8D%AE/01%20-%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0--%E5%9F%BA%E7%A1%80%E7%AF%87/" title="Untitled">Untitled</a><time datetime="2023-11-21T13:31:00.854Z" title="Created 2023-11-21 13:31:00">2023-11-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/21/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/284%20-%20%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98/01%20-%20%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/" title="Untitled">Untitled</a><time datetime="2023-11-21T13:31:00.854Z" title="Created 2023-11-21 13:31:00">2023-11-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/21/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/07%20-%20Python%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%88%AC%E8%99%AB/" title="Untitled">Untitled</a><time datetime="2023-11-21T13:31:00.854Z" title="Created 2023-11-21 13:31:00">2023-11-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/04%20-%20OpenResty%20%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="Untitled">Untitled</a><time datetime="2023-11-21T13:31:00.854Z" title="Created 2023-11-21 13:31:00">2023-11-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/21/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/00%20-%20%E7%9B%AE%E5%BD%95/" title="Untitled">Untitled</a><time datetime="2023-11-21T13:31:00.850Z" title="Created 2023-11-21 13:31:00">2023-11-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
