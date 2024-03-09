@@ -1,0 +1,709 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OpenResty 基础篇 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0 参考资料 nginx-lua-module 中文版 nginx-lua-module 原版 API网关： KONG基于nginx+OpenResty Envoy APISIX    0.1 课程目录 1 入门篇1.1 初探OpenRestyOpenResty的三大特性：  详尽的文档和测试用例 同步非阻塞 动态   传统的Web服务器，比如NGINX，如果发生任何的变动，都需要去修改磁盘上的配">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenResty 基础篇">
+<meta property="og:url" content="https://baihlup.github.io/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/01%20-%20OpenResty%20%E5%9F%BA%E7%A1%80%E7%AF%87/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="0 参考资料 nginx-lua-module 中文版 nginx-lua-module 原版 API网关： KONG基于nginx+OpenResty Envoy APISIX    0.1 课程目录 1 入门篇1.1 初探OpenRestyOpenResty的三大特性：  详尽的文档和测试用例 同步非阻塞 动态   传统的Web服务器，比如NGINX，如果发生任何的变动，都需要去修改磁盘上的配">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-11-21T16:27:41.000Z">
+<meta property="article:modified_time" content="2024-03-09T09:55:14.240Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="OpenResty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/01%20-%20OpenResty%20%E5%9F%BA%E7%A1%80%E7%AF%87/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OpenResty 基础篇',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-09 09:55:14'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">OpenResty 基础篇</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-11-21T16:27:41.000Z" title="Created 2023-11-21 16:27:41">2023-11-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-03-09T09:55:14.240Z" title="Updated 2024-03-09 09:55:14">2024-03-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%90%8E%E7%AB%AF-%E6%9E%B6%E6%9E%84/">后端&amp;架构</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="OpenResty 基础篇"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="0-参考资料"><a href="#0-参考资料" class="headerlink" title="0 参考资料"></a>0 参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/iresty/nginx-lua-module-zh-wiki">nginx-lua-module 中文版</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/openresty/lua-nginx-module">nginx-lua-module 原版</a></li>
+<li>API网关：<ol>
+<li>KONG基于nginx+OpenResty</li>
+<li>Envoy</li>
+<li>APISIX</li>
+</ol>
+</li>
+</ol>
+<h3 id="0-1-课程目录"><a href="#0-1-课程目录" class="headerlink" title="0.1 课程目录"></a>0.1 课程目录</h3><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311171102436.png"></p>
+<h2 id="1-入门篇"><a href="#1-入门篇" class="headerlink" title="1 入门篇"></a>1 入门篇</h2><h3 id="1-1-初探OpenResty"><a href="#1-1-初探OpenResty" class="headerlink" title="1.1 初探OpenResty"></a>1.1 初探OpenResty</h3><p><strong>OpenResty的三大特性：</strong></p>
+<ol>
+<li>详尽的文档和测试用例</li>
+<li>同步非阻塞</li>
+<li>动态</li>
+</ol>
+<blockquote>
+<p>传统的Web服务器，比如NGINX，如果发生任何的变动，都需要去修改磁盘上的配置文件，然后重新加载才能生效，这是因为没有提供API，来控制运行时的行为。但OpenResty可以使用脚本语言lua来控制逻辑的，动态时Lua天生的优势。</p>
+</blockquote>
+<h3 id="1-2-第一个程序"><a href="#1-2-第一个程序" class="headerlink" title="1.2 第一个程序"></a>1.2 第一个程序</h3><p> 下边通过使用Lua语言，使用OpenResty启动服务，然后响应打印出“hello world”</p>
+<ol>
+<li>安装OpenResty</li>
+</ol>
+<p>可以取官网下载源码进行编译安装（<a target="_blank" rel="noopener" href="https://openresty.org/cn/">enter link description here</a>）<br> 2. 创建工作目录</p>
+<p>创建工作目录，然后目录下创建日志和配置文件保存地方</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> geektime</span><br><span class="line"><span class="built_in">cd</span> geektime</span><br><span class="line"><span class="built_in">mkdir</span> logs/ conf/</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>编写nginx.conf</li>
+</ol>
+<p>下边编写一个最简单的nginx.conf配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">events &#123;</span><br><span class="line">    worker_connections 1024;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">http &#123;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 8080;</span><br><span class="line">        lua_code_cache off; #可以实时修改lua，不建议开启，影响性能</span><br><span class="line">        location / &#123;</span><br><span class="line">            content_by_lua &#x27;</span><br><span class="line">                ngx.say(&quot;hello, world&quot;)</span><br><span class="line">            &#x27;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>lua_code_cache off</code> 可以在调试的时候使用，但即使设置off，对直接写在配置文件里的Lua代码，或者被”init_by_lua_file&#x2F;init_worker_by_lua_file”加载的Lua代码无效（都是在启动时一次性加载的），这时仍要使用”-s reload”的方式。</p>
+<ol start="4">
+<li>启动openresty</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openresty -p `<span class="built_in">pwd</span>` -c conf/nginx.conf</span><br></pre></td></tr></table></figure>
+<p>如果正常启动，可以使用curl访问下服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -i 127.0.0.1:8080</span></span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: openresty/1.13.6.2</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Transfer-Encoding: chunked</span><br><span class="line">Connection: keep-alive</span><br><span class="line"> </span><br><span class="line">hello, world</span><br></pre></td></tr></table></figure>
+<p>可以看到，正常响应“hello， world”</p>
+<h3 id="1-3-OpenResty-CLI"><a href="#1-3-OpenResty-CLI" class="headerlink" title="1.3 OpenResty CLI"></a>1.3 OpenResty CLI</h3><p>在安装好的openresty下有一个resty，resty命令行工具功能很强大，可以通过 <code>resty -h</code> 查看使用手册。<br>下边是一个使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# resty --shdict=&#x27;dogs 1m&#x27; -e &#x27;local dict = ngx.shared.dogs dict:set(&quot;Tom&quot;, 56)  print(dict:get(&quot;Tom&quot;))&#x27;</span><br><span class="line">56</span><br></pre></td></tr></table></figure>
+<p>这个示例结合了 NGINX 配置和 Lua 代码，一起完成了一个共享内存字典的设置和查询。dogs 1m 是 NGINX 的一段配置，声明了一个共享内存空间，名字是 dogs，大小是 1m；在 Lua 代码中用字典的方式使用共享内存。</p>
+<h3 id="1-4-OpenRest项目概览"><a href="#1-4-OpenRest项目概览" class="headerlink" title="1.4 OpenRest项目概览"></a>1.4 OpenRest项目概览</h3><ul>
+<li><strong>NGINX C 模块</strong></li>
+</ul>
+<p>OpenResty 中一共包含了 20 多个 C 模块，我们在本节最开始使用的 openresty -V 中，也可以看到这些 C 模块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openresty -V</span></span><br><span class="line">nginx version: openresty/1.13.6.2</span><br><span class="line">built by clang 10.0.0 (clang-1000.10.44.4)</span><br><span class="line">built with OpenSSL 1.1.0h  27 Mar 2018</span><br><span class="line">TLS SNI support enabled</span><br><span class="line">configure arguments: --prefix=/usr/local/Cellar/openresty/1.13.6.2/nginx --with-cc-opt=&#x27;-O2 -I/usr/local/include -I/usr/local/opt/pcre/include -I/usr/local/opt/openresty-openssl/include&#x27; --add-module=../ngx_devel_kit-0.3.0 --add-module=../echo-nginx-module-0.61 --add-module=../xss-nginx-module-0.06 --add-module=../ngx_coolkit-0.2rc3 --add-module=../set-misc-nginx-module-0.32 --add-module=../form-input-nginx-module-0.12 --add-module=../encrypted-session-nginx-module-0.08 --add-module=../srcache-nginx-module-0.31 --add-module=../ngx_lua-0.10.13 --add-module=../ngx_lua_upstream-0.07 --add-module=../headers-more-nginx-module-0.33 --add-module=../array-var-nginx-module-0.05 --add-module=../memc-nginx-module-0.19 --add-module=../redis2-nginx-module-0.15 --add-module=../redis-nginx-module-0.3.7 --add-module=../ngx_stream_lua-0.0.5 --with-ld-opt=&#x27;-Wl,-rpath,/usr/local/Cellar/openresty/1.13.6.2/luajit/lib -L/usr/local/lib -L/usr/local/opt/pcre/lib -L/usr/local/opt/openresty-openssl/lib&#x27; --pid-path=/usr/local/var/run/openresty.pid --lock-path=/usr/local/var/run/openresty.lock --conf-path=/usr/local/etc/openresty/nginx.conf --http-log-path=/usr/local/var/log/nginx/access.log --error-log-path=/usr/local/var/log/nginx/error.log --with-pcre-jit --with-ipv6 --with-stream --with-stream_ssl_module --with-stream_ssl_preread_module --with-http_v2_module --without-mail_pop3_module --without-mail_imap_module --without-mail_smtp_module --with-http_stub_status_module --with-http_realip_module --with-http_addition_module --with-http_auth_request_module --with-http_secure_link_module --with-http_random_index_module --with-http_geoip_module --with-http_gzip_static_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-threads --with-dtrace-probes --with-stream --with-stream_ssl_module --with-http_ssl_module</span><br></pre></td></tr></table></figure>
+<p>这里–add-module&#x3D;后面跟着的，就是 OpenResty 的 C 模块。其中，最核心的就是 lua-nginx-module 和 stream-lua-nginx-module，前者用来处理七层流量，后者用来处理四层流量。</p>
+<ul>
+<li><strong>lua-resty- 周边库</strong></li>
+</ul>
+<p>OpenResty 官方仓库中包含 18 个 lua-resty-* 库，涵盖 Redis、MySQL、memcached、websocket、dns、流量控制、字符串处理、进程内缓存等常用库。除了官方自带的之外，还有更多的第三方库。它们非常重要，所以下一章节，我们会花更多的篇幅来专门介绍这些周边库。</p>
+<h3 id="1-5-第三方包管理工具"><a href="#1-5-第三方包管理工具" class="headerlink" title="1.5 第三方包管理工具"></a>1.5 第三方包管理工具</h3><ul>
+<li>OPM</li>
+</ul>
+<p>OPM是OpenResty自带的包管理器，在安装好OpenResty之后，可以直接使用，如下搜索一个http的库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ opm search lua-resty-http</span><br><span class="line">ledgetech/lua-resty-http                          Lua HTTP client cosocket driver <span class="keyword">for</span> OpenResty/ngx_lua</span><br><span class="line">pintsized/lua-resty-http                          Lua HTTP client cosocket driver <span class="keyword">for</span> OpenResty/ngx_lua</span><br><span class="line">agentzh/lua-resty-http                            Lua HTTP client cosocket driver <span class="keyword">for</span> OpenResty/ngx_lua</span><br></pre></td></tr></table></figure>
+<p>OPM 使用了贡献者的 GitHub 仓库地址作为包名，即 GitHub ID &#x2F; repo name。上面返回了三个 lua-resty-http 第三方库。<br><a target="_blank" rel="noopener" href="https://opm.openresty.org/">OPM 的网站</a>上并没有提供包的下载次数，也没有这个包的依赖关系。</p>
+<ul>
+<li><strong>LUAROCKS</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://luarocks.org/">LUAROCKS</a> 是 OpenResty 世界的另一个包管理器，诞生在 OPM 之前。不同于 OPM 里只包含 OpenResty 相关的包，LuaRocks 里面还包含 Lua 世界的库。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ luarocks search lua-resty-http</span><br></pre></td></tr></table></figure>
+<p>这次只返回了一个包，可以看下<a target="_blank" rel="noopener" href="https://luarocks.org/modules/pintsized/lua-resty-http">包的详细信息</a><br>这里面包含了作者、License、GitHub 地址、下载次数、功能简介、历史版本、依赖等。和 OPM 不同的是，LuaRocks 并没有直接使用 GitHub 的用户信息，而是需要开发者单独在 LuaRocks 上进行注册。<br>其实，开源的 API 网关项目 Kong，就是使用 LuaRocks 来进行包的管理。</p>
+<ul>
+<li><strong>AWESOME-RESTY</strong></li>
+</ul>
+<p>讲了这么多包管理的内容，其实呢，即使有了 OPM 和 LuaRocks，对于 OpenResty 的 lua-resty 包，我们还是管中窥豹的状态。到底有没有地方可以让我们一览全貌呢？<br><a target="_blank" rel="noopener" href="https://github.com/bungle/awesome-resty">awesome-resty</a> 这个项目，维护了几乎所有 OpenResty 可用的包，并且都分门别类地整理好了。当你不确定是否存在适合的第三方包时，来这里“按图索骥”，可以说是最好的办法。</p>
+<p>还是以 HTTP 库为例， 在 awesome-resty 中，它自然是属于 <a target="_blank" rel="noopener" href="https://github.com/bungle/awesome-resty#networking">networking</a> 分类：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">lua-resty-http by @pintsized — Lua HTTP client cosocket driver for OpenResty / ngx_lua</span><br><span class="line">lua-resty-http by @liseen — Lua http client driver for the ngx_lua based on the cosocket API</span><br><span class="line">lua-resty-http by @DorianGray — Lua HTTP client driver for ngx_lua based on the cosocket API</span><br><span class="line">lua-resty-http-simple — Simple Lua HTTP client driver for ngx_lua</span><br><span class="line">lua-resty-httpipe — Lua HTTP client cosocket driver for OpenResty / ngx_lua</span><br><span class="line">lua-resty-httpclient — Nonblocking Lua HTTP Client library for aLiLua &amp; ngx_lua</span><br><span class="line">lua-httpcli-resty — Lua HTTP client module for OpenResty</span><br><span class="line">lua-resty-requests — Yet Another HTTP Library for OpenResty</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-6-OpenResty开源项目推荐"><a href="#1-6-OpenResty开源项目推荐" class="headerlink" title="1.6 OpenResty开源项目推荐"></a>1.6 OpenResty开源项目推荐</h3><ul>
+<li><strong>OPM</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/openresty/opm/">OPM</a> 做为OpenResty的包管理器，同时也是一个可以学习的项目示例。opm 是 OpenResty 中为数不多的网站类项目，而里面的代码，基本上是由 OpenResty 的作者亲自操刀完成的。</p>
+<ul>
+<li>OpenResty网站</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/openresty/openresty.org">OpenResty网站</a> 网站也是一个开源的OpenResty项目</p>
+<ul>
+<li><strong>lua-nginx-module</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/openresty/lua-nginx-module">lua-nginx-module</a> 是OpenResty中比较常用的一个库。</p>
+<h3 id="1-7-OpenResty-中用到的-NGINX-知识"><a href="#1-7-OpenResty-中用到的-NGINX-知识" class="headerlink" title="1.7 OpenResty 中用到的 NGINX 知识"></a>1.7 OpenResty 中用到的 NGINX 知识</h3><p>OpenResty 的两个基石：NGINX 和 LuaJIT</p>
+<ul>
+<li><strong>MASTER-WORKER模式</strong></li>
+</ul>
+<p>下边是nginx中的master-worker模型，master是个“管理者”的角色，并不负责处理终端的请求，它是用来管理Worker进程，包括接受管理员发送的信号量、监控Worker的运行状态。当 Worker 进程异常退出时，Master 进程会重新启动一个新的 Worker 进程。<br>Worker 进程则是“一线员工”，用来处理终端用户的请求。它是从 Master 进程 fork 出来的，彼此之间相互独立，互不影响。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311171103179.png"></p>
+<p>而 OpenResty 在 NGINX Master-Worker 模式的前提下，又增加了独有的特权进程（privileged agent）。这个进程并不监听任何端口，和 NGINX 的 Master 进程拥有同样的权限，所以可以做一些需要高权限才能完成的任务，比如对本地磁盘文件的一些写操作等。</p>
+<ul>
+<li><strong>执行阶段</strong></li>
+</ul>
+<p>下边是nginx在ngx_http_core_module.h中定义的11个阶段</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span> &#123;</span></span><br><span class="line">    NGX_HTTP_POST_READ_PHASE = <span class="number">0</span>,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_SERVER_REWRITE_PHASE,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_FIND_CONFIG_PHASE,</span><br><span class="line">    NGX_HTTP_REWRITE_PHASE,</span><br><span class="line">    NGX_HTTP_POST_REWRITE_PHASE,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_PREACCESS_PHASE,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_ACCESS_PHASE,</span><br><span class="line">    NGX_HTTP_POST_ACCESS_PHASE,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_PRECONTENT_PHASE,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_CONTENT_PHASE,</span><br><span class="line"> </span><br><span class="line">    NGX_HTTP_LOG_PHASE</span><br><span class="line">&#125; ngx_http_phases;</span><br></pre></td></tr></table></figure>
+
+<p>OpenResty 也有 11 个 <code>*_by_lua</code> 指令，它们和 NGINX 阶段的关系如下图所示（图片来自 lua-nginx-module 文档）：<br><img src="https://i.loli.net/2020/09/10/rmH87gfUyoCnMsw.png"><br>其中， <code>init_by_lua</code> 只会在 Master 进程被创建时执行，<code>init_worker_by_lua</code> 只会在每个 Worker 进程被创建时执行。其他的 <code>*_by_lua</code> 指令则是由终端请求触发，会被反复执行。</p>
+<blockquote>
+<p>NGINX 支持的功能，OpenResty 并不一定支持，需要看 OpenResty 的版本号</p>
+</blockquote>
+<h3 id="1-8-快速上手Lua"><a href="#1-8-快速上手Lua" class="headerlink" title="1.8 快速上手Lua"></a>1.8 快速上手Lua</h3><h4 id="1-8-1-执行Hello-World"><a href="#1-8-1-执行Hello-World" class="headerlink" title="1.8.1 执行Hello World"></a>1.8.1 执行Hello World</h4><p>在安装完OpenResty后，同时也安装了luajit 和 Resty，luajit 是OpenResty维护的一个lua的解释器，下边细说，现在先执行一个简单的程序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cat 1.lua</span><br><span class="line">print(&quot;hello world&quot;)</span><br><span class="line"> </span><br><span class="line">$ luajit 1.lua</span><br><span class="line"> hello world</span><br></pre></td></tr></table></figure>
+<p>下边使用resty执行，它最终其实也是用LuaJIT 来执行的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;print(&quot;hello world&quot;)&#x27;</span><br><span class="line"> hello world</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-8-2-数据类型"><a href="#1-8-2-数据类型" class="headerlink" title="1.8.2 数据类型"></a>1.8.2 数据类型</h4><p>下边使用type函数打印下lua中常见的数据类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;print(type(&quot;hello world&quot;)) </span><br><span class="line"> print(type(print)) </span><br><span class="line"> print(type(true)) </span><br><span class="line"> print(type(360.0))</span><br><span class="line"> print(type(&#123;&#125;))</span><br><span class="line"> print(type(nil))</span><br><span class="line"> &#x27;</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">string</span><br><span class="line">function</span><br><span class="line">boolean</span><br><span class="line">number</span><br><span class="line">table</span><br><span class="line">nil</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>字符串</strong></li>
+</ul>
+<p>在 Lua 中，字符串是不可变的值，如果你要修改某个字符串，就等于创建了一个新的字符串。这种做法显然有利有弊：好处是即使同一个字符串出现了很多次，在内存中也只有一份；但劣势也很明显，如果你想修改、拼接字符串，会额外地创建很多不必要的字符串。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local s  = &quot;&quot;</span><br><span class="line"> for i = 1, 10 do</span><br><span class="line">     s = s .. tostring(i)</span><br><span class="line"> end</span><br><span class="line"> print(s)&#x27;</span><br></pre></td></tr></table></figure>
+<p>这里我们循环了 10 次，但只有最后一次是我们想要的，而中间新建的 9 个字符串都是无用的。它们不仅占用了额外的空间，也消耗了不必要的 CPU 运算。<br>另外，在 Lua 中，你有三种方式可以表达一个字符串：单引号、双引号，以及长括号（[[]]）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;print([[string has \n and \r]])&#x27;</span><br><span class="line"> string has \n and \r</span><br></pre></td></tr></table></figure>
+<p>可以看到，长括号中的字符串不会做任何的转义处理。<br>如果字符串中包括了长括号本身，需要在长括号中间增加一个或者多个 &#x3D; 符号：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;print([=[ string has a [[]]. ]=])&#x27;</span><br><span class="line">  string has a [[]].</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>布尔值</strong></li>
+</ul>
+<p>在lua中，<strong>只有 nil 和 false 为假，其他都为真，包括 0 和空字符串也为真</strong>。</p>
+<ul>
+<li><strong>数字</strong></li>
+</ul>
+<p>Lua 的 <code>number</code> 类型，是用双精度浮点数来实现的。值得一提的是，LuaJIT 支持 <code>dual-number</code>（双数）模式，也就是说， LuaJIT 会根据上下文来用整型来存储整数，而用双精度浮点数来存放浮点数。</p>
+<p>此外，LuaJIT 还支持<strong>长长整型</strong>的大整数，比如下面的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;print(9223372036854775807LL - 1)&#x27;</span><br><span class="line">9223372036854775806LL</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>函数</strong></li>
+</ul>
+<p>函数在 Lua 中是一等公民，你可以把函数存放在一个变量中，也可以当作另外一个函数的入参和出参。<br>下面两个函数的声明是完全等价的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">function foo()</span><br><span class="line"> end</span><br></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">foo = function ()</span><br><span class="line"> end</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>table</strong></li>
+</ul>
+<p>table 是 Lua 中唯一的数据结构。下边是示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local color = &#123;first = &quot;red&quot;&#125;</span><br><span class="line">print(color[&quot;first&quot;])&#x27;</span><br><span class="line"> red</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>空值</strong></li>
+</ul>
+<p>在 Lua 中，空值就是 nil。如果你定义了一个变量，但没有赋值，它的默认值就是 nil：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local a</span><br><span class="line"> print(type(a))&#x27;</span><br><span class="line"> nil</span><br></pre></td></tr></table></figure>
+<p>当你真正进入 OpenResty 体系中后，会发现很多种空值，比如 <code>ngx.null</code> 等等，我们后面再细聊。</p>
+<h4 id="1-8-3-常用标准库"><a href="#1-8-3-常用标准库" class="headerlink" title="1.8.3 常用标准库"></a>1.8.3 常用标准库</h4><p>下边介绍几个Lua中原生的标准库，但是在OpenResty中，Lua库的优先级是最低的。对于同一个功能，我更推荐你优先使用 OpenResty 的 API 来解决，然后是 LuaJIT 的库函数，最后才是标准 Lua 的函数。<br><strong>OpenResty的API &gt; LuaJIT的库函数 &gt; 标准Lua的函数</strong></p>
+<ul>
+<li><strong>string 库</strong></li>
+</ul>
+<p>有一个简单的原则，那就是如果涉及到正则表达式的，请一定要使用 OpenResty 提供的 <code>ngx.re.*</code> 来解决，不要用 Lua 的 <code>string.*</code> 处理。这是因为，Lua 的正则独树一帜，不符合 PCRE 的规范，我相信绝大部分工程师是玩不转的。</p>
+<p>其中 <code>string.byte(s [, i [, j ]])</code>，是比较常用到的一个 string 库函数，它返回字符 <code>s[i]、s[i + 1]、s[i + 2]、······、s[j]</code> 所对应的 ASCII 码。i 的默认值为 1，即第一个字节，j 的默认值为 i。<br>示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;print(string.byte(&quot;abc&quot;, 1, 3))</span><br><span class="line"> print(string.byte(&quot;abc&quot;, 3)) -- 缺少第三个参数，第三个参数默认与第二个相同，此时为 3</span><br><span class="line"> print(string.byte(&quot;abc&quot;))    -- 缺少第二个和第三个参数，此时这两个参数都默认为 1</span><br><span class="line"> &#x27;</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">979899</span><br><span class="line">99</span><br><span class="line">97</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>table 库</strong></li>
+</ul>
+<p>在 OpenResty 的上下文中，对于 Lua 自带的 table 库，除了 <code>table.concat</code> 、<code>table.sort</code> 等少数几个函数，大部分我都不推荐使用。<br><code>table.concat</code>一般用在字符串拼接的场景下，比如下面这个例子。它可以避免生成很多无用的字符串。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local a = &#123;&quot;A&quot;, &quot;b&quot;, &quot;C&quot;&#125;</span><br><span class="line"> print(table.concat(a))&#x27;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>math 库</strong></li>
+</ul>
+<p><code>math.random()</code> 和 <code>math.randomseed()</code> 两个函数比较常用，比如下面的这段代码，它可以在指定的范围内，随机地生成两个数字。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;math.randomseed (os.time()) </span><br><span class="line">print(math.random())</span><br><span class="line"> print(math.random(100))&#x27;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>虚变量</strong></li>
+</ul>
+<p>在一个函数返回多个变量时，我们可以不需要接收某些返回值，这时候可以使用虚变量的方式接收，如下使用 <code>string.find</code> 这个标准库函数为例，这个标准库函数会返回两个值，分别代表开始和结束的下标。<br>如果我们只需要获取开始的下标，那么很简单，只声明一个变量来接收 string.find 的返回值即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local start = string.find(&quot;hello&quot;, &quot;he&quot;)</span><br><span class="line"> print(start)&#x27;</span><br><span class="line"> 1</span><br></pre></td></tr></table></figure>
+
+<p>但如果你只想获取结束的下标，那就必须使用虚变量了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local  _, end_pos = string.find(&quot;hello&quot;, &quot;he&quot;)</span><br><span class="line"> print(end_pos)&#x27;</span><br><span class="line"> 2</span><br></pre></td></tr></table></figure>
+
+<p>除了在返回值里使用，虚变量还经常用于循环中，比如下面这个例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">resty -e <span class="string">&#x27;for _, v in ipairs(&#123;4,5,6&#125;) do</span></span></span><br><span class="line">     print(v)</span><br><span class="line"> end&#x27;</span><br><span class="line"> 4</span><br><span class="line"> 5</span><br><span class="line"> 6</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-9-LuaJIT-分支和-Lua"><a href="#1-9-LuaJIT-分支和-Lua" class="headerlink" title="1.9 LuaJIT 分支和 Lua"></a>1.9 LuaJIT 分支和 Lua</h3><h4 id="1-9-1-LuaJIT"><a href="#1-9-1-LuaJIT" class="headerlink" title="1.9.1 LuaJIT"></a>1.9.1 LuaJIT</h4><p>先来看下LuaJIT 在OpenResty 整体架构中的位置：<br><img src="https://i.loli.net/2020/09/11/y4GX9EJgubIdVKL.png"><br>OpenResty 的 worker 进程都是 fork master 进程而得到的， 其实， master 进程中的 LuaJIT 虚拟机也会一起 fork 过来。在同一个 worker 内的所有协程，都会共享这个 LuaJIT 虚拟机，Lua 代码的执行也是在这个虚拟机中完成的。</p>
+<ul>
+<li><strong>Lua 和 LuaJIT的区别</strong></li>
+</ul>
+<p>标准 Lua 和 LuaJIT 是两回事儿，LuaJIT 只是兼容了 Lua 5.1 的语法。<br>所谓 LuaJIT 的性能优化，本质上就是让尽可能多的 Lua 代码可以被 JIT 编译器生成机器码，而不是回退到 Lua 解释器的解释执行模式。</p>
+<p>LuaJIT 除了兼容了Lua5.1的语法外，还紧密结合了 FFI（Foreign Function Interface），可以让你直接在 Lua 代码中调用外部的 C 函数和使用 C 的数据结构。</p>
+<p>示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">local ffi = require(&quot;ffi&quot;)</span><br><span class="line">ffi.cdef[[</span><br><span class="line">int printf(const char *fmt, ...);</span><br><span class="line">]]</span><br><span class="line">ffi.C.printf(&quot;Hello %s!&quot;, &quot;world&quot;)</span><br></pre></td></tr></table></figure>
+<p>短短这几行代码，就可以直接在 Lua 中调用 C 的 printf 函数，打印出 Hello world!。你可以使用 resty 命令来运行它，看下是否成功。<br>类似的，我们可以用 FFI 来调用 NGINX、OpenSSL 的 C 函数，来完成更多的功能。实际上，FFI 方式比传统的 Lua&#x2F;C API 方式的性能更优，这也是 lua-resty-core 项目存在的意义。下一节我们就来专门讲讲 FFI 和 lua-resty-core。</p>
+<h4 id="1-9-2-Lua-特别之处"><a href="#1-9-2-Lua-特别之处" class="headerlink" title="1.9.2 Lua 特别之处"></a>1.9.2 Lua 特别之处</h4><ol>
+<li>Lua的下标是从1开始</li>
+<li>使用 .. 来拼接字符串</li>
+<li>只有table数据结构</li>
+<li>默认是全局变量，需要local 定义局部变量</li>
+</ol>
+<h4 id="1-9-3-Lua-独有概念"><a href="#1-9-3-Lua-独有概念" class="headerlink" title="1.9.3 Lua 独有概念"></a>1.9.3 Lua 独有概念</h4><ul>
+<li><strong>弱表</strong></li>
+</ul>
+<p>弱表（weak table），它是 Lua 中很独特的一个概念，和垃圾回收相关。<br>举个例子，我们把一个 Lua 的对象 Foo（table 或者函数）插入到 table tb 中，这就会产生对这个对象 Foo 的引用。即使没有其他地方引用 Foo，tb 对它的引用也还一直存在，那么 GC 就没有办法回收 Foo 所占用的内存。这时候，我们就只有两种选择：</p>
+<ol>
+<li>一是手工释放 Foo；</li>
+<li>二是让它常驻内存。</li>
+</ol>
+<p>比如下边的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local tb = &#123;&#125;</span><br><span class="line">tb[1] = &#123;red&#125;</span><br><span class="line">tb[2] = function() print(&quot;func&quot;) end</span><br><span class="line">print(#tb) -- 2</span><br><span class="line"> </span><br><span class="line">collectgarbage()</span><br><span class="line">print(#tb) -- 2</span><br><span class="line"> </span><br><span class="line">table.remove(tb, 1)</span><br><span class="line">print(#tb) -- 1</span><br></pre></td></tr></table></figure>
+<p>下边使用弱表优化：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local tb = &#123;&#125;</span><br><span class="line">tb[1] = &#123;red&#125;</span><br><span class="line">tb[2] = function() print(&quot;func&quot;) end</span><br><span class="line">setmetatable(tb, &#123;__mode = &quot;v&quot;&#125;)</span><br><span class="line">print(#tb)  -- 2</span><br><span class="line"> </span><br><span class="line">collectgarbage()</span><br><span class="line">print(#tb) -- 0</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<p>可以看到，没有被使用的对象都被 GC 了。这其中，最重要的就是下面这一行代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setmetatable(tb, &#123;__mode = &quot;v&quot;&#125;)</span><br></pre></td></tr></table></figure>
+<p>当一个 table 的元表中存在 __mode 字段时，这个 table 就是弱表（weak table）了。</p>
+<ol>
+<li>如果 __mode 的值是 k，那就意味着这个 table 的 键 是弱引用。</li>
+<li>如果 __mode 的值是 v，那就意味着这个 table 的 值 是弱引用。</li>
+<li>当然，你也可以设置为 kv，表明这个表的键和值都是弱引用。</li>
+</ol>
+<p>这三者中的任意一种弱表，只要它的 键 或者 值 被回收了，那么对应的整个键值 对象都会被回收。</p>
+<ul>
+<li><strong>闭包 和 upvalue</strong></li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;</span><br><span class="line">local function foo()</span><br><span class="line">     local i = 1</span><br><span class="line">     local function bar()</span><br><span class="line">         i = i + 1</span><br><span class="line">         print(i)</span><br><span class="line">     end</span><br><span class="line">     return bar</span><br><span class="line">end</span><br><span class="line"> </span><br><span class="line">local fn = foo()</span><br><span class="line">print(fn()) -- 2</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<p>bar 这个函数可以读取函数 foo 里面的局部变量 i，并修改它的值，即使这个变量并不在 foo 里面定义。这个特性叫做词法作用域（lexical scoping）。</p>
+<p>事实上，Lua 的这些特性正是闭包的基础。所谓闭包 ，简单地理解，它其实是一个函数，不过它访问了另外一个函数词法作用域中的变量。<br>实际上，upvalue 就是闭包中捕获的自己词法作用域外的那个变量。还是继续看上面那段代码：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> foo, bar</span><br><span class="line"><span class="keyword">local</span> <span class="function"><span class="keyword">function</span> <span class="title">fn</span><span class="params">()</span></span></span><br><span class="line">     foo = <span class="number">1</span></span><br><span class="line">     bar = <span class="number">2</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>你可以看到，函数 fn 捕获了两个不在自己词法作用域的局部变量 foo 和 bar，而这两个变量，实际上就是函数 fn 的 upvalue。</p>
+<ul>
+<li><strong>变量的个数限制</strong></li>
+</ul>
+<p> Lua 中，一个函数的局部变量的个数，和 upvalue 的个数都是有上限的，你可以从 Lua 的源码中得到印证：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">@@ LUAI_MAXVARS is the maximum number of local variables per function</span><br><span class="line">@* (must be smaller than 250).</span><br><span class="line">*/</span><br><span class="line">#define LUAI_MAXVARS            200</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">/*</span><br><span class="line">@@ LUAI_MAXUPVALUES is the maximum number of upvalues per function</span><br><span class="line">@* (must be smaller than 250).</span><br><span class="line">*/</span><br><span class="line">#define LUAI_MAXUPVALUES        60</span><br></pre></td></tr></table></figure>
+<p>分别被硬编码为 200 和 60。虽说你可以手动修改源码来调整这两个值，不过最大也只能设置为 250。<br>我们不会超过这个阈值，但写 OpenResty 代码的时候，你还是要留意这个事情，不要过多地使用局部变量和 upvalue，而是要尽可能地使用 do .. end 做一层封装，来减少局部变量和 upvalue 的个数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">local re_find = ngx.re.find</span><br><span class="line">  function foo() ... end</span><br><span class="line">function bar() ... end</span><br><span class="line">function fn() ... end</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-9-4-面向对象"><a href="#1-9-4-面向对象" class="headerlink" title="1.9.4 面向对象"></a>1.9.4 面向对象</h4><p>lua-resty-mysql 是 OpenResty 官方的 MySQL 客户端，里面就使用元表模拟了类和类方法，它的使用方式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local mysql = require &quot;resty.mysql&quot; -- 先引用 lua-resty 库</span><br><span class="line">local db, err = mysql:new() -- 新建一个类的实例</span><br><span class="line">db:set_timeout(1000) -- 调用类的方法&#x27;</span><br></pre></td></tr></table></figure>
+<p>在这里冒号和点号都是可以的，<code>db:set_timeout(1000)</code> 和 <code>db.set_timeout(db, 1000)</code> 是完全等价的。冒号是 Lua 中的一个语法糖，可以省略掉函数的第一个参数 self。<br>下边看下具体实现：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> _M = &#123; <span class="built_in">_VERSION</span> = <span class="string">&#x27;0.21&#x27;</span> &#125; <span class="comment">-- 使用 table 模拟类</span></span><br><span class="line"><span class="keyword">local</span> mt = &#123; <span class="built_in">__index</span> = _M &#125; <span class="comment">-- mt 即 metatable 的缩写，__index 指向类自身</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">-- 类的构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_M.new</span><span class="params">(self)</span></span> </span><br><span class="line">     <span class="keyword">local</span> sock, err = tcp()</span><br><span class="line">     <span class="keyword">if</span> <span class="keyword">not</span> sock <span class="keyword">then</span></span><br><span class="line">         <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">     <span class="keyword">end</span></span><br><span class="line">     <span class="keyword">return</span> <span class="built_in">setmetatable</span>(&#123; sock = sock &#125;, mt) <span class="comment">-- 使用 table 和 metatable 模拟类的实例</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">-- 类的成员函数</span></span><br><span class="line"> <span class="function"><span class="keyword">function</span> <span class="title">_M.set_timeout</span><span class="params">(self, timeout)</span></span> <span class="comment">-- 使用 self 参数，获取要操作的类的实例</span></span><br><span class="line">     <span class="keyword">local</span> sock = <span class="built_in">self</span>.sock</span><br><span class="line">     <span class="keyword">if</span> <span class="keyword">not</span> sock <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, <span class="string">&quot;not initialized&quot;</span></span><br><span class="line">     <span class="keyword">end</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> sock:settimeout(timeout)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>你可以看到，<code>_M</code> 这个 table 模拟了一个类，初始化时，它只有 _VERSION 这一个成员变量，并在随后定义了 <code>_M.set_timeout</code> 等成员函数。在 <code>_M.new(self)</code> 这个构造函数中，我们返回了一个 table，这个 table 的元表就是 mt，而 mt 的 <code>__index</code> 元方法指向了 <code>_M</code>，这样，返回的这个 table 就模拟了类 <code>_M</code> 的实例。</p>
+<h3 id="1-10-剖析Lua-唯一的数据结构table-和-metatable-特性"><a href="#1-10-剖析Lua-唯一的数据结构table-和-metatable-特性" class="headerlink" title="1.10 剖析Lua 唯一的数据结构table 和 metatable 特性"></a>1.10 剖析Lua 唯一的数据结构table 和 metatable 特性</h3><h4 id="1-10-1-table-库函数"><a href="#1-10-1-table-库函数" class="headerlink" title="1.10.1 table 库函数"></a>1.10.1 table 库函数</h4><ul>
+<li><strong>table.getn 获取元素个数</strong></li>
+</ul>
+<p>在lua中获取table中的元素个数是一个比较难的问题，在<strong>序列中</strong>，用table.getn 或者一元操作符 # ，可以正确返回元素的个数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost bin]# resty -e &#x27;local t = &#123; 1, 2, 3 &#125;</span><br><span class="line">&gt; print(table.getn(t)) &#x27;</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>在 OpenResty 的环境下，除非你明确知道，你正在获取序列的长度，否则请不要使用函数 table.getn 和一元操作符 # 。</p>
+<blockquote>
+<p><code>table.getn</code> 和一元操作符 # 并不是 O(1) 的时间复杂度，而是 O(n)，这也是尽量避免使用它们的另外一个理由。</p>
+</blockquote>
+<ul>
+<li><strong>table.remove 删除指定元素</strong></li>
+</ul>
+<p>它的作用是在 table 中根据下标来删除元素，也就是说只能删除 table 中数组部分的元素。我们还是来看color的例子：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">resty -e <span class="string">&#x27;local color = &#123;first = &quot;red&quot;, &quot;blue&quot;, third = &quot;green&quot;, &quot;yellow&quot;&#125;</span></span><br><span class="line"><span class="string">  table.remove(color, 1)</span></span><br><span class="line"><span class="string">  for k, v in pairs(color) do</span></span><br><span class="line"><span class="string">      print(v)</span></span><br><span class="line"><span class="string">  end&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>这段代码会把下标为 1 的 blue 删除掉。删除table中的哈希部分，可以直接把key对应的value 设置为 nil。</p>
+<ul>
+<li><strong>table.concat 元素拼接函数</strong></li>
+</ul>
+<p>它可以按照下标，把 table 中的元素拼接起来。既然这里又是根据下标来操作的，那么显然还是针对 table 的数组部分。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resty -e <span class="string">&#x27;local color = &#123;first = &quot;red&quot;, &quot;blue&quot;, third = &quot;green&quot;, &quot;yellow&quot;&#125;</span></span><br><span class="line"><span class="string">print(table.concat(color, &quot;, &quot;))&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>使用table.concat函数后，它输出的是 <code>blue, yellow</code>，哈希的部分被跳过了<br>另外，这个函数还可以指定下标的起始位置来做拼接，比如下面这样的写法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local color = &#123;first = &quot;red&quot;, &quot;blue&quot;, third = &quot;green&quot;, &quot;yellow&quot;, &quot;orange&quot;&#125;</span><br><span class="line">print(table.concat(color, &quot;, &quot;, 2, 3))&#x27;</span><br></pre></td></tr></table></figure>
+<p>这次输出是 <code>yellow, orange</code>，跳过了 blue。</p>
+<ul>
+<li><strong>table.insert 插入一个元素</strong></li>
+</ul>
+<p>它可以下标插入一个新的元素，自然，影响的还是 table 的数组部分。还是用color例子来说明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> resty -e &#x27;local color = &#123;first = &quot;red&quot;, &quot;blue&quot;, third = &quot;green&quot;, &quot;yellow&quot;&#125;</span><br><span class="line">table.insert(color, 1,  &quot;orange&quot;)</span><br><span class="line">print(color[1])</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<p>以上输出 orange，可以发现color的第一个元素变为了 orange。当然，你也可以不指定下标，这样就会默认插入队尾。</p>
+<h4 id="1-10-2-LuaJIT-的-table-扩展函数"><a href="#1-10-2-LuaJIT-的-table-扩展函数" class="headerlink" title="1.10.2 LuaJIT 的 table 扩展函数"></a>1.10.2 LuaJIT 的 table 扩展函数</h4><ul>
+<li><strong>table.new(narray, nhash) 新建 table</strong></li>
+</ul>
+<p>第一个是<code>table.new(narray, nhash)</code> 函数。这个函数，会预先分配好指定的数组和哈希的空间大小，而不是在插入元素时自增长，这也是它的两个参数 narray 和 nhash 的含义。自增长是一个代价比较高的操作，会涉及到空间分配、resize 和 rehash 等，我们应该尽量避免。<br>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">local new_tab = require &quot;table.new&quot;</span><br><span class="line">local t = new_tab(100, 0)</span><br><span class="line">for i = 1, 100 do</span><br><span class="line">   t[i] = i</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>你可以看到，这段代码新建了一个 table，里面包含 100 个数组元素和 0 个哈希元素。当然，你也可以根据实际需要，新建一个同时包含 100 个数组元素和 50 个 哈希元素的 table，这都是合法的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">local t = new_tab(100, 50)</span><br></pre></td></tr></table></figure>
+<p>另外，超出预设的空间大小，也可以正常使用，只不过性能会退化，也就失去了使用 <code>table.new</code> 的意义。</p>
+<blockquote>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/senlin1202/article/details/86021545">table.new</a></p>
+</blockquote>
+<ul>
+<li><strong>table.clear() 清空 table</strong></li>
+</ul>
+<p>它用来清空某个 table 里的所有数据，但并不会释放数组和哈希部分占用的内存。所以，它在循环利用 Lua table 时非常有用，可以避免反复创建和销毁 table 的开销。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;local clear_tab =require &quot;table.clear&quot;</span><br><span class="line">local color = &#123;first = &quot;red&quot;, &quot;blue&quot;, third = &quot;green&quot;, &quot;yellow&quot;&#125;</span><br><span class="line">clear_tab(color)</span><br><span class="line">for k, v in pairs(color) do</span><br><span class="line">     print(k)</span><br><span class="line">end&#x27;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-10-3-OpenResty-的-table-扩展函数"><a href="#1-10-3-OpenResty-的-table-扩展函数" class="headerlink" title="1.10.3 OpenResty 的 table 扩展函数"></a>1.10.3 OpenResty 的 table 扩展函数</h4><p>OpenResty 自己维护的 LuaJIT 分支，也对 table 做了扩展，它<a target="_blank" rel="noopener" href="https://github.com/openresty/luajit2/#new-api">新增了几个 API</a>：<code>table.isempty、table.isarray、 table.nkeys 和 table.clone</code>。</p>
+<p>下边使用 <code>table.nkeys</code> 示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">local nkeys = require &quot;table.nkeys&quot;</span><br><span class="line"> </span><br><span class="line">print(nkeys(&#123;&#125;))  -- 0</span><br><span class="line">print(nkeys(&#123; &quot;a&quot;, nil, &quot;b&quot; &#125;))  -- 2</span><br><span class="line">print(nkeys(&#123; dog = 3, cat = 4, bird = nil &#125;))  -- 2</span><br><span class="line">print(nkeys(&#123; &quot;a&quot;, dog = 3, cat = 4 &#125;))  -- 3</span><br></pre></td></tr></table></figure>
+<p>table.nkeys函数，返回的是 table 的元素个数，包括数组和哈希部分的元素。</p>
+<h4 id="1-10-4-元表"><a href="#1-10-4-元表" class="headerlink" title="1.10.4 元表"></a>1.10.4 元表</h4><p>元表是 Lua 中独有的概念，在实际项目中的使用非常广泛。不夸张地说，在几乎所有的 <code>lua-resty-*</code> 库中，你都能看到它的身影。</p>
+<p> Lua 提供了两个处理元表的函数：</p>
+<ul>
+<li>第一个是setmetatable(table, metatable), 用于为一个 table 设置元表；</li>
+<li>第二个是getmetatable(table)，用于获取 table 的元表。</li>
+</ul>
+<p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27; local version = &#123;</span><br><span class="line">  major = 1,</span><br><span class="line">  minor = 1,</span><br><span class="line">  patch = 1</span><br><span class="line">  &#125;</span><br><span class="line">version = setmetatable(version, &#123;</span><br><span class="line">    __tostring = function(t)</span><br><span class="line">      return string.format(&quot;%d.%d.%d&quot;, t.major, t.minor, t.patch)</span><br><span class="line">    end</span><br><span class="line">  &#125;)</span><br><span class="line">  print(tostring(version))</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<p>首先定义了一个 名为 version的 table ，你可以看到，这段代码的目的，是想把 version 中的版本号打印出来。<br>所以，我们需要自定义这个 table 的字符串转换函数，也就是 <code>__tostring</code>，到这一步也就是元表的用武之地了。我们用 setmetatable ，重新设置 version 这个 table 的 <code>__tostring</code> 方法，就可以打印出版本号: 1.1.1。</p>
+<ul>
+<li><strong>重载元表中的元方法</strong></li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27; local version = &#123;</span><br><span class="line">  major = 1,</span><br><span class="line">  minor = 1</span><br><span class="line">  &#125;</span><br><span class="line">version = setmetatable(version, &#123;</span><br><span class="line">     __index = function(t, key)</span><br><span class="line">         if key == &quot;patch&quot; then</span><br><span class="line">             return 2</span><br><span class="line">         end</span><br><span class="line">     end,</span><br><span class="line">     __tostring = function(t)</span><br><span class="line">      return string.format(&quot;%d.%d.%d&quot;, t.major, t.minor, t.patch)</span><br><span class="line">    end</span><br><span class="line">  &#125;)</span><br><span class="line">  print(tostring(version))</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<p>这样的话，<code>t.patch</code> 其实获取不到值，那么就会走到 <code>__index</code> 这个函数中，结果就会打印出 1.1.2。</p>
+<p>事实上，__index 不仅可以是一个函数，也可以是一个 table。你试着运行下面这段代码，就会看到，它们实现的效果是一样的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27; local version = &#123;</span><br><span class="line">  major = 1,</span><br><span class="line">  minor = 1</span><br><span class="line">  &#125;</span><br><span class="line">version = setmetatable(version, &#123;</span><br><span class="line">     __index = &#123;patch = 2&#125;,</span><br><span class="line">     __tostring = function(t)</span><br><span class="line">      return string.format(&quot;%d.%d.%d&quot;, t.major, t.minor, t.patch)</span><br><span class="line">    end</span><br><span class="line">  &#125;)</span><br><span class="line">  print(tostring(version))</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>元方法<code>__call</code></li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27;</span><br><span class="line">local version = &#123;</span><br><span class="line">  major = 1,</span><br><span class="line">  minor = 1,</span><br><span class="line">  patch = 1</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">local function print_version(t)</span><br><span class="line">     print(string.format(&quot;%d.%d.%d&quot;, t.major, t.minor, t.patch))</span><br><span class="line">end</span><br><span class="line"> </span><br><span class="line">version = setmetatable(version,</span><br><span class="line">     &#123;__call = print_version&#125;)</span><br><span class="line"> </span><br><span class="line">  version()</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<p>这段代码中，我们使用 <code>setmetatable</code>，给 version 这个 table 增加了元表，而里面的 <code>__call</code> 元方法指向了函数 <code>print_version</code> 。那么，如果我们尝试把 <code>version</code> 当作函数调用，这里就会执行函数 <code>print_version</code>。</p>
+<p>而 <code>getmetatable</code> 是和 <code>setmetatable</code> 配对的操作，可以获取到已经设置的元表，比如下面这段代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ resty -e &#x27; local version = &#123;</span><br><span class="line">  major = 1,</span><br><span class="line">  minor = 1</span><br><span class="line">  &#125;</span><br><span class="line">version = setmetatable(version, &#123;</span><br><span class="line">     __index = &#123;patch = 2&#125;,</span><br><span class="line">     __tostring = function(t)</span><br><span class="line">      return string.format(&quot;%d.%d.%d&quot;, t.major, t.minor, t.patch)</span><br><span class="line">    end</span><br><span class="line">  &#125;)</span><br><span class="line">  print(getmetatable(version).__index.patch)</span><br><span class="line">&#x27;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>元方法参考：<a target="_blank" rel="noopener" href="http://lua-users.org/wiki/MetamethodsTutorial">http://lua-users.org/wiki/MetamethodsTutorial</a></p>
+</blockquote>
+<h3 id="1-11-答疑"><a href="#1-11-答疑" class="headerlink" title="1.11 答疑"></a>1.11 答疑</h3><h4 id="1-11-1-关于空值的困惑"><a href="#1-11-1-关于空值的困惑" class="headerlink" title="1.11.1 关于空值的困惑"></a>1.11.1 关于空值的困惑</h4><p>Q：我遇到一些让人困惑的地方是ngx.null、nil、null和””。在网上搜索的时候，看到有人说null是ngx.null的一个定义。Redis 返回的时候，经常会判断返回结果是否为空，那么，判断的时候是和哪个值进行比较呢？关于这些值，有没有其他一些使用上的坑呢？一直以来我都没有一个明确的认识，想和老师确认一下。</p>
+<p>A：在回答你的问题之前，我建议你在 lua-resty-redis 里，使用下面的代码去查找一个 key：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">local res, err = red:get(&quot;dog&quot;)</span><br></pre></td></tr></table></figure>
+<p>如果返回值 res 是 nil，就说明函调用失败了；如果 res 是 ngx.null ，就说明 redis 中不存在 dog 这个 key。这是因为， Lua 的 nil 无法作为 table 的 value，所以 OpenResty 引入了 <code>ngx.null</code>，作为 table 中的空值。<br>我们可以用下面的代码，打印出 ngx.null 和它的类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 打印 ngx.null</span><br><span class="line">$ resty -e  &#x27;print(ngx.null)&#x27;</span><br><span class="line">null</span><br><span class="line"> </span><br><span class="line"># 打印类型</span><br><span class="line">$ resty -e &#x27;print(type(ngx.null))&#x27;</span><br><span class="line">userdata</span><br></pre></td></tr></table></figure>
+<p>你可以看到， ngx.null 并非nil，而是 userdata 类型。</p>
+<h4 id="1-11-2-配置文件的规则优先级"><a href="#1-11-2-配置文件的规则优先级" class="headerlink" title="1.11.2 配置文件的规则优先级"></a>1.11.2 配置文件的规则优先级</h4><p>Q：当 OpenResty 中的 Lua 规则和 NGINX 配置文件产生冲突时，比如 NGINX 配置了 rewrite 规则，又同时引用了 rewrite_by_lua_file，那么这两条规则的优先级是什么？</p>
+<p>A：其实，这个具体要看 NGINX 配置的 rewrite 规则是怎么写的了，是 break 还是 last。这一点，在 OpenResty 的官方文档中有注明，并且配了一个示例代码：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location /foo &#123;</span><br><span class="line">    rewrite ^ /bar;</span><br><span class="line">    rewrite_by_lua <span class="string">&#x27;ngx.exit(503)&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">location /bar &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在示例代码的这个配置中，ngx.exit(503) 是不会被执行的。</p>
+<p>但是，如果你改成下面这样的写法，ngx.exit(503) 就可以被执行。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rewrite ^ /bar <span class="keyword">break</span>；</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="3-测试篇"><a href="#3-测试篇" class="headerlink" title="3 测试篇"></a>3 测试篇</h2><h3 id="3-1-test-nginx-简介"><a href="#3-1-test-nginx-简介" class="headerlink" title="3.1 test::nginx 简介"></a>3.1 test::nginx 简介</h3><p><code>test::nginx</code> 是 OpenResty 测试体系中的核心，OpenResty 本身和周边的 lua-rety 库，都是使用它来组织和编写测试集的。<br><code>test::nginx</code> 糅合了 Perl、数据驱动以及 DSL（领域小语言）。对于同一份测试案例集，通过对参数和环境变量的控制，可以实现乱序执行、多次重复、内存泄漏检测、压力测试等不同的效果。</p>
+<h4 id="3-1-1-安装"><a href="#3-1-1-安装" class="headerlink" title="3.1.1 安装"></a>3.1.1 安装</h4><p>下边通过源码进行安装</p>
+<ol>
+<li>先安装perl的包管理器cpanminus<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install cpanminus</span><br></pre></td></tr></table></figure></li>
+<li>下载最新的 test-nginx代码，并编译安装<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/agentzh/test-nginx.git</span><br><span class="line"><span class="built_in">cd</span> test-nginx &amp; perl Makefile.PL</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure></li>
+<li>安装完之后可以运行test-nginx中带的测试用例，如下：<br><img src="https://i.loli.net/2020/09/23/VAbIDRK4Y5q2hps.png"><br>以上会运行每个 t 目录下的测试用例，最后显示运行结果 PASS</li>
+</ol>
+<h3 id="3-2-测试用例介绍"><a href="#3-2-测试用例介绍" class="headerlink" title="3.2 测试用例介绍"></a>3.2 测试用例介绍</h3><p>test::nginx 中提供了很多 DSL 的原语，下边按照 Nginx 配置、发送请求、处理响应、检查日志这个流程，做了一个简单的分类。</p>
+<h4 id="3-2-1-Nginx配置"><a href="#3-2-1-Nginx配置" class="headerlink" title="3.2.1 Nginx配置"></a>3.2.1 Nginx配置</h4><p><code>test::nginx</code> 的原语中带有 config 这个关键字的，就和 Nginx 配置相关，还有 <code>config</code>、<code>stream_config</code>、<code>http_config</code> 等。<br>他们的作用都一样，即在Nginx的不同上下文中，插入指定的Nginx配置。这些配置可以是Nginx指令，也可以是 <code>content_by_lua_block</code> 封装起来的Lua代码。<br> config是最常用的原语，在其中可以加载Lua库，并调用函数来做白盒测试。下边是一段测试代码：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> === TEST <span class="number">1</span>: sanity</span><br><span class="line">--- config</span><br><span class="line">    location /t &#123;</span><br><span class="line">        content_by_lua_block &#123;</span><br><span class="line">            <span class="keyword">local</span> plugin = <span class="keyword">require</span>(<span class="string">&quot;apisix.plugins.key-auth&quot;</span>)</span><br><span class="line">            <span class="keyword">local</span> ok, err = plugin.check_schema(&#123;key = <span class="string">&#x27;test-key&#x27;</span>&#125;)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> ok then</span><br><span class="line">                ngx.say(err)</span><br><span class="line">            end</span><br><span class="line">            ngx.say(<span class="string">&quot;done&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这个测试案例的目的，是为了测试代码文件 <code>plugins.key-auth</code> 中， check_schema 这个函数能否正常工作。它在<code>location /t</code> 中使用 <code>content_by_lua_block</code> 这个 Nginx 指令，require 需要测试的模块，并直接调用需要检查的函数。</p>
+<h4 id="3-2-2-发送请求"><a href="#3-2-2-发送请求" class="headerlink" title="3.2.2 发送请求"></a>3.2.2 发送请求</h4><p>这个主要是模拟客户端发送请求。下边先从发送单个请求入手。</p>
+<ul>
+<li><strong>request</strong></li>
+</ul>
+<p>想要单元测试的代码被运行，就要发送一个HTTP请求，访问的地址是config中注明的 &#x2F;t ，如下：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- request</span><br><span class="line">GET /t</span><br></pre></td></tr></table></figure>
+<p>这段代码在 request 原语中，发起了一个 GET 请求，地址是 &#x2F;t。这里，我们并没有注明访问的 ip 地址、域名和端口，也没有指定是 HTTP 1.0 还是 HTTP 1.1，这些细节都被 test::nginx 隐藏了，你不用去关心。这就是 DSL 的好处之一——你只需要关心业务逻辑，不用被各种细节所打扰。<br>如果想要测试HTTP 1.0 也可以显示指定：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- request</span><br><span class="line">GET /t  HTTP/<span class="number">1.0</span></span><br></pre></td></tr></table></figure>
+<p>除了 GET 方法之外，POST 方法也是需要支持的。下面这个示例，可以 POST hello world 这个字符串到指定的地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--- request</span><br><span class="line">POST /t  </span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<p><code>test::nginx</code> 在这里为你自动计算了请求体长度，并自动增加了 host 和 <code>connection</code> 这两个请求头，以保证这是一个正常的请求。<br>为了可读性，以#开头的，会自动被识别为代码注释：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--- request</span><br><span class="line">   # post request</span><br><span class="line">POST /t  </span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>有很多测试用例可以嵌入perl脚本，需要对perl有一定的了解</p>
+</blockquote>
+<ul>
+<li><strong>pipelined_requests</strong></li>
+</ul>
+<p>下边来看下发送多个请求，<br>在 <code>test::nginx</code> 中，可以使用 <code>pipelined_requests</code> 这个原语，在同一个 keep-alive 的连接里面，依次发送多个请求：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- pipelined_requests eval</span><br><span class="line">[&quot;GET /hello&quot;, &quot;GET /world&quot;, &quot;GET /foo&quot;, &quot;GET /bar&quot;]</span><br></pre></td></tr></table></figure>
+<p>比如这个示例就会在同一个连接中，依次访问这 4 个接口。这样做会有两个好处：</p>
+<ul>
+<li>第一是可以省去不少重复的测试代码，把 4 个测试案例压缩到一个测试案例中完成；</li>
+<li>第二也是最重要的原因，你可以用流水线的请求，来检测代码逻辑在多次访问的情况下，是否会有异常。</li>
+</ul>
+<p>基于它，你可以模拟出限流、限速、限并发等多种情况，用更真实和复杂的场景来检测你的系统是否正常。</p>
+<blockquote>
+<p>在单个请求的用例里，每次执行用例时，<code>test::nginx</code> 都会单独启动Nginx进程，在执行完后，Nginx进程会退出，但是多个请求时会启动Nginx进行，然后各请求依次执行，适用于连续请求各请求之间有关联的业务。</p>
+</blockquote>
+<ul>
+<li><strong>repeat_each</strong></li>
+</ul>
+<p>刚才我们提到了测试多个请求的情况，那么应该如何对同一个测试执行多次呢？</p>
+<p><code>test::nginx</code> 提供了一个全局的设置：<code>repeat_each</code>。它其实是一个 perl 函数，默认情况下是 <code>repeat_each(1)</code>，表示测试案例只运行一次。所以之前的测试案例中，我们都没有去单独设置它。</p>
+<p>可以在 run_test() 函数之前来设置它，比如将参数改为 2：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">repeat_each(2);</span><br><span class="line">run_tests();</span><br></pre></td></tr></table></figure>
+<p>那么，每个测试案例就都会被运行两次，以此类推。</p>
+<ul>
+<li><strong>more_headers</strong></li>
+</ul>
+<p>上边的<code>test::nginx</code> 在发送请求的时候，默认会带上 host 和 connection 这两个请求头。那么其他的请求头如何设置呢？<br><code>more_headers</code> 就是专门做这件事儿的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- more_headers</span><br><span class="line">X-Foo: blah</span><br></pre></td></tr></table></figure>
+<p>如果想设置多个头，那设置多行就可以了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--- more_headers</span><br><span class="line">X-Foo: 3</span><br><span class="line">User-Agent: openresty</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-3-处理响应"><a href="#3-2-3-处理响应" class="headerlink" title="3.2.3 处理响应"></a>3.2.3 处理响应</h4><p>发送完请求后，<code>test::nginx</code> 中最重要的部分就来了，那就是处理响应，我们会在这里判断响应是否符合预期。这里我们分为 4 个部分依次介绍，分别是响应体、响应头、响应码和日志。</p>
+<ol>
+<li><strong>response_body</strong></li>
+</ol>
+<p>与 request 原语对应的就是 <code>response_body</code>，下面是它们两个配置使用的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">=== TEST 1: sanity</span><br><span class="line">--- config</span><br><span class="line">    location /t &#123;</span><br><span class="line">        content_by_lua_block &#123;</span><br><span class="line">            ngx.say(&quot;hello&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">--- request</span><br><span class="line">GET /t</span><br><span class="line">--- response_body</span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
+<p>这个测试案例，在响应体是 hello 的情况下会通过，其他情况就会报错。<br>但是如果返回体很长，<code>test::nginx</code> 也支持正则表达式检测响应体，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- response_body_like</span><br><span class="line">^he\w+$</span><br></pre></td></tr></table></figure>
+<p>这样你就可以对响应体进行非常灵活的检测了<br><code>test::nginx</code> 还支持 unlike 的操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- response_body_unlike</span><br><span class="line">^he\w+$</span><br></pre></td></tr></table></figure>
+<p>这时候，如果响应体是hello，测试就不能通过了。<br>了解完单个请求的检测后，我们再来看下多个请求的检测。下面是配合 <code>pipelined_requests</code> 一起使用的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--- pipelined_requests eval</span><br><span class="line">[&quot;GET /hello&quot;, &quot;GET /world&quot;, &quot;GET /foo&quot;, &quot;GET /bar&quot;]</span><br><span class="line">--- response_body eval</span><br><span class="line">[&quot;hello&quot;, &quot;world&quot;, &quot;oo&quot;, &quot;bar&quot;]</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是，你发送了多少个请求，就需要有多少个响应来对应。</p>
+<ol start="2">
+<li><strong>response_headers</strong></li>
+</ol>
+<p>响应头和请求头类似，每一行对应一个 header 的 key 和 value：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--- response_headers</span><br><span class="line">X-RateLimit-Limit: 2</span><br><span class="line">X-RateLimit-Remaining: 1</span><br></pre></td></tr></table></figure>
+<p>和响应体的检测一样，响应头也支持正则表达式和 unlike 操作，分别是 <code>response_headers_like</code> 、<code>raw_response_headers_like</code> 和 <code>raw_response_headers_unlike</code>。</p>
+<ol start="3">
+<li><strong>error_code</strong></li>
+</ol>
+<p>响应码的检测支持直接的比较，同时也支持 like 操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--- error_code: 302</span><br><span class="line"> </span><br><span class="line">--- error_code_like: ^(?:500)?$</span><br></pre></td></tr></table></figure>
+
+<p>而对于多个请求的情况，error_code 自然也需要检测多次：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--- pipelined_requests eval</span><br><span class="line">[&quot;GET /hello&quot;, &quot;GET /hello&quot;, &quot;GET /hello&quot;, &quot;GET /hello&quot;]</span><br><span class="line">--- error_code eval</span><br><span class="line">[200, 200, 503, 503]</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>error_log</strong></li>
+</ol>
+<p>用 <code>no_error_log</code> 来检测错误日志：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- no_error_log</span><br><span class="line">[error]</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，如果 Nginx 的错误日志 error.log 中，出现 [error] 这个字符串，测试就会失败。这是一个很常用的功能。<br>我们也可以指定错误日志中是否出现指定的字符串：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- error_log</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<p>上面这段配置，其实就在检测 error.log 中是否出现了 hello world。</p>
+<p>你可以在其中，用 eval 嵌入 perl 代码的方式，来实现正则表达式的检测，比如下面这样的写法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- error_log eval</span><br><span class="line">qr/\[notice\] .*?  \d+ hello world/</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-4-测试中的调试"><a href="#3-2-4-测试中的调试" class="headerlink" title="3.2.4 测试中的调试"></a>3.2.4 测试中的调试</h4><p>下边是几个在调试阶段可能用到的原语，这些调试的原语也许不会提交到最终的代码中。</p>
+<ol>
+<li><strong>ONLY</strong></li>
+</ol>
+<p>如果在原有的测试案例集基础上，新增了一个测试案例。如果这个测试文件包含了很多的测试案例，那么从头到尾跑一遍显然是比较耗时的，这在你需要反复修改测试案例的时候尤为明显。</p>
+<p>那么，有没有什么方法只运行你指定的某一个测试案例呢？ ONLY 这个标记可以轻松实现这一点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">=== TEST 1: sanity</span><br><span class="line">=== TEST 2: get</span><br><span class="line">--- ONLY</span><br></pre></td></tr></table></figure>
+<p>把 <code>--- ONLY</code> 放在需要单独运行的测试案例的最后一行，那么使用 prove 来运行这个测试案例文件的时候，就会忽略其他所有的测试案例，只运行这一个测试了。</p>
+<ol start="2">
+<li><strong>SKIP</strong></li>
+</ol>
+<p>与只执行一个测试案例对应的需求，就是忽略掉某一个测试案例。SKIP 这个标记，一般用于测试尚未实现的功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">=== TEST 1: sanity</span><br><span class="line">=== TEST 2: get</span><br><span class="line">--- SKIP</span><br></pre></td></tr></table></figure>
+
+<p>它的用法和 ONLY 类似。</p>
+<ol start="3">
+<li><strong>LAST</strong></li>
+</ol>
+<p>在它之前的测试案例集都会被执行，后面的就会被忽略掉：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">=== TEST 1: sanity</span><br><span class="line">=== TEST 2: get</span><br><span class="line">--- LAST</span><br><span class="line">=== TEST 3: set</span><br></pre></td></tr></table></figure>
+<p>如果有时候你的测试案例是有依赖关系的，需要你执行完前面几个测试案例后，之后的测试才有意义。那么，在这种情况下去调试的话，LAST 就非常有用了。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202311171113762.png"></p>
+<h4 id="3-2-5-测试计划-plan"><a href="#3-2-5-测试计划-plan" class="headerlink" title="3.2.5 测试计划 plan"></a>3.2.5 测试计划 plan</h4><p>它源自于 perl 的 <code>Test::Plan</code> 模块，所以文档并不在 <code>test::nginx</code>中<br>在 OpenResty 官方测试集的每一个文件的开始部分，你都能看到类似的配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plan tests =&gt; repeat_each() * (3 * blocks());</span><br></pre></td></tr></table></figure>
+<p>这里 plan 的含义是，在整个测试文件中，按照计划应该会做多少次检测项。如果最终运行的结果和计划不符，整个测试就会失败。<br>这个使用比较复杂，可以直接关掉</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use Test::Nginx::Socket &#x27;no_plan&#x27;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-6-预处理器"><a href="#3-2-6-预处理器" class="headerlink" title="3.2.6 预处理器"></a>3.2.6 预处理器</h4><p>在同一个测试文件的不同测试案例之间，可能会有一些共同的设置。如果在每一个测试案例中都重复设置，就会让代码显得冗余，后面修改起来也比较麻烦。<br>你就可以使用 <code>add_block_preprocessor</code> 指令，来增加一段 perl 代码，比如下面这样来写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">add_block_preprocessor(sub &#123;</span><br><span class="line">    my $block = shift;</span><br><span class="line"> </span><br><span class="line">    if (!defined $block-&gt;config) &#123;</span><br><span class="line">        $block-&gt;set_value(&quot;config&quot;, &lt;&lt;&#x27;_END_&#x27;);</span><br><span class="line">    location = /t &#123;</span><br><span class="line">        echo $arg_a;</span><br><span class="line">    &#125;</span><br><span class="line">    _END_</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这个预处理器，就会为所有的测试案例，都增加一段 config 的配置，而里面的内容就是 location &#x2F;t。这样，在你后面的测试案例里，就都可以省略掉 config，直接访问即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">=== TEST 1:</span><br><span class="line">--- request</span><br><span class="line">    GET /t?a=3</span><br><span class="line">--- response_body</span><br><span class="line">3</span><br><span class="line"> </span><br><span class="line">=== TEST 2:</span><br><span class="line">--- request</span><br><span class="line">    GET /t?a=blah</span><br><span class="line">--- response_body</span><br><span class="line">blah</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-7-自定义函数"><a href="#3-2-7-自定义函数" class="headerlink" title="3.2.7 自定义函数"></a>3.2.7 自定义函数</h4><p>除了在预处理器中增加 perl 代码之外，你还可以在 run_tests 原语之前，随意地增加 perl 函数，也就是我们所说的自定义函数。<br>下面是一个示例，它增加了一个读取文件的函数，并结合 eval 指令，一起实现了 POST 文件的功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">sub read_file &#123;</span><br><span class="line">    my $infile = shift;</span><br><span class="line">    open my $in, $infile</span><br><span class="line">        or die &quot;cannot open $infile for reading: $!&quot;;</span><br><span class="line">    my $content = do &#123; local $/; &lt;$in&gt; &#125;;</span><br><span class="line">    close $in;</span><br><span class="line">    $content;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">our $CONTENT = read_file(&quot;t/test.jpg&quot;);</span><br><span class="line"> </span><br><span class="line">run_tests;</span><br><span class="line"> </span><br><span class="line">__DATA__</span><br><span class="line"> </span><br><span class="line">=== TEST 1: sanity</span><br><span class="line">--- request eval</span><br><span class="line">&quot;POST /\n$::CONTENT&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-8-乱序"><a href="#3-2-8-乱序" class="headerlink" title="3.2.8 乱序"></a>3.2.8 乱序</h4><p><code>test::nginx</code> 可以实现 默认乱序、随机来执行测试案例，而非按照测试案例的前后顺序和编号来执行。<br>它的初衷是想测试出更多的问题。毕竟，每一个测试案例运行完后，都会关闭 Nginx 进程，并启动新的 Nginx 来执行，结果不应该和顺序相关才对。<br>这个功能谨慎使用，因为在实际业务中可能我们的测试案例就是顺序执行的，乱序可能导致各种不同的问题，可以使用下边两行代码关闭这个功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">no_shuffle();</span><br><span class="line">run_tests;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>no_shuffle</code> 原语就是用来禁用随机，让测试严格按照测试案例的前后顺序来运行。</p>
+<h4 id="3-2-9-reindex"><a href="#3-2-9-reindex" class="headerlink" title="3.2.9 reindex"></a>3.2.9 reindex</h4><p>OpenResty 的测试案例集，对格式有着严格的要求。每个测试案例之间都需要有 3 个换行来分割，测试案例的编号也要严格保持自增长。<br>幸好，我们有对应的自动化工具 reindex 来做这些繁琐的事情，它隐藏在 <a target="_blank" rel="noopener" href="https://github.com/openresty/openresty-devel-utils"> openresty-devel-utils</a> 项目中，因为没有文档来介绍，知道的人很少。<br>可以尝试着把测试案例的编号打乱，或者增删分割的换行个数，然后用这个工具来整理下，看看是否可以还原。</p>
+<h3 id="3-3-压测工具-wrk"><a href="#3-3-压测工具-wrk" class="headerlink" title="3.3 压测工具 wrk"></a>3.3 压测工具 wrk</h3><p>参考资料：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xinzhao/p/6233009.html">https://www.cnblogs.com/xinzhao/p/6233009.html</a><br>以上是wrk工具的安装和使用。</p>
+<h4 id="3-3-1-测试环境"><a href="#3-3-1-测试环境" class="headerlink" title="3.3.1 测试环境"></a>3.3.1 测试环境</h4><p>下边介绍下在进行压测前，需要对测试环境的配置。</p>
+<ol>
+<li>关闭SELinux</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sestatus</span><br><span class="line">SELinux status: disabled</span><br></pre></td></tr></table></figure>
+<p>可以执行<code>setenforce 0</code>来临时关闭；同时修改 &#x2F;etc&#x2F;selinux&#x2F;config 文件来永久关闭，将 <code>SELINUX=enforcing</code> 改为 <code>SELINUX=disabled</code>。<br>2. 设置最大打开文件数</p>
+<p>查看最大打开文件数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/sys/fs/file-nr</span><br><span class="line">3984 0 3255296</span><br></pre></td></tr></table></figure>
+<p>这里的最后一个数字，就是最大打开文件数。如果你的机器中这个数字比较小，那就需要修改 &#x2F;etc&#x2F;sysctl.conf 文件来增大：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fs.file-max = 1020000</span><br><span class="line">net.ipv4.ip_conntrack_max = 1020000</span><br><span class="line">net.ipv4.netfilter.ip_conntrack_max = 1020000</span><br></pre></td></tr></table></figure>
+<p>修改完以后，还需要重启系统服务来生效：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sysctl -p /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>进程限制</li>
+</ol>
+<p>除了系统的全局最大打开文件数，一个进程可以打开的文件数也是有限制的，你可以通过命令 ulimit 来查看：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ulimit -n</span><br><span class="line">1024</span><br></pre></td></tr></table></figure>
+<p>压力测试会产生大量的请求，所以我们需要增大这个数值，把它改为百万级别，你可以用下面的命令来临时修改：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ulimit -n 1024000</span><br></pre></td></tr></table></figure>
+<p>也可以修改配置文件 &#x2F;etc&#x2F;security&#x2F;limits.conf 来永久生效：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">* hard nofile 1024000</span><br><span class="line">* soft nofile 1024000</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-盘点OpenResty的各种调试手段"><a href="#4-盘点OpenResty的各种调试手段" class="headerlink" title="4 盘点OpenResty的各种调试手段"></a>4 盘点OpenResty的各种调试手段</h1><h2 id="4-1-OpenResty编码指南"><a href="#4-1-OpenResty编码指南" class="headerlink" title="4.1 OpenResty编码指南"></a>4.1 OpenResty编码指南</h2><ol>
+<li>函数之间用两个空行分隔</li>
+<li>全部使用局部变量，变量命名snake_case 风格，常量使用全部大写形式</li>
+<li>数组使用table.new()提前分配</li>
+<li>函数名使用snake_case 命名风格，函数使用尽早返回</li>
+<li>require 的库都要 local 化：</li>
+</ol>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--Yes</span></span><br><span class="line"><span class="keyword">local</span> timer_at = ngx.timer.at</span><br><span class="line"><span class="keyword">local</span> <span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line">    <span class="keyword">local</span> ok, err = timer_at(delay, handler)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>如果函数返回错误，对其处理</li>
+</ol>
+<p><strong>参考资料：</strong><br><a target="_blank" rel="noopener" href="https://github.com/apache/apisix/blob/master/CODE_STYLE.md">代码规范</a></p>
+<h3 id="4-5-实际项目中的性能优化：ingress-nginx中的几个PR解读"><a href="#4-5-实际项目中的性能优化：ingress-nginx中的几个PR解读" class="headerlink" title="4.5 实际项目中的性能优化：ingress-nginx中的几个PR解读"></a>4.5 实际项目中的性能优化：ingress-nginx中的几个PR解读</h3><p>给K8S中ingress-nginx提交的两个PR：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/pull/3673">https://github.com/kubernetes/ingress-nginx/pull/3673</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/pull/3674">https://github.com/kubernetes/ingress-nginx/pull/3674</a></li>
+</ul>
+<h4 id="4-6-1-断点和打印日志"><a href="#4-6-1-断点和打印日志" class="headerlink" title="4.6.1 断点和打印日志"></a>4.6.1 断点和打印日志</h4><p>一般通过打印日志和GDB设置断点可以定位的问题有一个前提，问题可以稳定复现，然后通过多次复现查看日志或者设置断点进行定位。<br>但是有些问题是不能稳定复现的，可以使用Mozilla RR，这个可以把程序执行的行为录制下来，然后反复重放，只要能把bug复现录制一次，就可以通过断点等手段进行定位。<br>资料：<a target="_blank" rel="noopener" href="https://my.oschina.net/u/4001231/blog/3017627">Mozilla rr快速学习</a><br>项目地址：<a target="_blank" rel="noopener" href="https://github.com/rr-debugger/rr">https://github.com/rr-debugger/rr</a></p>
+<h4 id="4-6-2-分布式链路追踪"><a href="#4-6-2-分布式链路追踪" class="headerlink" title="4.6.2 分布式链路追踪"></a>4.6.2 分布式链路追踪</h4><p>如果有多个服务，bug可能出现在其中一个服务中，定位起来相对困难，可以通过排除法，但相对效率低。<br>推荐使用 OpenTracing 这样的标准，来进行分布式追踪。OpenTracing 可以在系统的各处埋点，通过 Trace ID 把多个 Span 组成的调用链和埋点数据上报到服务端，进行分析和图形化的展现。这样就可以发现很多隐藏的问题，而且历史数据都会保存下来，方便我们随时对比和查看。<br>如果你的系统比较复杂，比如是在微服务的环境下，那么 Zipkin、Apache SkyWalking 都是不错的选择。</p>
+<h4 id="4-6-3-动态调试"><a href="#4-6-3-动态调试" class="headerlink" title="4.6.3 动态调试"></a>4.6.3 动态调试</h4><p>动态调试工具：Dtrace、Systemtap、eBPF、VTune<br>Systemtap 有自己的 DSL，也就是小语言，可以用来设置探测点。可以直接安装systemtap：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install systemtap</span><br></pre></td></tr></table></figure>
+
+<p>用 Systemtap 写的 hello world 程序是什么样子的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># cat hello-world.stp</span></span><br><span class="line">probe begin</span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;hello world!&quot;</span>)</span><br><span class="line">  <span class="built_in">exit</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stap helloworld.stp </span><br></pre></td></tr></table></figure>
+<p>在大部分场景下，我们都不需要自己写 stap 脚本来进行分析，因为 OpenResty 已经有了很多现成的 stap 脚本来做常规的分析，下节课我就会为你介绍这些脚本。所以，今天我们只用对 stap 脚本有一个简单的认识就行了。</p>
+<p>Systemtap 的工作原理，是将上述 stap 脚本转换为 C，运行系统 C 编译器来创建 kernel 模块。当模块被加载的时候，它会通过 hook 内核的方式，来激活所有的探测事件。<br>比如，刚刚这个示例代码中的 probe 就是一个探针。begin 会在探测的最开始运行，与之对应的是 end，所以上面的 hello world 程序也可以写成下面的这种方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">probe begin</span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;hello &quot;</span>)</span><br><span class="line">  <span class="built_in">exit</span>()</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">probe end</span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;world!&quot;</span>) </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上程序同样输出“hello world!”</p>
+<blockquote>
+<p>Systemtap 的作者 Frank Ch. Eigler 写了一本电子书《Systemtap tutorial》，详细地介绍了 Systemtap。</p>
+</blockquote>
+<p>eBPF（extended BPF）则是最近几年 Linux 内核中新增的特性。相比 Systemtap，eBPF 有内核直接支持、不会死机、启动速度快等优点；同时，它并没有使用 DSL，而是直接使用了 C 语言的语法，所以也大大降低了它的上手难度。<br>除了开源的解决方案外，Intel 出品的 VTune 也是神兵利器之一。它直观的界面操作和数据展示，可以让你不写代码也能分析出性能的瓶颈。</p>
+<h2 id="5-API网关篇"><a href="#5-API网关篇" class="headerlink" title="5 API网关篇"></a>5 API网关篇</h2><p>基于<a target="_blank" rel="noopener" href="https://github.com/apache/apisix">APISIX</a> 讲解</p>
+<h3 id="5-1-微服务API网关搭建"><a href="#5-1-微服务API网关搭建" class="headerlink" title="5.1 微服务API网关搭建"></a>5.1 微服务API网关搭建</h3><h4 id="5-1-1-微服务API网关有什么用？"><a href="#5-1-1-微服务API网关有什么用？" class="headerlink" title="5.1.1 微服务API网关有什么用？"></a>5.1.1 微服务API网关有什么用？</h4><p>有以下传统功能：</p>
+<ul>
+<li>反向代理和负载均衡，这和 Nginx 的定位和功能是一致的；</li>
+<li>动态上游、动态 SSL 证书和动态限流限速等运行时的动态功能，这是开源版本 Nginx 并不具备的功能；</li>
+<li>上游的主动和被动健康检查，以及服务熔断功能；</li>
+<li>在 API 网关的基础上进行扩展，成为全生命周期的 API 管理平台。</li>
+</ul>
+<p>在最近几年，业务相关的流量，不再仅仅由 PC 客户端和浏览器发起，更多的来自手机、IoT 设备等，未来随着 5G 的普及，这些流量会越来越多。同时，随着微服务架构的结构变迁，服务之间的流量也开始爆发性地增长。在这种新的业务场景下，自然也催生了 API 网关更多、更高级的功能：<br>在最近几年，业务相关的流量，不再仅仅由 PC 客户端和浏览器发起，更多的来自手机、IoT 设备等，未来随着 5G 的普及，这些流量会越来越多。同时，随着微服务架构的结构变迁，服务之间的流量也开始爆发性地增长。在这种新的业务场景下，自然也催生了 API 网关更多、更高级的功能：</p>
+<ol>
+<li>云原生友好，架构要变得轻巧，便于容器化；</li>
+<li>对接 Prometheus、Zipkin、Skywalking 等统计、监控组件；</li>
+<li>支持 gRPC 代理，以及 HTTP 到 gRPC 之间的协议转换，把用户的 HTTP 请求转为内部服务的 gPRC 请求；</li>
+<li>承担 OpenID Relying Party 的角色，对接 Auth0、Okta 等身份认证提供商的服务，把流量安全作为头等大事来对待；</li>
+<li>通过运行时动态执行用户函数的方式来实现 Serverless，让网关的边缘节点更加灵活；</li>
+<li>不锁定用户，支持混合云的部署架构；</li>
+<li>最后，网关节点要状态无关，可以随意地扩容和缩容。</li>
+</ol>
+<p>当一个微服务 API 网关具备了上述十几项功能时，就可以让用户的服务只关心业务本身；而和业务实现无关的功能，比如服务发现、服务熔断、身份认证、限流限速、统计、性能分析等，就可以在独立的网关层面来解决。当一个微服务 API 网关具备了上述十几项功能时，就可以让用户的服务只关心业务本身；而和业务实现无关的功能，比如服务发现、服务熔断、身份认证、限流限速、统计、性能分析等，就可以在独立的网关层面来解决。</p>
+<h3 id="5-2-答疑"><a href="#5-2-答疑" class="headerlink" title="5.2 答疑"></a>5.2 答疑</h3><h4 id="5-2-1-OpenResty的数据库封装"><a href="#5-2-1-OpenResty的数据库封装" class="headerlink" title="5.2.1 OpenResty的数据库封装"></a>5.2.1 OpenResty的数据库封装</h4><p>Q：根据你的指点，要尽量少用 ..字符串拼接，特别是在代码热区。但是我在处理数据库访问时，需要动态构建 SQL 语句（在语句中插入变量），这应该是非常常见的使用场景。可是对于这个需求，我目前感觉，只有字符串拼接是最简单的办法，其他真的想不到既简单又高性能的办法。</p>
+<p>A：你可以先用我们前面课程介绍过的 SystemTap 或者其他工具分析下，看 SQL 语句的拼接是否是系统的瓶颈。如果不是，自然就没有优化的必要性，毕竟，过早的优化是万恶之源。</p>
+<p>如果瓶颈确实是 SQL 语句的拼接，那么我们可以利用数据库的 prepare 语句来做优化，也可以用数组的方式来做拼接。但 lua-resrty-mysql 对 prepare 的支持一直处于 TODO 状态，所以只剩下数组拼接的方式了。这也是一些 lua-resty 库的通病，实现了大部分的功能，处于能用的状态，但更新得并不够及时。除了数据库的 prepare 语句外，lua-resty-redis 对 cluster 也一直没有支持。<br>字符串拼接，包括 lua-resty 库的这类问题，OpenResty 是希望用 DSL 来彻底解决的——使用编译器的技术自动生成数组来拼接字符串，把这些细节隐藏起来，上层的用户不用感知；使用小语言 wirelang 来自动生成各种 lua-resty 网络通信库，不再需要手写。</p>
+<h4 id="5-2-2-修改了响应体，怎么修改响应头中的-content-length？"><a href="#5-2-2-修改了响应体，怎么修改响应头中的-content-length？" class="headerlink" title="5.2.2 修改了响应体，怎么修改响应头中的 content-length？"></a>5.2.2 修改了响应体，怎么修改响应头中的 content-length？</h4><p>Q：如果需要修改 respones body 的内容，就只能在 body filter 里做修改，但这样会引起 body 长度与 content-length 长度不一致，应该如何处理呢？</p>
+<p>A：在这种情况下，我们需要在 body filter 之前的 header filter 阶段中，把 content length 这个响应头置为 nil，不再返回，改为流式输出。</p>
+<p>下面是一段示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 8080;</span><br><span class="line"> </span><br><span class="line">    location /test &#123;</span><br><span class="line">            proxy_pass http://www.baidu.com;</span><br><span class="line">            header_filter_by_lua_block &#123;</span><br><span class="line">                     ngx.header.content_length = nil</span><br><span class="line">            &#125;</span><br><span class="line">            body_filter_by_lua_block &#123;</span><br><span class="line">                    ngx.arg[1] = ngx.arg[1] .. &quot;abc&quot;</span><br><span class="line">            &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过这段代码你可以看到，在 body filter 阶段中，ngx.arg[1] 代表的就是响应体。如果我们在它后面增加了字符串 abc，响应头 content length 就不准确了，所以，我们在 header filter 阶段直接把它禁用掉就可以了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/01%20-%20OpenResty%20%E5%9F%BA%E7%A1%80%E7%AF%87/">https://baihlup.github.io/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/01%20-%20OpenResty%20%E5%9F%BA%E7%A1%80%E7%AF%87/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/OpenResty/">OpenResty</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/02%20-%20OpenResty%20API%E7%AF%87/" title="OpenResty API篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">OpenResty API篇</div></div></a></div><div class="next-post pull-right"><a href="/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/04%20-%20OpenResty%20%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="OpenResty 性能优化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">OpenResty 性能优化</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/02%20-%20OpenResty%20API%E7%AF%87/" title="OpenResty API篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-21</div><div class="title">OpenResty API篇</div></div></a></div><div><a href="/2023/11/21/260%20-%20%E5%90%8E%E7%AB%AF&%E6%9E%B6%E6%9E%84/263%20-%20%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1/04%20-%20OpenResty%20%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="OpenResty 性能优化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-21</div><div class="title">OpenResty 性能优化</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.</span> <span class="toc-text">0 参考资料</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0-1-%E8%AF%BE%E7%A8%8B%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">0.1 课程目录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%A5%E9%97%A8%E7%AF%87"><span class="toc-number">2.</span> <span class="toc-text">1 入门篇</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%88%9D%E6%8E%A2OpenResty"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 初探OpenResty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 第一个程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-OpenResty-CLI"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 OpenResty CLI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-OpenRest%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%A7%88"><span class="toc-number">2.4.</span> <span class="toc-text">1.4 OpenRest项目概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E7%AC%AC%E4%B8%89%E6%96%B9%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7"><span class="toc-number">2.5.</span> <span class="toc-text">1.5 第三方包管理工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-OpenResty%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E6%8E%A8%E8%8D%90"><span class="toc-number">2.6.</span> <span class="toc-text">1.6 OpenResty开源项目推荐</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-OpenResty-%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84-NGINX-%E7%9F%A5%E8%AF%86"><span class="toc-number">2.7.</span> <span class="toc-text">1.7 OpenResty 中用到的 NGINX 知识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-8-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8BLua"><span class="toc-number">2.8.</span> <span class="toc-text">1.8 快速上手Lua</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8-1-%E6%89%A7%E8%A1%8CHello-World"><span class="toc-number">2.8.1.</span> <span class="toc-text">1.8.1 执行Hello World</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8-2-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.8.2.</span> <span class="toc-text">1.8.2 数据类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8-3-%E5%B8%B8%E7%94%A8%E6%A0%87%E5%87%86%E5%BA%93"><span class="toc-number">2.8.3.</span> <span class="toc-text">1.8.3 常用标准库</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-9-LuaJIT-%E5%88%86%E6%94%AF%E5%92%8C-Lua"><span class="toc-number">2.9.</span> <span class="toc-text">1.9 LuaJIT 分支和 Lua</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-9-1-LuaJIT"><span class="toc-number">2.9.1.</span> <span class="toc-text">1.9.1 LuaJIT</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-9-2-Lua-%E7%89%B9%E5%88%AB%E4%B9%8B%E5%A4%84"><span class="toc-number">2.9.2.</span> <span class="toc-text">1.9.2 Lua 特别之处</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-9-3-Lua-%E7%8B%AC%E6%9C%89%E6%A6%82%E5%BF%B5"><span class="toc-number">2.9.3.</span> <span class="toc-text">1.9.3 Lua 独有概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-9-4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">2.9.4.</span> <span class="toc-text">1.9.4 面向对象</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-10-%E5%89%96%E6%9E%90Lua-%E5%94%AF%E4%B8%80%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84table-%E5%92%8C-metatable-%E7%89%B9%E6%80%A7"><span class="toc-number">2.10.</span> <span class="toc-text">1.10 剖析Lua 唯一的数据结构table 和 metatable 特性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-10-1-table-%E5%BA%93%E5%87%BD%E6%95%B0"><span class="toc-number">2.10.1.</span> <span class="toc-text">1.10.1 table 库函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-10-2-LuaJIT-%E7%9A%84-table-%E6%89%A9%E5%B1%95%E5%87%BD%E6%95%B0"><span class="toc-number">2.10.2.</span> <span class="toc-text">1.10.2 LuaJIT 的 table 扩展函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-10-3-OpenResty-%E7%9A%84-table-%E6%89%A9%E5%B1%95%E5%87%BD%E6%95%B0"><span class="toc-number">2.10.3.</span> <span class="toc-text">1.10.3 OpenResty 的 table 扩展函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-10-4-%E5%85%83%E8%A1%A8"><span class="toc-number">2.10.4.</span> <span class="toc-text">1.10.4 元表</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-11-%E7%AD%94%E7%96%91"><span class="toc-number">2.11.</span> <span class="toc-text">1.11 答疑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-11-1-%E5%85%B3%E4%BA%8E%E7%A9%BA%E5%80%BC%E7%9A%84%E5%9B%B0%E6%83%91"><span class="toc-number">2.11.1.</span> <span class="toc-text">1.11.1 关于空值的困惑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-11-2-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%A7%84%E5%88%99%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-number">2.11.2.</span> <span class="toc-text">1.11.2 配置文件的规则优先级</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B5%8B%E8%AF%95%E7%AF%87"><span class="toc-number">3.</span> <span class="toc-text">3 测试篇</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-test-nginx-%E7%AE%80%E4%BB%8B"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 test::nginx 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-%E5%AE%89%E8%A3%85"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 安装</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 测试用例介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-Nginx%E9%85%8D%E7%BD%AE"><span class="toc-number">3.2.1.</span> <span class="toc-text">3.2.1 Nginx配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E5%8F%91%E9%80%81%E8%AF%B7%E6%B1%82"><span class="toc-number">3.2.2.</span> <span class="toc-text">3.2.2 发送请求</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E5%A4%84%E7%90%86%E5%93%8D%E5%BA%94"><span class="toc-number">3.2.3.</span> <span class="toc-text">3.2.3 处理响应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-4-%E6%B5%8B%E8%AF%95%E4%B8%AD%E7%9A%84%E8%B0%83%E8%AF%95"><span class="toc-number">3.2.4.</span> <span class="toc-text">3.2.4 测试中的调试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-5-%E6%B5%8B%E8%AF%95%E8%AE%A1%E5%88%92-plan"><span class="toc-number">3.2.5.</span> <span class="toc-text">3.2.5 测试计划 plan</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-6-%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8"><span class="toc-number">3.2.6.</span> <span class="toc-text">3.2.6 预处理器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-7-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.7.</span> <span class="toc-text">3.2.7 自定义函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-8-%E4%B9%B1%E5%BA%8F"><span class="toc-number">3.2.8.</span> <span class="toc-text">3.2.8 乱序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-9-reindex"><span class="toc-number">3.2.9.</span> <span class="toc-text">3.2.9 reindex</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%8E%8B%E6%B5%8B%E5%B7%A5%E5%85%B7-wrk"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 压测工具 wrk</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">3.3.1.</span> <span class="toc-text">3.3.1 测试环境</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%9B%98%E7%82%B9OpenResty%E7%9A%84%E5%90%84%E7%A7%8D%E8%B0%83%E8%AF%95%E6%89%8B%E6%AE%B5"><span class="toc-number"></span> <span class="toc-text">4 盘点OpenResty的各种调试手段</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-OpenResty%E7%BC%96%E7%A0%81%E6%8C%87%E5%8D%97"><span class="toc-number">1.</span> <span class="toc-text">4.1 OpenResty编码指南</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E5%AE%9E%E9%99%85%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%EF%BC%9Aingress-nginx%E4%B8%AD%E7%9A%84%E5%87%A0%E4%B8%AAPR%E8%A7%A3%E8%AF%BB"><span class="toc-number">1.1.</span> <span class="toc-text">4.5 实际项目中的性能优化：ingress-nginx中的几个PR解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-1-%E6%96%AD%E7%82%B9%E5%92%8C%E6%89%93%E5%8D%B0%E6%97%A5%E5%BF%97"><span class="toc-number">1.1.1.</span> <span class="toc-text">4.6.1 断点和打印日志</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-2-%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA"><span class="toc-number">1.1.2.</span> <span class="toc-text">4.6.2 分布式链路追踪</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-3-%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95"><span class="toc-number">1.1.3.</span> <span class="toc-text">4.6.3 动态调试</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-API%E7%BD%91%E5%85%B3%E7%AF%87"><span class="toc-number">2.</span> <span class="toc-text">5 API网关篇</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%BE%AE%E6%9C%8D%E5%8A%A1API%E7%BD%91%E5%85%B3%E6%90%AD%E5%BB%BA"><span class="toc-number">2.1.</span> <span class="toc-text">5.1 微服务API网关搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-1-%E5%BE%AE%E6%9C%8D%E5%8A%A1API%E7%BD%91%E5%85%B3%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-number">2.1.1.</span> <span class="toc-text">5.1.1 微服务API网关有什么用？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E7%AD%94%E7%96%91"><span class="toc-number">2.2.</span> <span class="toc-text">5.2 答疑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-OpenResty%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85"><span class="toc-number">2.2.1.</span> <span class="toc-text">5.2.1 OpenResty的数据库封装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-%E4%BF%AE%E6%94%B9%E4%BA%86%E5%93%8D%E5%BA%94%E4%BD%93%EF%BC%8C%E6%80%8E%E4%B9%88%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94%E5%A4%B4%E4%B8%AD%E7%9A%84-content-length%EF%BC%9F"><span class="toc-number">2.2.2.</span> <span class="toc-text">5.2.2 修改了响应体，怎么修改响应头中的 content-length？</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/09/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/261%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%AA%E5%91%BD%E5%90%8D/" title="Untitled">Untitled</a><time datetime="2024-03-09T09:55:14.240Z" title="Created 2024-03-09 09:55:14">2024-03-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/04/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/10%20-%20Go--%E8%BF%9B%E9%98%B6%E7%AF%87/" title="Go--进阶篇">Go--进阶篇</a><time datetime="2024-03-04T00:00:00.000Z" title="Created 2024-03-04 00:00:00">2024-03-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/02/28/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/271%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/01%20-%20%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%9A%E9%AB%98%E5%B9%B6%E5%8F%91%E7%BD%91%E5%85%B3%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E8%B7%B5/" title="负载均衡：高并发网关设计原理与实践">负载均衡：高并发网关设计原理与实践</a><time datetime="2024-02-28T00:00:00.000Z" title="Created 2024-02-28 00:00:00">2024-02-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/02/07/255%20-%20%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;%E5%A4%A7%E6%95%B0%E6%8D%AE/257%20-%20AI%20%E5%A4%A7%E6%A8%A1%E5%9E%8B/03%20-%20Langchain%20%E8%AF%A6%E8%A7%A3%E4%B8%8E%E5%AE%9E%E6%88%98/" title="Langchain 详解与实战">Langchain 详解与实战</a><time datetime="2024-02-07T00:00:00.000Z" title="Created 2024-02-07 00:00:00">2024-02-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/02/05/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/279%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20REUSEADDR%20%E5%92%8CREUSEPORT%20%E5%AF%B9TCP%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%8E%A7%E5%88%B6/" title="REUSEADDR 和REUSEPORT 对TCP连接的控制">REUSEADDR 和REUSEPORT 对TCP连接的控制</a><time datetime="2024-02-05T00:00:00.000Z" title="Created 2024-02-05 00:00:00">2024-02-05</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
