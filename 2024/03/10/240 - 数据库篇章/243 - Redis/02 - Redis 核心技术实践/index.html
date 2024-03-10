@@ -1,0 +1,674 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Redis 核心技术实践 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="2 实践篇2.11“万金油”的String，为什么不好用了？2.11.1 string类型如何保存数据的举一个示例，用10位数来表示图片ID和图片存储对象ID，例如，图片ID为1101000051，它在存储系统中对应的ID号是3301000051，在图片数量巨大的场景下。 如果保存1亿张图片，使用string类型，大约用6.4GB的内存。一个图片ID和图片存储对象ID的记录平均用了64字节。来分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 核心技术实践">
+<meta property="og:url" content="https://baihlup.github.io/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/02%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="2 实践篇2.11“万金油”的String，为什么不好用了？2.11.1 string类型如何保存数据的举一个示例，用10位数来表示图片ID和图片存储对象ID，例如，图片ID为1101000051，它在存储系统中对应的ID号是3301000051，在图片数量巨大的场景下。 如果保存1亿张图片，使用string类型，大约用6.4GB的内存。一个图片ID和图片存储对象ID的记录平均用了64字节。来分析">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg">
+<meta property="article:published_time" content="2024-03-10T00:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-10T08:11:31.333Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/02%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%AE%9E%E8%B7%B5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis 核心技术实践',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-10 08:11:31'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">9</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis 核心技术实践</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-03-10T08:11:31.333Z" title="Updated 2024-03-10 08:11:31">2024-03-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/">数据库篇章</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis 核心技术实践"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="2-实践篇"><a href="#2-实践篇" class="headerlink" title="2 实践篇"></a>2 实践篇</h1><h2 id="2-11“万金油”的String，为什么不好用了？"><a href="#2-11“万金油”的String，为什么不好用了？" class="headerlink" title="2.11“万金油”的String，为什么不好用了？"></a>2.11“万金油”的String，为什么不好用了？</h2><h3 id="2-11-1-string类型如何保存数据的"><a href="#2-11-1-string类型如何保存数据的" class="headerlink" title="2.11.1 string类型如何保存数据的"></a>2.11.1 string类型如何保存数据的</h3><p>举一个示例，用10位数来表示图片ID和图片存储对象ID，例如，图片ID为1101000051，它在存储系统中对应的ID号是3301000051，在图片数量巨大的场景下。</p>
+<p>如果保存1亿张图片，使用string类型，大约用6.4GB的内存。一个图片ID和图片存储对象ID的记录平均用了64字节。<br>来分析一下。图片ID和图片存储对象ID都是10位数，我们可以用两个8字节的Long类型表示这两个ID。因为8字节的Long类型最大可以表示2的64次方的数值，所以肯定可以表示10位数。但是，为什么String类型却用了64字节呢？<br>通过对string类型进行分析，在记录实际数据时，string类型还需要额外的内存空间记录数据长度、空间使用等信息，这些信息也叫做元数据。当实际保存的数据较小时，元数据的空间开销就显得比较大了。</p>
+<p>String类型具体是怎么保存数据的呢？</p>
+<ol>
+<li>当你保存64位有符号整数时，String类型会把它保存为一个8字节的Long类型整数，这种保存方式通常也叫作int编码方式。</li>
+<li>当你保存的数据中包含字符时，String类型就会用简单动态字符串（Simple Dynamic String，SDS）结构体来保存，如下图所示：</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262207482.png"></p>
+<ul>
+<li>buf：字节数组，保存实际数据。为了表示字节数组的结束，Redis会自动在数组最后加一个“\0”，这就会额外占用1个字节的开销。</li>
+<li>len：占4个字节，表示buf的已用长度。</li>
+<li>alloc：也占个4字节，表示buf的实际分配长度，一般大于len。</li>
+</ul>
+<p>在SDS中，buf保存实际数据，而len和alloc本身其实是SDS结构体的额外开销。</p>
+<p>对于String类型来说，除了SDS的额外开销，还有一个来自于RedisObject结构体的开销。<br>因为Redis的数据类型有很多，而且，不同数据类型都有些相同的元数据要记录（比如最后一次访问的时间、被引用的次数等），所以，Redis会用一个RedisObject结构体来统一记录这些元数据，同时指向实际数据。<br>一个RedisObject包含了8字节的元数据和一个8字节指针，这个指针再进一步指向具体数据类型的实际数据所在，例如指向String类型的SDS结构所在的内存地址，可以看一下下面的示意图。关于RedisObject的具体结构细节，我会在后面的课程中详细介绍，现在你只要了解它的基本结构和元数据开销就行了。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262208668.png"><br>为了节省内存空间，Redis还对Long类型整数和SDS的内存布局做了专门的设计。<br>一方面，当保存的是Long类型整数时，RedisObject中的指针就直接赋值为整数数据了，这样就不用额外的指针再指向整数了，节省了指针的空间开销。<br>另一方面，当保存的是字符串数据，并且字符串小于等于44字节时，RedisObject中的元数据、指针和SDS是一块连续的内存区域，这样就可以避免内存碎片。这种布局方式也被称为embstr编码方式。<br>当然，当字符串大于44字节时，SDS的数据量就开始变多了，Redis就不再把SDS和RedisObject布局在一起了，而是会给SDS分配独立的空间，并用指针指向SDS结构。这种布局方式被称为raw编码模式。<br>为了帮助你理解int、embstr和raw这三种编码模式，我画了一张示意图，如下所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262209860.png"></p>
+<p>现在来计算下存储上边示例的图片需要的内存使用量。<br>因为10位数的图片ID和图片存储对象ID是Long类型整数，所以可以直接用int编码的RedisObject保存。每个int编码的RedisObject元数据部分占8字节，指针部分被直接赋值为8字节的整数了。此时，每个ID会使用16字节，加起来一共是32字节。<br>为了保存string类型的key，Redis会使用全局哈希表，哈希表的每一项是一个dictEntry的结构体，用来指向一个键值对。dictEntry结构中有三个8字节的指针，分别指向key、value以及下一个dictEntry，三个指针共24字节，如下图所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262209344.png"><br>然后由于Redis使用的内存分配库jemalloc，在分配内存时会根据我们申请的字节数N，找一个比N大，但是最接近N的2的幂次数作为分配的空间，这样可以减少频繁分配的次数。所以在申请24字节空间时，会分配32字节。</p>
+<h3 id="2-11-2-选择节省内存的数据结构"><a href="#2-11-2-选择节省内存的数据结构" class="headerlink" title="2.11.2 选择节省内存的数据结构"></a>2.11.2 选择节省内存的数据结构</h3><p>Redis有一种底层数据结构，叫压缩列表（ziplist），这是一种非常节省内存的结构。<br>表头有三个字段zlbytes、zltail和zllen，分别表示列表长度、列表尾的偏移量，以及列表中的entry个数。压缩列表尾还有一个zlend，表示列表结束。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262210821.png"><br>压缩列表之所以能节省内存，就在于它是用一系列连续的entry保存数据。每个entry的元数据包括下面几部分。</p>
+<ul>
+<li>prev_len，表示前一个entry的长度。prev_len有两种取值情况：1字节或5字节。取值1字节时，表示上一个entry的长度小于254字节。虽然1字节的值能表示的数值范围是0到255，但是压缩列表中zlend的取值默认是255，因此，就默认用255表示整个压缩列表的结束，其他表示长度的地方就不能再用255这个值了。所以，当上一个entry长度小于254字节时，prev_len取值为1字节，否则，就取值为5字节。</li>
+<li>len：表示自身长度，4字节；</li>
+<li>encoding：表示编码方式，1字节；</li>
+<li>content：保存实际数据。</li>
+</ul>
+<p>这些entry会挨个儿放置在内存中，不需要再用额外的指针进行连接，这样就可以节省指针所占用的空间。<br>Redis基于压缩列表实现了List、Hash和Sorted Set这样的集合类型，这样做的最大好处就是节省了dictEntry的开销。当你用String类型时，一个键值对就有一个dictEntry，要用32字节空间。但采用集合类型时，一个key就对应一个集合的数据，能保存的数据多了很多，但也只用了一个dictEntry，这样就节省了内存。</p>
+<ul>
+<li>使用集合类型保存单值键值对</li>
+</ul>
+<p>在保存单值的键值对时，可以采用基于Hash类型的二级编码方法。这里说的二级编码，就是把一个单值的数据拆分成两部分，前一部分作为Hash集合的key，后一部分作为Hash集合的value，这样一来，我们就可以把单值数据保存到Hash集合中了。<br>以图片ID 1101000060和图片存储对象ID 3302000080为例，我们可以把图片ID的前7位（1101000）作为Hash类型的键，把图片ID的最后3位（060）和图片存储对象ID分别作为Hash类型值中的key和value。<br>按照这种设计方法，我在Redis中插入了一组图片ID及其存储对象ID的记录，并且用info命令查看了内存开销，我发现，增加一条记录后，内存占用只增加了16字节，如下所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262210884.png"><br>在使用String类型时，每个记录需要消耗64字节，这种方式却只用了16字节，所使用的内存空间是原来的1&#x2F;4，满足了我们节省内存空间的需求。</p>
+<p>Redis Hash类型的两种底层实现结构，分别是压缩列表和哈希表。<br>Hash类型设置了用压缩列表保存数据时的两个阈值，一旦超过了阈值，Hash类型就会用哈希表来保存数据了。<br>这两个阈值分别对应以下两个配置项：</p>
+<ul>
+<li>hash-max-ziplist-entries：表示用压缩列表保存时哈希集合中的最大元素个数。</li>
+<li>hash-max-ziplist-value：表示用压缩列表保存时哈希集合中单个元素的最大长度。</li>
+</ul>
+<p>如果我们往Hash集合中写入的元素个数超过了hash-max-ziplist-entries，或者写入的单个元素大小超过了hash-max-ziplist-value，Redis就会自动把Hash类型的实现结构由压缩列表转为哈希表。<br>为了能充分使用压缩列表的精简内存布局，我们一般要控制保存在Hash集合中的元素个数。所以，在刚才的二级编码中，我们只用图片ID最后3位作为Hash集合的key，也就保证了Hash集合的元素个数不超过1000，同时，我们把hash-max-ziplist-entries设置为1000，这样一来，Hash集合就可以一直使用压缩列表来节省内存空间了。</p>
+<h2 id="2-12-有一亿个keys要统计，使用Redis实现统计"><a href="#2-12-有一亿个keys要统计，使用Redis实现统计" class="headerlink" title="2.12 有一亿个keys要统计，使用Redis实现统计"></a>2.12 有一亿个keys要统计，使用Redis实现统计</h2><p>比如要保存如下一些信息：</p>
+<ul>
+<li>手机App中的每天的用户登录信息：一天对应一系列用户ID或移动设备ID；</li>
+<li>电商网站上商品的用户评论列表：一个商品对应了一系列的评论；</li>
+<li>用户在手机App上的签到打卡信息：一天对应一系列用户的签到记录；</li>
+<li>应用网站上的网页访问信息：一个网页对应一系列的访问点击。</li>
+</ul>
+<p>Redis集合类型的特点就是一个键对应一系列的数据，所以非常适合用来存取这些数据。但是，在这些场景中，除了记录信息，我们往往还需要对集合中的数据进行统计，例如：</p>
+<ul>
+<li>在移动应用中，需要统计每天的新增用户数和第二天的留存用户数；</li>
+<li>在电商网站的商品评论中，需要统计评论列表中的最新评论；</li>
+<li>在签到打卡中，需要统计一个月内连续打卡的用户数；</li>
+<li>在网页访问记录中，需要统计独立访客（Unique Visitor，UV）量。</li>
+</ul>
+<p>要想选择合适的集合，我们就得了解常用的集合统计模式，下边介绍集合类型常见的四种统计模式，包括聚合统计、排序统计、二值状态统计和基数统计。</p>
+<h3 id="2-12-1-聚合统计"><a href="#2-12-1-聚合统计" class="headerlink" title="2.12.1 聚合统计"></a>2.12.1 聚合统计</h3><p>聚合统计，就是指统计多个集合元素的聚合结果，包括：统计多个集合的共有元素（交集统计）；把两个集合相比，统计其中一个集合独有的元素（差集统计）；统计多个集合的所有元素（并集统计）。<br>在刚才提到的场景中，统计手机App每天的新增用户数和第二天的留存用户数，正好对应了聚合统计。<br>要完成这个统计任务，我们可以用一个集合记录所有登录过App的用户ID，同时，用另一个集合记录每一天登录过App的用户ID。然后，再对这两个集合做聚合统计。我们来看下具体的操作。<br>记录所有登录过App的用户ID还是比较简单的，我们可以直接使用Set类型，把key设置为user280680，表示记录的是用户ID，value就是一个Set集合，里面是所有登录过App的用户ID，我们可以把这个Set叫作累计用户Set。<br>每日用户Set可以在key中加入日期信息，比如：</p>
+<ul>
+<li>key是user280680以及当天日期，例如user280680:20200803；</li>
+<li>value是Set集合，记录当天登录的用户ID。</li>
+</ul>
+<p>在统计每天的新增用户时，我们只用计算每日用户Set和累计用户Set的差集就行。<br>假设我们的手机App在2020年8月3日上线，那么，8月3日前是没有用户的。此时，累计用户Set是空集，当天登录的用户ID会被记录到 key为user280680:20200803的Set中。所以，user280680:20200803这个Set中的用户就是当天的新增用户。<br>然后，我们计算累计用户Set和user280680:20200803 Set的并集结果，结果保存在user280680这个累计用户Set中，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUNIONSTORE user280680 user280680 user280680:20200803</span><br></pre></td></tr></table></figure>
+<p>此时，user280680这个累计用户Set中就有了8月3日的用户ID。等到8月4日再统计时，我们把8月4日登录的用户ID记录到user280680:20200804 的Set中。接下来，我们执行SDIFFSTORE命令计算累计用户Set和user280680:20200804 Set的差集，结果保存在key为user:new的Set中，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SDIFFSTORE  user:new  user280680:20200804 user280680  </span><br></pre></td></tr></table></figure>
+<p>可以看到，这个差集中的用户ID在user280680:20200804 的Set中存在，但是不在累计用户Set中。所以，user:new这个Set中记录的就是8月4日的新增用户。<br>当要计算8月4日的留存用户时，我们只需要再计算user280680:20200803 和 user280680:20200804两个Set的交集，就可以得到同时在这两个集合中的用户ID了，这些就是在8月3日登录，并且在8月4日留存的用户。执行的命令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SINTERSTORE user280680:rem user280680:20200803 user280680:20200804</span><br></pre></td></tr></table></figure>
+<p>当你需要对多个集合进行聚合计算时，Set类型会是一个非常不错的选择。但是Set的差集、并集和交集的计算复杂度较高，在数据量较大的情况下，如果直接执行这些计算，会导致Redis实例阻塞。所以，我给你分享一个小建议：你可以从主从集群中选择一个从库，让它专门负责聚合计算，或者是把数据读取到客户端，在客户端来完成聚合统计，这样就可以规避阻塞主库实例和其他从库实例的风险了。</p>
+<h3 id="2-12-2-排序统计"><a href="#2-12-2-排序统计" class="headerlink" title="2.12.2 排序统计"></a>2.12.2 排序统计</h3><p>通过电商网站上查看最新评论的场景，可以看下有序集合的使用方式。<br>在Redis常用的4个集合类型中（List、Hash、Set、Sorted Set），List和Sorted Set就属于有序集合。<br>List是按照元素进入List的顺序进行排序的，而Sorted Set可以根据元素的权重来排序。<br>使用List保存评论时，评论在分页时，如果此时新添加了评论，则评论在List中的位置会发生变化，导致分页展示评论时出问题。<br>可以按评论时间的先后给每条评论设置一个权重值，然后再把评论保存到Sorted Set中。Sorted Set的ZRANGEBYSCORE命令就可以按权重排序后返回元素。这样的话，即使集合中的元素频繁更新，Sorted Set也能通过ZRANGEBYSCORE命令准确地获取到按序排列的数据。</p>
+<p>假设越新的评论权重越大，目前最新评论的权重是N，我们执行下面的命令时，就可以获得最新的10条评论：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGEBYSCORE comments N-9 N</span><br></pre></td></tr></table></figure>
+<p>所以，在面对需要展示最新列表、排行榜等场景时，如果数据更新频繁或者需要分页显示，建议你优先考虑使用Sorted Set。</p>
+<h3 id="2-12-3-二值状态统计"><a href="#2-12-3-二值状态统计" class="headerlink" title="2.12.3 二值状态统计"></a>2.12.3 二值状态统计</h3><p>在签到打卡的场景中，我们只用记录签到（1）或未签到（0），所以它就是非常典型的二值状态，在签到统计时，每个用户一天的签到用1个bit位就能表示，一个月（假设是31天）的签到情况用31个bit位就可以，而一年的签到也只需要用365个bit位，根本不用太复杂的集合类型。这个时候，我们就可以选择Bitmap。这是Redis提供的扩展数据类型。<br>Bitmap本身是用String类型作为底层数据结构实现的一种统计二值状态的数据类型。String类型是会保存为二进制的字节数组，所以，Redis就把字节数组的每个bit位利用起来，用来表示一个元素的二值状态。你可以把Bitmap看作是一个bit数组。<br>Bitmap提供了GETBIT&#x2F;SETBIT操作，使用一个偏移值offset对bit数组的某一个bit位进行读和写。不过，需要注意的是，Bitmap的偏移量是从0开始算的，也就是说offset的最小值是0。当使用SETBIT对一个bit位进行写操作时，这个bit位会被设置为1。Bitmap还提供了BITCOUNT操作，用来统计这个bit数组中所有“1”的个数。</p>
+<p>假设我们要统计ID 3000的用户在2020年8月份的签到情况，就可以按照下面的步骤进行操作。</p>
+<ol>
+<li>执行下面的命令，记录该用户8月3号已签到。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SETBIT uid:sign:3000:202008 2 1</span><br></pre></td></tr></table></figure></li>
+<li>检查该用户8月3日是否签到。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GETBIT uid:sign:3000:202008 2</span><br></pre></td></tr></table></figure></li>
+<li>统计该用户在8月份的签到次数。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BITCOUNT uid:sign:3000:202008</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>如果记录了1亿个用户10天的签到情况，你有办法统计出这10天连续签到的用户总数吗？<br>在介绍具体的方法之前，我们要先知道，Bitmap支持用BITOP命令对多个Bitmap按位做“与”“或”“异或”的操作，操作的结果会保存到一个新的Bitmap中。<br>可以把每天的日期作为key，每个key对应一个1亿位的Bitmap，每一个bit对应一个用户当天的签到情况。<br>接下来，我们对10个Bitmap做“与”操作，得到的结果也是一个Bitmap。在这个Bitmap中，只有10天都签到的用户对应的bit位上的值才会是1。最后，我们可以用BITCOUNT统计下Bitmap中的1的个数，这就是连续签到10天的用户总数了。<br>现在，我们可以计算一下记录了10天签到情况后的内存开销。每天使用1个1亿位的Bitmap，大约占12MB的内存（10^8&#x2F;8&#x2F;1024&#x2F;1024），10天的Bitmap的内存开销约为120MB，内存压力不算太大。不过，在实际应用时，最好对Bitmap设置过期时间，让Redis自动删除不再需要的签到记录，以节省内存开销。</p>
+<p>所以，如果只需要统计数据的二值状态，例如商品有没有、用户在不在等，就可以使用Bitmap，因为它只用一个bit位就能表示0或1。在记录海量数据时，Bitmap能够有效地节省内存空间。</p>
+<h3 id="2-12-4-基数统计"><a href="#2-12-4-基数统计" class="headerlink" title="2.12.4 基数统计"></a>2.12.4 基数统计</h3><p>统计访问一个网页的用户数，网页可能很火爆，有千万人访问，一个用户也可能访问多个，只算一次。<br>以上的基数统计场景可以使用HyperLogLog，的最大优势就在于，当集合元素数量非常多时，它计算基数所需的空间总是固定的，而且还很小。<br>在Redis中，每个 HyperLogLog只需要花费 12 KB 内存，就可以计算接近 2^64 个元素的基数。你看，和元素越多就越耗费内存的Set和Hash类型相比，HyperLogLog就非常节省空间。<br>在统计UV时，你可以用PFADD命令（用于向HyperLogLog中添加新元素）把访问页面的每个用户都添加到HyperLogLog中。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PFADD page1:uv user1 user2 user3 user4 user5</span><br></pre></td></tr></table></figure>
+<p>接下来，就可以用PFCOUNT命令直接获得page1的UV值了，这个命令的作用就是返回HyperLogLog的统计结果。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PFCOUNT page1:uv</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-12-5-总结"><a href="#2-12-5-总结" class="headerlink" title="2.12.5 总结"></a>2.12.5 总结</h3><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221119181247.png"><br>Set和Sorted Set都支持多种聚合统计，不过，对于差集计算来说，只有Set支持。Bitmap也能做多个Bitmap间的聚合计算，包括与、或和异或操作。<br>当需要进行排序统计时，List中的元素虽然有序，但是一旦有新元素插入，原来的元素在List中的位置就会移动，那么，按位置读取的排序结果可能就不准确了。而Sorted Set本身是按照集合元素的权重排序，可以准确地按序获取结果，所以建议你优先使用它。<br>如果我们记录的数据只有0和1两个值的状态，Bitmap会是一个很好的选择，这主要归功于Bitmap对于一个数据只用1个bit记录，可以节省内存。<br>对于基数统计来说，如果集合元素量达到亿级别而且不需要精确统计时，我建议你使用HyperLogLog。</p>
+<h2 id="2-13-GEO是什么？还可以定义新的数据类型吗？"><a href="#2-13-GEO是什么？还可以定义新的数据类型吗？" class="headerlink" title="2.13 GEO是什么？还可以定义新的数据类型吗？"></a>2.13 GEO是什么？还可以定义新的数据类型吗？</h2><h3 id="2-13-1-GEO的底层结构"><a href="#2-13-1-GEO的底层结构" class="headerlink" title="2.13.1 GEO的底层结构"></a>2.13.1 GEO的底层结构</h3><p>GEO的底层结构就是用Sorted Set来实现的。<br>场景：查看附近车辆，每辆车由经纬度信息和车辆ID<br>在保存车辆ID和经纬度信息时考虑使用Sorted Set类型，<br>用Sorted Set来保存车辆的经纬度信息时，Sorted Set的元素是车辆ID，元素的权重分数是经纬度信息，如下图所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221206101635.png"><br>Sorted Set元素的权重分数是一个浮点数（float类型），而一组经纬度包含的是经度和纬度两个值，是没法直接保存为一个浮点数的，那具体该怎么进行保存呢？<br>这就要用到GEO类型中的GeoHash编码了。</p>
+<h3 id="2-13-2-GeoHash的编码方法"><a href="#2-13-2-GeoHash的编码方法" class="headerlink" title="2.13.2 GeoHash的编码方法"></a>2.13.2 GeoHash的编码方法</h3><p>为了能高效地对经纬度进行比较，Redis采用了业界广泛使用的GeoHash编码方法，这个方法的基本原理就是“二分区间，区间编码”。<br>当我们要对一组经纬度进行GeoHash编码时，我们要先对经度和纬度分别编码，然后再把经纬度各自的编码组合成一个最终编码。</p>
+<p>首先，我们来看下经度和纬度的单独编码过程。<br>对于一个地理位置信息来说，它的经度范围是[-180,180]。GeoHash编码会把一个经度值编码成一个N位的二进制值，我们来对经度范围[-180,180]做N次的二分区操作，其中N可以自定义。<br>在进行第一次二分区时，经度范围[-180,180]会被分成两个子区间：[-180,0)和[0,180]（我称之为左、右分区）。此时，我们可以查看一下要编码的经度值落在了左分区还是右分区。如果是落在左分区，我们就用0表示；如果落在右分区，就用1表示。这样一来，每做完一次二分区，我们就可以得到1位编码值。以此类推</p>
+<p>示例：对经度值为116.37，用5位编码值（就是N&#x3D;5，做5次分区）<br>先做第一次二分区操作，把经度区间[-180,180]分成了左分区[-180,0)和右分区[0,180]，此时，经度值116.37是属于右分区[0,180]，所以，我们用1表示第一次二分区后的编码值。以此类推。<br>按照这种方法，做完5次分区后，我们把经度值116.37定位在[112.5, 123.75]这个区间，并且得到了经度值的5位编码值，即11010。这个编码过程如下表所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221206102240.png" alt="20221206102240"><br>对纬度的编码方式，和对经度的一样，只是纬度的范围是[-90，90]，下面这张表显示了对纬度值39.86的编码过程。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262222994.png"><br>当一组经纬度值都编完码后，我们再把它们的各自编码值组合在一起，组合的规则是：最终编码值的偶数位上依次是经度的编码值，奇数位上依次是纬度的编码值，其中，偶数位从0开始，奇数位从1开始。<br>刚刚计算的经纬度（116.37，39.86）的各自编码值是11010和10111，组合之后，第0位是经度的第0位1，第1位是纬度的第0位1，第2位是经度的第1位1，第3位是纬度的第1位0，以此类推，就能得到最终编码值1110011101，如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221206102423.png"><br>用了GeoHash编码后，原来无法用一个权重分数表示的一组经纬度（116.37，39.86）就可以用1110011101这一个值来表示，就可以保存为Sorted Set的权重分数了。<br>使用GeoHash编码后，我们相当于把整个地理空间划分成了一个个方格，每个方格对应了GeoHash中的一个分区。<br>举个例子。我们把经度区间[-180,180]做一次二分区，把纬度区间[-90,90]做一次二分区，就会得到4个分区。我们来看下它们的经度和纬度范围以及对应的GeoHash组合编码。</p>
+<ul>
+<li>分区一：[-180,0)和[-90,0)，编码00；</li>
+<li>分区二：[-180,0)和[0,90]，编码01；</li>
+<li>分区三：[0,180]和[-90,0)，编码10；</li>
+<li>分区四：[0,180]和[0,90]，编码11。</li>
+</ul>
+<p>这4个分区对应了4个方格，每个方格覆盖了一定范围内的经纬度值，分区越多，每个方格能覆盖到的地理空间就越小，也就越精准。我们把所有方格的编码值映射到一维空间时，相邻方格的GeoHash编码值基本也是接近的，如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221206102557.png"><br>所以，我们使用Sorted Set范围查询得到的相近编码值，在实际的地理空间上，也是相邻的方格，这就可以实现LBS应用“搜索附近的人或物”的功能了。<br>不过，我要提醒你一句，有的编码值虽然在大小上接近，但实际对应的方格却距离比较远。例如，我们用4位来做GeoHash编码，把经度区间[-180,180]和纬度区间[-90,90]各分成了4个分区，一共16个分区，对应了16个方格。编码值为0111和1000的两个方格就离得比较远，如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221206102613.png"><br>所以，为了避免查询不准确问题，我们可以同时查询给定经纬度所在的方格周围的4个或8个方格。</p>
+<h3 id="2-13-3-如何操作GEO类型"><a href="#2-13-3-如何操作GEO类型" class="headerlink" title="2.13.3 如何操作GEO类型"></a>2.13.3 如何操作GEO类型</h3><p>在使用GEO类型时，我们经常会用到两个命令，分别是GEOADD和GEORADIUS。</p>
+<ul>
+<li>GEOADD命令：用于把一组经纬度信息和相对应的一个ID记录到GEO类型集合中；</li>
+<li>GEORADIUS命令：会根据输入的经纬度位置，查找以这个经纬度为中心的一定范围内的其他元素。当然，我们可以自己定义这个范围。</li>
+</ul>
+<p>假设车辆ID是33，经纬度位置是（116.034579，39.030452），我们可以用一个GEO集合保存所有车辆的经纬度，集合key是cars:locations。执行下面的这个命令，就可以把ID号为33的车辆的当前经纬度位置存入GEO集合中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GEOADD cars:locations 116.034579 39.030452 33</span><br></pre></td></tr></table></figure>
+<p>当用户想要寻找自己附近的网约车时，LBS应用就可以使用GEORADIUS命令。<br>例如，LBS应用执行下面的命令时，Redis会根据输入的用户的经纬度信息（116.054579，39.030452 ），查找以这个经纬度为中心的5公里内的车辆信息，并返回给LBS应用。当然， 你可以修改“5”这个参数，来返回更大或更小范围内的车辆信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GEORADIUS cars:locations 116.054579 39.030452 5 km ASC COUNT 10</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-13-4-如何自定义数据类型？"><a href="#2-13-4-如何自定义数据类型？" class="headerlink" title="2.13.4 如何自定义数据类型？***"></a>2.13.4 如何自定义数据类型？***</h3><h2 id="2-14-在Redis中保存时间序列数据"><a href="#2-14-在Redis中保存时间序列数据" class="headerlink" title="2.14 在Redis中保存时间序列数据"></a>2.14 在Redis中保存时间序列数据</h2><h3 id="2-14-1-时间序列数据的读写特点"><a href="#2-14-1-时间序列数据的读写特点" class="headerlink" title="2.14.1 时间序列数据的读写特点"></a>2.14.1 时间序列数据的读写特点</h3><p>场景：要求记录近万台设备的实时状态信息，包括设备ID、压力、温度、湿度，以及对应的时间戳。<br>时间序列数据的写入主要就是插入新数据，而不是更新一个已存在的数据，也就是说，一个时间序列数据被记录后通常就不会变了，因为它就代表了一个设备在某个时刻的状态值（例如，一个设备在某个时刻的温度测量值，一旦记录下来，这个值本身就不会再变了）。</p>
+<blockquote>
+<p>种数据的写入特点很简单，就是插入数据快，这就要求我们选择的数据类型，在进行数据插入时，复杂度要低，尽量不要阻塞。</p>
+</blockquote>
+<p>时间序列数据的“读”操作有什么特点：</p>
+<ul>
+<li>对单条记录的查询（例如查询某个设备在某一个时刻的运行状态信息，对应的就是这个设备的一条记录）</li>
+<li>对某个时间范围内的数据的查询（例如每天早上8点到10点的所有设备的状态信息）。</li>
+<li>对某个时间范围内的数据做聚合计算（包括计算均值、最大&#x2F;最小值、求和等）</li>
+</ul>
+<p>弄清楚了时间序列数据的读写特点，接下来我们就看看如何在Redis中保存这些数据。我们来分析下：针对时间序列数据的“写要快”，Redis的高性能写特性直接就可以满足了；而针对“查询模式多”，也就是要支持单点查询、范围查询和聚合计算，Redis提供了保存时间序列数据的两种方案，分别可以基于Hash和Sorted Set实现，以及基于RedisTimeSeries模块实现。</p>
+<h3 id="2-14-2-基于Hash和Sorted-Set保存时间序列数据"><a href="#2-14-2-基于Hash和Sorted-Set保存时间序列数据" class="headerlink" title="2.14.2 基于Hash和Sorted Set保存时间序列数据"></a>2.14.2 基于Hash和Sorted Set保存时间序列数据</h3><p>可以考虑使用Hash集合记录设备的温度值示意图如下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221207112556.png"></p>
+<p>当我们想要查询某个时间点或者是多个时间点上的温度数据时，直接使用HGET命令或者HMGET命令，就可以分别获得Hash集合中的一个key和多个key的value值了。<br>举个例子。我们用HGET命令查询202008030905这个时刻的温度值，使用HMGET查询202008030905、202008030907、202008030908这三个时刻的温度值，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">HGET device:temperature 202008030905</span><br><span class="line">&quot;25.1&quot;</span><br><span class="line"></span><br><span class="line">HMGET device:temperature 202008030905 202008030907 202008030908</span><br><span class="line">1) &quot;25.1&quot;</span><br><span class="line">2) &quot;25.9&quot;</span><br><span class="line">3) &quot;24.9&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>Hash类型有个短板：它并不支持对数据进行范围查询。</strong><br>为了能同时支持按时间戳范围的查询，可以用Sorted Set来保存时间序列数据，因为它能够根据元素的权重分数来排序。我们可以把时间戳作为Sorted Set集合的元素分数，把时间点上记录的数据作为元素本身。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221207112729.png"><br>使用Sorted Set保存数据后，我们就可以使用ZRANGEBYSCORE命令，按照输入的最大时间戳和最小时间戳来查询这个时间范围内的温度值了。如下所示，我们来查询一下在2020年8月3日9点7分到9点10分间的所有温度值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ZRANGEBYSCORE device:temperature 202008030907 202008030910</span><br><span class="line">1) &quot;25.9&quot;</span><br><span class="line">2) &quot;24.9&quot;</span><br><span class="line">3) &quot;25.3&quot;</span><br><span class="line">4) &quot;25.2&quot;</span><br></pre></td></tr></table></figure>
+<p>同时使用Hash和Sorted Set，可以满足单个时间点和一个时间范围内的数据查询需求了，但是我们又会面临一个新的问题，也就是我们要解答的第二个问题：如何保证写入Hash和Sorted Set是一个原子性的操作呢？</p>
+<p>可以使用Redis中的事务机制满足原子操作，MULTI和EXEC命令。</p>
+<ul>
+<li>MULTI命令：表示一系列原子性操作的开始。收到这个命令后，Redis就知道，接下来再收到的命令需要放到一个内部队列中，后续一起执行，保证原子性。</li>
+<li>EXEC命令：表示一系列原子性操作的结束。一旦Redis收到了这个命令，就表示所有要保证原子性的命令操作都已经发送完成了。此时，Redis开始执行刚才放到内部队列中的所有命令操作。</li>
+</ul>
+<p>以保存设备状态信息的需求为例，我们执行下面的代码，把设备在2020年8月3日9时5分的温度，分别用HSET命令和ZADD命令写入Hash集合和Sorted Set集合。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; MULTI</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; HSET device:temperature 202008030911 26.8</span><br><span class="line">QUEUED</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; ZADD device:temperature 202008030911 26.8</span><br><span class="line">QUEUED</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; EXEC</span><br><span class="line">1) (integer) 1</span><br><span class="line">2) (integer) 1</span><br></pre></td></tr></table></figure>
+<p>可以看到，首先，Redis收到了客户端执行的MULTI命令。然后，客户端再执行HSET和ZADD命令后，Redis返回的结果为“QUEUED”，表示这两个命令暂时入队，先不执行；执行了EXEC命令后，HSET命令和ZADD命令才真正执行，并返回成功结果（结果值为1）。<br>存取的问题解决了，下边需要解决聚合计算的问题，如果把数据读到客户端再计算，大量数据在Redis实例和客户端间频繁传输，这会和其他操作命令竞争网络资源，导致其他操作变慢。</p>
+<h3 id="2-14-3-基于RedisTimeSeries模块保存时间序列数据"><a href="#2-14-3-基于RedisTimeSeries模块保存时间序列数据" class="headerlink" title="2.14.3 基于RedisTimeSeries模块保存时间序列数据"></a>2.14.3 基于RedisTimeSeries模块保存时间序列数据</h3><p>RedisTimeSeries是Redis的一个扩展模块。它专门面向时间序列数据提供了数据类型和访问接口，并且支持在Redis实例上直接对数据进行按时间范围的聚合计算。<br>因为RedisTimeSeries不属于Redis的内建功能模块，在使用时，我们需要先把它的源码单独编译成动态链接库redistimeseries.so，再使用loadmodule命令进行加载，如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loadmodule redistimeseries.so</span><br></pre></td></tr></table></figure>
+<p>当用于时间序列数据存取时，RedisTimeSeries的操作主要有5个：</p>
+<ul>
+<li>用TS.CREATE命令创建时间序列数据集合；</li>
+<li>用TS.ADD命令插入数据；</li>
+<li>用TS.GET命令读取最新数据；</li>
+<li>用TS.MGET命令按标签过滤查询数据集合；</li>
+<li>用TS.RANGE支持聚合计算的范围查询。</li>
+</ul>
+<ol>
+<li>用TS.CREATE命令创建一个时间序列数据集合</li>
+</ol>
+<p>在TS.CREATE命令中，我们需要设置时间序列数据集合的key和数据的过期时间（以毫秒为单位）。此外，我们还可以为数据集合设置标签，来表示数据集合的属性。</p>
+<p>例如，我们执行下面的命令，创建一个key为device:temperature、数据有效期为600s的时间序列数据集合。也就是说，这个集合中的数据创建了600s后，就会被自动删除。最后，我们给这个集合设置了一个标签属性{device_id:1}，表明这个数据集合中记录的是属于设备ID号为1的数据。</p>
+<ol start="2">
+<li>用TS.ADD命令插入数据，用TS.GET命令读取最新数据</li>
+</ol>
+<p>可以用TS.ADD命令往时间序列集合中插入数据，包括时间戳和具体的数值，并使用TS.GET命令读取数据集合中的最新一条数据。</p>
+<p>例如，我们执行下列TS.ADD命令时，就往device:temperature集合中插入了一条数据，记录的是设备在2020年8月3日9时5分的设备温度；再执行TS.GET命令时，就会把刚刚插入的最新数据读取出来。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">TS.ADD device:temperature 1596416700 25.1</span><br><span class="line">1596416700</span><br><span class="line"></span><br><span class="line">TS.GET device:temperature </span><br><span class="line">25.1</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>用TS.MGET命令按标签过滤查询数据集合</li>
+</ol>
+<p>假设我们一共用4个集合为4个设备保存时间序列数据，设备的ID号是1、2、3、4，我们在创建数据集合时，把device_id设置为每个集合的标签。此时，我们就可以使用下列TS.MGET命令，以及FILTER设置（这个配置项用来设置集合标签的过滤条件），查询device_id不等于2的所有其他设备的数据集合，并返回各自集合中的最新的一条数据。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">TS.MGET FILTER device_id!=2 </span><br><span class="line">1) 1) <span class="string">&quot;device:temperature:1&quot;</span></span><br><span class="line">   2) (empty list or <span class="built_in">set</span>)</span><br><span class="line">   3) 1) (<span class="built_in">integer</span>) 1596417000</span><br><span class="line">      2) <span class="string">&quot;25.3&quot;</span></span><br><span class="line">2) 1) <span class="string">&quot;device:temperature:3&quot;</span></span><br><span class="line">   2) (empty list or <span class="built_in">set</span>)</span><br><span class="line">   3) 1) (<span class="built_in">integer</span>) 1596417000</span><br><span class="line">      2) <span class="string">&quot;29.5&quot;</span></span><br><span class="line">3) 1) <span class="string">&quot;device:temperature:4&quot;</span></span><br><span class="line">   2) (empty list or <span class="built_in">set</span>)</span><br><span class="line">   3) 1) (<span class="built_in">integer</span>) 1596417000</span><br><span class="line">      2) <span class="string">&quot;30.1&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>用TS.RANGE支持需要聚合计算的范围查询</li>
+</ol>
+<p>在对时间序列数据进行聚合计算时，我们可以使用TS.RANGE命令指定要查询的数据的时间范围，同时用AGGREGATION参数指定要执行的聚合计算类型。RedisTimeSeries支持的聚合计算类型很丰富，包括求均值（avg）、求最大&#x2F;最小值（max&#x2F;min），求和（sum）等。<br>例如，在执行下列命令时，我们就可以按照每180s的时间窗口，对2020年8月3日9时5分和2020年8月3日9时12分这段时间内的数据进行均值计算了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">TS.RANGE device:temperature 1596416700 1596417120 AGGREGATION avg 180000</span><br><span class="line">1) 1) (<span class="built_in">integer</span>) 1596416700</span><br><span class="line">   2) <span class="string">&quot;25.6&quot;</span></span><br><span class="line">2) 1) (<span class="built_in">integer</span>) 1596416880</span><br><span class="line">   2) <span class="string">&quot;25.8&quot;</span></span><br><span class="line">3) 1) (<span class="built_in">integer</span>) 1596417060</span><br><span class="line">   2) <span class="string">&quot;26.1&quot;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>与使用Hash和Sorted Set来保存时间序列数据相比，RedisTimeSeries是专门为时间序列数据访问设计的扩展模块，能支持在Redis实例上直接进行聚合计算，以及按标签属性过滤查询数据集合，当我们需要频繁进行聚合计算，以及从大量集合中筛选出特定设备或用户的数据集合时，RedisTimeSeries就可以发挥优势了。</p>
+</blockquote>
+<h2 id="2-15-消息队列的考验：Redis有哪些解决方案？"><a href="#2-15-消息队列的考验：Redis有哪些解决方案？" class="headerlink" title="2.15 消息队列的考验：Redis有哪些解决方案？"></a>2.15 消息队列的考验：Redis有哪些解决方案？</h2><h3 id="2-15-1-消息队列的消息存取需求"><a href="#2-15-1-消息队列的消息存取需求" class="headerlink" title="2.15.1 消息队列的消息存取需求"></a>2.15.1 消息队列的消息存取需求</h3><p>消息队列在存取消息时，必须要满足三个需求，分别是<strong>消息保序</strong>、<strong>处理重复的消息</strong>和<strong>保证消息可靠性</strong>。</p>
+<ol>
+<li>消息保序：所有消息要按生产者生产的顺序进行消费，乱序会导致业务逻辑错误</li>
+<li>重复消息处理：生产者尽量不产生重复的消息，每个消息可以使用一个唯一ID标识</li>
+<li>消息可靠性保证：如果消费者在处理消息的时候挂了，消费者重启后可以再次处理宕机时未处理完的消息。</li>
+</ol>
+<h3 id="2-15-2-基于List的消息队列解决方案"><a href="#2-15-2-基于List的消息队列解决方案" class="headerlink" title="2.15.2 基于List的消息队列解决方案"></a>2.15.2 基于List的消息队列解决方案</h3><p>使用redis中的list结构实现消息队列，首先依据list的先进先出等操作方式可以保序。<br>可以使用LPUSH生产消息，RPOP读出消息。<br>为了保证不重复，可以使用全局ID标识：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LPUSH mq <span class="string">&quot;101030001:stock:5&quot;</span> </span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262219692.png"></p>
+<p>但以上方案有个缺点，就是消费者什么时候读消息，如果使用RPOP，则需要一直轮询看是否有消息需要消费，可以使用BRPOP，阻塞读，则不需要定时轮询。</p>
+<p>如果消费者在读出消息后，处理时挂了，重启后则会丢失上次未处理完的消息，可以使用BRPOPLPUSH命令在读取消息时，备份到另一个list。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262219671.png"></p>
+<blockquote>
+<p>以上是一个消费者，一个生产者，如果消费者有多个，要分担处理生产者生产的消息，list类型不支持消费者组，无法实现，可以使用Streams数据类型。</p>
+</blockquote>
+<h3 id="2-15-3-基于Streams的消息队列解决方案"><a href="#2-15-3-基于Streams的消息队列解决方案" class="headerlink" title="2.15.3 基于Streams的消息队列解决方案"></a>2.15.3 基于Streams的消息队列解决方案</h3><p>Streams是Redis专门为消息队列设计的数据类型，它提供了丰富的消息队列操作命令。</p>
+<ul>
+<li>XADD：插入消息，保证有序，可以自动生成全局唯一ID；</li>
+<li>XREAD：用于读取消息，可以按ID读取数据；</li>
+<li>XREADGROUP：按消费组形式读取消息；</li>
+<li>XPENDING和XACK：XPENDING命令可以用来查询每个消费组内所有消费者已读取但尚未确认的消息，而XACK命令用于向消息队列确认消息处理已完成。</li>
+</ul>
+<p>执行下面的命令，就可以往名称为mqstream的消息队列中插入一条消息，消息的键是repo，值是5。其中，消息队列名称后面的<em>，表示让Redis为插入的数据自动生成一个全局唯一的ID，例如“1599203861727-0”。当然，我们也可以不用</em>，直接在消息队列名称后自行设定一个ID号，只要保证这个ID号是全局唯一的就行。不过，相比自行设定ID号，使用*会更加方便高效。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XADD mqstream * repo 5 </span><br><span class="line">&quot;1599203861727-0&quot;</span><br></pre></td></tr></table></figure>
+<p>消息的全局唯一ID由两部分组成，第一部分“1599203861727”是数据插入时，以毫秒为单位计算的当前服务器时间，第二部分表示插入消息在当前毫秒内的消息序号，这是从0开始编号的。例如，“1599203861727-0”就表示在“1599203861727”毫秒内的第1条消息。</p>
+<p>XREAD在读取消息时，可以指定一个消息ID，并从这个消息ID的下一条消息开始进行读取。<br>可以执行下面的命令，从ID号为1599203861727-0的消息开始，读取后续的所有消息（示例中一共3条）。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262215410.png"><br>消费者也可以在调用XRAED时设定block配置项，实现类似于BRPOP的阻塞读取操作。当消息队列中没有消息时，一旦设置了block配置项，XREAD就会阻塞，阻塞的时长可以在block配置项进行设置。</p>
+<p>Streams本身可以使用XGROUP创建消费组，创建消费组之后，Streams可以使用XREADGROUP命令让消费组内的消费者读取消息，<br>执行下面的命令，创建一个名为group1的消费组，这个消费组消费的消息队列是mqstream。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XGROUP create mqstream group1 0 </span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+<p>再执行一段命令，让group1消费组里的消费者consumer1从mqstream中读取所有消息，其中，命令最后的参数“&gt;”，表示从第一条尚未被消费的消息开始读取。因为在consumer1读取消息前，group1中没有其他消费者读取过消息，所以，consumer1就得到mqstream消息队列中的所有消息了（一共4条）。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262215388.png"></p>
+<p>需要注意的是，消息队列中的消息一旦被消费组里的一个消费者读取了，就不能再被该消费组内的其他消费者读取了。比如说，我们执行完刚才的XREADGROUP命令后，再执行下面的命令，让group1内的consumer2读取消息时，consumer2读到的就是空值，因为消息已经被consumer1读取完了，如下所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262216440.png"><br>使用消费组的目的是让组内的多个消费者共同分担读取消息，所以，我们通常会让每个消费者读取部分消息，从而实现消息读取负载在多个消费者间是均衡分布的。例如，我们执行下列命令，让group2中的consumer1、2、3各自读取一条消息。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262217635.png"><br>为了保证消费者在发生故障或宕机再次重启后，仍然可以读取未处理完的消息，Streams会自动使用内部队列（也称为PENDING List）留存消费组里每个消费者读取的消息，直到消费者使用XACK命令通知Streams“消息已经处理完成”。如果消费者没有成功处理消息，它就不会给Streams发送XACK命令，消息仍然会留存。此时，消费者可以在重启后，用XPENDING命令查看已读取、但尚未确认处理完成的消息。</p>
+<p>例如，我们来查看一下group2中各个消费者已读取、但尚未确认的消息个数。其中，XPENDING返回结果的第二、三行分别表示group2中所有消费者读取的消息最小ID和最大ID。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262217478.png"><br>如果我们还需要进一步查看某个消费者具体读取了哪些数据，可以执行下面的命令：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262217705.png"><br>可以看到，consumer2已读取的消息的ID是1599274912765-0。</p>
+<p>一旦消息1599274912765-0被consumer2处理了，consumer2就可以使用XACK命令通知Streams，然后这条消息就会被删除。当我们再使用XPENDING命令查看时，就可以看到，consumer2已经没有已读取、但尚未确认处理的消息了。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262218717.png"></p>
+<blockquote>
+<p>Streams是Redis 5.0专门针对消息队列场景设计的数据类型，如果你的Redis是5.0及5.0以后的版本，就可以考虑把Streams用作消息队列了。</p>
+</blockquote>
+<h3 id="2-15-4-总结"><a href="#2-15-4-总结" class="headerlink" title="2.15.4 总结"></a>2.15.4 总结</h3><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/202305262211832.png"></p>
+<p>于Redis是否适合做消息队列，业界一直是有争论的。很多人认为，要使用消息队列，就应该采用Kafka、RabbitMQ这些专门面向消息队列场景的软件，而Redis更加适合做缓存。<br>关于是否用Redis做消息队列的问题，不能一概而论，我们需要考虑业务层面的数据体量，以及对性能、可靠性、可扩展性的需求。如果分布式系统中的组件消息通信量不大，那么，Redis只需要使用有限的内存空间就能满足消息存储的需求，而且，Redis的高性能特性能支持快速的消息读写，不失为消息队列的一个好的解决方案。</p>
+<blockquote>
+<p>如果一个生产者发送给消息队列的消息，需要被多个消费者进行读取和处理，你会使用Redis的什么数据类型来解决这个问题？</p>
+</blockquote>
+<blockquote>
+<p>这种情况下，只能使用Streams数据类型来解决。使用Streams数据类型，创建多个消费者组，就可以实现同时消费生产者的数据。每个消费者组内可以再挂多个消费者分担读取消息进行消费，消费完成后，各自向Redis发送XACK，标记自己的消费组已经消费到了哪个位置，而且消费组之间互不影响。</p>
+</blockquote>
+<h2 id="2-16-异步机制：如何避免单线程模型的阻塞？"><a href="#2-16-异步机制：如何避免单线程模型的阻塞？" class="headerlink" title="2.16 异步机制：如何避免单线程模型的阻塞？"></a>2.16 异步机制：如何避免单线程模型的阻塞？</h2><h3 id="2-16-1-Redis实例有哪些阻塞点？"><a href="#2-16-1-Redis实例有哪些阻塞点？" class="headerlink" title="2.16.1 Redis实例有哪些阻塞点？"></a>2.16.1 Redis实例有哪些阻塞点？</h3><ul>
+<li>客户端：网络IO，键值对增删改查操作，数据库操作；</li>
+<li>磁盘：生成RDB快照，记录AOF日志，AOF日志重写；</li>
+<li>主从节点：主库生成、传输RDB文件，从库接收RDB文件、清空数据库、加载RDB文件；</li>
+<li>切片集群实例：向其他实例传输哈希槽信息，数据迁移。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221215100351.png"></p>
+<ol>
+<li><strong>集合全量查询和聚合操作</strong></li>
+</ol>
+<p>Redis中涉及集合的操作复杂度通常为O(N)，所以在对集合元素全量查询操作HGETALL、SMEMBERS，如集合的统计操作：求交、并和差集。</p>
+<ol start="2">
+<li><strong>bigkey删除操作</strong></li>
+</ol>
+<p>bigkey删除操作，需要释放占用的内存空间，为了更加高效地管理内存空间，在应用程序释放内存时，操作系统需要把释放掉的内存块插入一个空闲内存块的链表，以便后续进行管理和再分配。这个过程本身需要一定时间，而且会阻塞当前释放内存的应用程序，所以，如果一下子释放了大量内存，空闲内存块链表操作时间就会增加，相应地就会造成Redis主线程的阻塞。</p>
+<p>测试了不同元素数量的集合在进行删除操作时所消耗的时间，如下表所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221215100830.png"></p>
+<p>可以得出三个结论：</p>
+<ul>
+<li>当元素数量从10万增加到100万时，4大集合类型的删除时间的增长幅度从5倍上升到了近20倍；</li>
+<li>集合元素越大，删除所花费的时间就越长；</li>
+<li>当删除有100万个元素的集合时，最大的删除时间绝对值已经达到了1.98s（Hash类型）。Redis的响应时间一般在微秒级别，所以，一个操作达到了近2s，不可避免地会阻塞主线程。</li>
+</ul>
+<ol start="3">
+<li>清空数据库</li>
+</ol>
+<p>同第2个阻塞点，也需要释放大量内存</p>
+<ol start="4">
+<li>AOF日志同步写</li>
+</ol>
+<p>同步写，与磁盘交互，造成阻塞，一个同步写磁盘的操作耗时大约是1~2ms</p>
+<ol start="5">
+<li>主从节点交互阻塞</li>
+</ol>
+<p>对于从库来说，它在接收了RDB文件后，需要使用FLUSHDB命令清空当前数据库，这就正好撞上了刚才我们分析的第三个阻塞点。<br>从库在清空当前数据库后，还需要把RDB文件加载到内存，这个过程的快慢和RDB文件的大小密切相关，RDB文件越大，加载过程越慢，所以，加载RDB文件就成为了Redis的第五个阻塞点。</p>
+<ol start="6">
+<li>群实例交互时的阻塞点</li>
+</ol>
+<p>每个Redis实例上分配的哈希槽信息需要在不同实例间进行传递，同时，当需要进行负载均衡或者有实例增删时，数据会在不同的实例间进行迁移。不过，哈希槽的信息量不大，而数据迁移是渐进式执行的，所以，一般来说，这两类操作对Redis主线程的阻塞风险不大。<br>如果你使用了Redis Cluster方案，而且同时正好迁移的是bigkey的话，就会造成主线程的阻塞，因为Redis Cluster使用了同步迁移。</p>
+<p>总结下刚刚找到的五个阻塞点：</p>
+<ul>
+<li>集合全量查询和聚合操作；</li>
+<li>bigkey删除；</li>
+<li>清空数据库；</li>
+<li>AOF日志同步写；</li>
+<li>从库加载RDB文件。</li>
+</ul>
+<h3 id="2-16-2-那些阻塞点可以异步执行"><a href="#2-16-2-那些阻塞点可以异步执行" class="headerlink" title="2.16.2 那些阻塞点可以异步执行"></a>2.16.2 那些阻塞点可以异步执行</h3><p>对于Redis的五大阻塞点来说，除了“集合全量查询和聚合操作”和“从库加载RDB文件”，其他三个阻塞点涉及的操作都不在关键路径上，所以，我们可以使用Redis的异步子线程机制来实现bigkey删除，清空数据库，以及AOF日志同步写。</p>
+<h3 id="2-16-3-异步的子线程机制"><a href="#2-16-3-异步的子线程机制" class="headerlink" title="2.16.3 异步的子线程机制"></a>2.16.3 异步的子线程机制</h3><p>Redis主线程启动后，会使用操作系统提供的pthread_create函数创建3个子线程，分别由它们负责AOF日志写操作、键值对删除以及文件关闭的异步执行。<br>主线程通过一个链表形式的任务队列和子线程进行交互。当收到键值对删除和清空数据库的操作时，主线程会把这个操作封装成一个任务，放入到任务队列中，然后给客户端返回一个完成信息，表明删除已经完成。<br>但实际上，这个时候删除还没有执行，等到后台子线程从任务队列中读取任务后，才开始实际删除键值对，并释放相应的内存空间。因此，我们把这种异步删除也称为惰性删除（lazy free）。此时，删除或清空操作不会阻塞主线程，这就避免了对主线程的性能影响。</p>
+<p>和惰性删除类似，当AOF日志配置成everysec选项后，主线程会把AOF写日志操作封装成一个任务，也放到任务队列中。后台子线程读取任务后，开始自行写入AOF日志，这样主线程就不用一直等待AOF日志写完了。<br>下面这张图展示了Redis中的异步子线程执行机制：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/blog/20221215102523.png"></p>
+<p>异步的键值对删除和数据库清空操作是Redis 4.0后提供的功能，Redis也提供了新的命令来执行这两个操作。</p>
+<ul>
+<li>键值对删除：当你的集合类型中有大量元素（例如有百万级别或千万级别元素）需要删除时，我建议你使用UNLINK命令。</li>
+<li>清空数据库：可以在FLUSHDB和FLUSHALL命令后加上ASYNC选项，这样就可以让后台子线程异步地清空数据库，如下所示：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FLUSHDB ASYNC </span><br><span class="line">FLUSHALL AYSNC</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="2-18-波动的响应延迟：如何应对变慢的Redis？"><a href="#2-18-波动的响应延迟：如何应对变慢的Redis？" class="headerlink" title="2.18 波动的响应延迟：如何应对变慢的Redis？"></a>2.18 波动的响应延迟：如何应对变慢的Redis？</h2><h2 id="2-25-缓存异常（上）：如何解决缓存和数据库的数据不一致问题？"><a href="#2-25-缓存异常（上）：如何解决缓存和数据库的数据不一致问题？" class="headerlink" title="2.25 缓存异常（上）：如何解决缓存和数据库的数据不一致问题？"></a>2.25 缓存异常（上）：如何解决缓存和数据库的数据不一致问题？</h2><ul>
+<li>读写缓存</li>
+</ul>
+<p>针对读写缓存，如果要对数据进行增删改，需要在缓存中进行，采取写回策略，决定是否同步写回到数据库中。</p>
+<p>同步直写策略：写缓存时，也同步写数据库，缓存和数据库中的数据一致；<br>异步写回策略：写缓存时不同步写数据库，等到数据从缓存中淘汰时，再写回数据库。使用这种策略时，如果数据还没有写回数据库，缓存就发生了故障，那么，此时，数据库就没有最新的数据了。<br>需要保证写缓存和写数据库具有原子性，两者要不一起更新，要不都不更新，返回错误信息，进行重试。</p>
+<ul>
+<li>只读缓存</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230513191020.png"></p>
+<p>Redis当做读写缓存使用，删改操作同时操作数据库和缓存：<br>1、先更新数据库，再更新缓存：如果更新数据库成功，但缓存更新失败，此时数据库中是最新值，但缓存中是旧值，后续的读请求会直接命中缓存，得到的是旧值。<br>2、先更新缓存，再更新数据库：如果更新缓存成功，但数据库更新失败，此时缓存中是最新值，数据库中是旧值，后续读请求会直接命中缓存，但得到的是最新值，短期对业务影响不大。但是，一旦缓存过期或者满容后被淘汰，读请求就会从数据库中重新加载旧值到缓存中，之后的读请求会从缓存中得到旧值，对业务产生影响。</p>
+<p>针对这种其中一个操作可能失败的情况，也可以使用重试机制解决，把第二步操作放入到消息队列中，消费者从消息队列取出消息，再更新缓存或数据库，成功后把消息从消息队列删除，否则进行重试，以此达到数据库和缓存的最终一致。</p>
+<p>并发请求的情况。如果存在并发读写，也会产生不一致，分为以下4种场景。<br>1、先更新数据库，再更新缓存，写+读并发：线程A先更新数据库，之后线程B读取数据，此时线程B会命中缓存，读取到旧值，之后线程A更新缓存成功，后续的读请求会命中缓存得到最新值。这种场景下，线程A未更新完缓存之前，在这期间的读请求会短暂读到旧值，对业务短暂影响。<br>2、先更新缓存，再更新数据库，写+读并发：线程A先更新缓存成功，之后线程B读取数据，此时线程B命中缓存，读取到最新值后返回，之后线程A更新数据库成功。这种场景下，虽然线程A还未更新完数据库，数据库会与缓存存在短暂不一致，但在这之前进来的读请求都能直接命中缓存，获取到最新值，所以对业务没影响。<br>3、先更新数据库，再更新缓存，写+写并发：线程A和线程B同时更新同一条数据，更新数据库的顺序是先A后B，但更新缓存时顺序是先B后A，这会导致数据库和缓存的不一致。<br>4、先更新缓存，再更新数据库，写+写并发：与场景3类似，线程A和线程B同时更新同一条数据，更新缓存的顺序是先A后B，但是更新数据库的顺序是先B后A，这也会导致数据库和缓存的不一致。</p>
+<h2 id="2-26-缓存异常（下）：如何解决缓存雪崩、击穿、穿透难题？"><a href="#2-26-缓存异常（下）：如何解决缓存雪崩、击穿、穿透难题？" class="headerlink" title="2.26 缓存异常（下）：如何解决缓存雪崩、击穿、穿透难题？"></a>2.26 缓存异常（下）：如何解决缓存雪崩、击穿、穿透难题？</h2><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230513191846.png"></p>
+<p>所谓的服务降级，是指发生缓存雪崩时，针对不同的数据采取不同的处理方式。</p>
+<ul>
+<li>当业务应用访问的是非核心数据（例如电商商品属性）时，暂时停止从缓存中查询这些数据，而是直接返回预定义信息、空值或是错误信息；</li>
+<li>当业务应用访问的是核心数据（例如电商商品库存）时，仍然允许查询缓存，如果缓存缺失，也可以继续通过数据库读取。</li>
+</ul>
+<blockquote>
+<p>服务熔断、服务降级、请求限流这些方法都是属于“有损”方案，在保证数据库和整体系统稳定的同时，会对业务应用带来负面影响。例如使用服务降级时，有部分数据的请求就只能得到错误返回信息，无法正常处理。如果使用了服务熔断，那么，整个缓存系统的服务都被暂停了，影响的业务范围更大。而使用了请求限流机制后，整个业务系统的吞吐率会降低，能并发处理的用户请求会减少，会影响到用户体验。</p>
+</blockquote>
+<p>尽量使用预防式方案：</p>
+<ul>
+<li>针对缓存雪崩，合理地设置数据过期时间，以及搭建高可靠缓存集群；</li>
+<li>针对缓存击穿，在缓存访问非常频繁的热点数据时，不要设置过期时间；</li>
+<li>针对缓存穿透，提前在入口前端实现恶意请求检测，或者规范数据库的数据删除操作，避免误删除。</li>
+</ul>
+<h2 id="2-27-缓存被污染了，该怎么办？"><a href="#2-27-缓存被污染了，该怎么办？" class="headerlink" title="2.27 缓存被污染了，该怎么办？"></a>2.27 缓存被污染了，该怎么办？</h2><p>缓存污染：在一些场景下，有些数据被访问的次数非常少，甚至只会被访问一次。当这些数据服务完访问请求后，如果还继续留存在缓存中的话，就只会白白占用缓存空间。</p>
+<p>解决缓存污染问题的策略：</p>
+<ul>
+<li>volatile-random和allkeys-random这两种策略。它们都是采用随机挑选数据的方式：效果差</li>
+<li>volatile-ttl策略：设置过期时间，把数据中剩余存活时间最短的淘汰掉</li>
+<li>LRU策略：每个数据对应的RedisObject结构体中设置了lru字段，记录数据的访问时间戳，淘汰lru字段值最小的数据（访问时间最久的数据）</li>
+<li>LFU策略：除了记录时间戳，还记录访问频次，淘汰时先淘汰访问次数最低的数据，如果访问次数一样再淘汰具体上次访问时间更久的数据。</li>
+</ul>
+<p>Redis在实现LFU策略的时候，只是把原来24bit大小的lru字段，又进一步拆分成了两部分。</p>
+<ul>
+<li>ldt值：lru字段的前16bit，表示数据的访问时间戳；</li>
+<li>counter值：lru字段的后8bit，表示数据的访问次数。</li>
+</ul>
+<p>Redis只使用了8bit记录数据的访问次数，而8bit记录的最大值是255，这样可以吗？</p>
+<p>在计算次数时，不是线性递增，每当数据被访问一次时，首先，用计数器当前的值乘以配置项lfu_log_factor再加1，再取其倒数，得到一个p值；然后，把这个p值和一个取值范围在（0，1）间的随机数r值比大小，只有p值大于r值时，计数器才加1。<br>其中，baseval是计数器当前的值。计数器的初始值默认是5（由代码中的LFU_INIT_VAL常量设置），而不是0，这样可以避免数据刚被写入缓存，就因为访问次数少而被立即淘汰。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">double</span> r = (<span class="type">double</span>)rand()/RAND_MAX;</span><br><span class="line">...</span><br><span class="line"><span class="type">double</span> p = <span class="number">1.0</span>/(baseval*server.lfu_log_factor+<span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span> (r &lt; p) counter++;   </span><br></pre></td></tr></table></figure>
+<p>使用了这种计算规则后，我们可以通过设置不同的lfu_log_factor配置项，来控制计数器值增加的速度，避免counter值很快就到255了。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230513195542.png"></p>
+<p>可以看到，当lfu_log_factor取值为1时，实际访问次数为100K后，counter值就达到255了，无法再区分实际访问次数更多的数据了。而当lfu_log_factor取值为100时，当实际访问次数为10M时，counter值才达到255，此时，实际访问次数小于10M的不同数据都可以通过counter值区分出来。</p>
+<p>可以看到，当lfu_log_factor取值为10时，百、千、十万级别的访问次数对应的counter值已经有明显的区分了，所以，我们在应用LFU策略时，一般可以将lfu_log_factor取值为10。</p>
+<p>在一些场景下，有些数据在短时间内被大量访问后就不会再被访问了。那么再按照访问次数来筛选的话，这些数据会被留存在缓存中，但不会提升缓存命中率。为此，Redis在实现LFU策略时，还设计了一个counter值的衰减机制。</p>
+<p>简单来说，LFU策略使用衰减因子配置项lfu_decay_time来控制访问次数的衰减。LFU策略会计算当前时间和数据最近一次访问时间的差值，并把这个差值换算成以分钟为单位。然后，LFU策略再把这个差值除以lfu_decay_time值，所得的结果就是数据counter要衰减的值。</p>
+<p>简单举个例子，假设lfu_decay_time取值为1，如果数据在N分钟内没有被访问，那么它的访问次数就要减N。如果lfu_decay_time取值更大，那么相应的衰减值会变小，衰减效果也会减弱。所以，如果业务应用中有短时高频访问的数据的话，建议把lfu_decay_time值设置为1，这样一来，LFU策略在它们不再被访问后，会较快地衰减它们的访问次数，尽早把它们从缓存中淘汰出去，避免缓存污染。</p>
+<h2 id="2-28-Pika-如何基于SSD实现大容量Redis？"><a href="#2-28-Pika-如何基于SSD实现大容量Redis？" class="headerlink" title="2.28 Pika-如何基于SSD实现大容量Redis？"></a>2.28 Pika-如何基于SSD实现大容量Redis？</h2><p><a target="_blank" rel="noopener" href="https://github.com/OpenAtomFoundation/pika">Pika</a>一款可以基于SSD实现大容量存储的Redis<br>五大模块：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230514091839.png"></p>
+<h2 id="2-29-无锁的原子操作：Redis如何应对并发访问？"><a href="#2-29-无锁的原子操作：Redis如何应对并发访问？" class="headerlink" title="2.29 无锁的原子操作：Redis如何应对并发访问？"></a>2.29 无锁的原子操作：Redis如何应对并发访问？</h2><p>Reids实现原子操作的两种方法：</p>
+<ol>
+<li>把多个操作在Redis中实现成一个操作，也就是单命令操作；</li>
+<li>把多个操作写到一个Lua脚本中，以原子性方式执行单个Lua脚本。</li>
+</ol>
+<ul>
+<li><p>示例1：对某数据进行加减</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">current = GET(id)</span><br><span class="line">current--</span><br><span class="line">SET(id, current)</span><br></pre></td></tr></table></figure>
+<p>以上使用三个语句实现，在并发场景下无法保证原子性，可以使用加减操作的命令INCR&#x2F;DECR。</p>
+</li>
+<li><p>示例2：通过lua脚本实现复杂的操作</p>
+</li>
+</ul>
+<p>下边设置每个IP地址1分钟以内，最多访问20次。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取ip对应的访问次数</span></span><br><span class="line">current = GET(ip)</span><br><span class="line"><span class="comment">//如果超过访问次数超过20次，则报错</span></span><br><span class="line">IF current != <span class="literal">NULL</span> AND current &gt; <span class="number">20</span> THEN</span><br><span class="line">    ERROR <span class="string">&quot;exceed 20 accesses per second&quot;</span></span><br><span class="line">ELSE</span><br><span class="line">    <span class="comment">//如果访问次数不足20次，增加一次访问计数</span></span><br><span class="line">    value = INCR(ip)</span><br><span class="line">    <span class="comment">//如果是第一次访问，将键值对的过期时间设置为60s后</span></span><br><span class="line">    IF value == <span class="number">1</span> THEN</span><br><span class="line">        EXPIRE(ip,<span class="number">60</span>)</span><br><span class="line">    END</span><br><span class="line">    <span class="comment">//执行其他操作</span></span><br><span class="line">    DO THINGS</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<p>客户端使用多线程访问，访问次数初始值为0，第一个线程执行了INCR(ip)操作后，第二个线程紧接着也执行了INCR(ip)，此时，ip对应的访问次数就被增加到了2，我们就无法再对这个ip设置过期时间了。这样就会导致，这个ip对应的客户端访问次数达到20次之后，就无法再进行访问了。<br>把访问次数加1和设置过期时间写入一个lua脚本执行，保证原子性，如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> current</span><br><span class="line">current = redis.call(<span class="string">&quot;incr&quot;</span>,KEYS[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">tonumber</span>(current) == <span class="number">1</span> <span class="keyword">then</span></span><br><span class="line">    redis.call(<span class="string">&quot;expire&quot;</span>,KEYS[<span class="number">1</span>],<span class="number">60</span>)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>脚本名称为lua.script，执行如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli  --<span class="built_in">eval</span> lua.script  keys , args</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以使用SCRIPT LOAD命令把 lua 脚本加载到 Redis 中，然后得到一个脚本唯一摘要值，再通过EVALSHA命令 + 脚本摘要值来执行脚本，这样可以避免每次发送脚本内容到 Redis，减少网络开销。</p>
+</blockquote>
+<h2 id="2-30-如何使用Redis实现分布式锁？"><a href="#2-30-如何使用Redis实现分布式锁？" class="headerlink" title="2.30 如何使用Redis实现分布式锁？"></a>2.30 如何使用Redis实现分布式锁？</h2><h3 id="2-30-1-基于单个Redis节点实现分布式锁"><a href="#2-30-1-基于单个Redis节点实现分布式锁" class="headerlink" title="2.30.1 基于单个Redis节点实现分布式锁"></a>2.30.1 基于单个Redis节点实现分布式锁</h3><ul>
+<li>加锁操作：</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230514095501.png"></p>
+<ul>
+<li>释放锁操作</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230514095635.png"></p>
+<ol>
+<li>加锁操作中包括了判断锁是否存在，为了实现原子性，可以使用SETNX命令，总体的加锁释放锁流程如下：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 加锁</span><br><span class="line">SETNX lock_key 1</span><br><span class="line">// 业务逻辑</span><br><span class="line">DO THINGS</span><br><span class="line">// 释放锁</span><br><span class="line">DEL lock_key</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>为了防止客户端出错退出，导致长期占用锁，加锁时可以设置过期时间，并且为了区分客户端，可以设置唯一标识：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 加锁, unique_value作为客户端唯一性的标识</span><br><span class="line">SET lock_key unique_value NX PX 10000</span><br></pre></td></tr></table></figure></li>
+<li>释放锁也需要根据客户端唯一标识释放，防止误释放，下边通过lua脚本实现原子性：</li>
+</ol>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//释放锁 比较unique_value是否相等，避免误释放</span><br><span class="line"><span class="keyword">if</span> redis.call(<span class="string">&quot;get&quot;</span>,KEYS[<span class="number">1</span>]) == ARGV[<span class="number">1</span>] <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> redis.call(<span class="string">&quot;del&quot;</span>,KEYS[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli  --<span class="built_in">eval</span>  unlock.script lock_key , unique_value </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-30-2-基于多个Redis节点实现高可靠的分布式锁"><a href="#2-30-2-基于多个Redis节点实现高可靠的分布式锁" class="headerlink" title="2.30.2 基于多个Redis节点实现高可靠的分布式锁"></a>2.30.2 基于多个Redis节点实现高可靠的分布式锁</h3><p>为了避免Redis实例故障而导致的锁无法工作的问题，Redis的开发者Antirez提出了分布式锁算法Redlock。<br>Redlock算法的基本思路，是让客户端和多个独立的Redis实例依次请求加锁，如果客户端能够和半数以上的实例成功地完成加锁操作，那么我们就认为，客户端成功地获得分布式锁了，否则加锁失败。这样一来，即使有单个Redis实例发生故障，因为锁变量在其它实例上也有保存，所以，客户端仍然可以正常地进行锁操作，锁变量并不会丢失。</p>
+<p>具体看下Redlock算法的执行步骤：</p>
+<ol>
+<li>第一步是，客户端获取当前时间。</li>
+<li>第二步是，客户端按顺序依次向N个Redis实例执行加锁操作。<blockquote>
+<p>这里的加锁操作和在单实例上执行的加锁操作一样，使用SET命令，带上NX，EX&#x2F;PX选项，以及带上客户端的唯一标识。当然，如果某个Redis实例发生故障了，为了保证在这种情况下，Redlock算法能够继续运行，我们需要给加锁操作设置一个超时时间。<br>如果客户端在和一个Redis实例请求加锁时，一直到超时都没有成功，那么此时，客户端会和下一个Redis实例继续请求加锁。加锁操作的超时时间需要远远地小于锁的有效时间，一般也就是设置为几十毫秒。</p>
+</blockquote>
+</li>
+<li>第三步是，一旦客户端完成了和所有Redis实例的加锁操作，客户端就要计算整个加锁过程的总耗时。</li>
+</ol>
+<p>客户端只有在满足下面的这两个条件时，才能认为是加锁成功：</p>
+<ul>
+<li>条件一：客户端从超过半数（大于等于 N&#x2F;2+1）的Redis实例上成功获取到了锁；</li>
+<li>条件二：客户端获取锁的总耗时没有超过锁的有效时间。</li>
+</ul>
+<p>在满足了这两个条件后，我们需要重新计算这把锁的有效时间，计算的结果是锁的最初有效时间减去客户端为获取锁的总耗时。如果锁的有效时间已经来不及完成共享数据的操作了，我们可以释放锁，以免出现还没完成数据操作，锁就过期了的情况。</p>
+<p>当然，如果客户端在和所有实例执行完加锁操作后，没能同时满足这两个条件，那么，客户端向所有Redis节点发起释放锁的操作。</p>
+<p>在Redlock算法中，释放锁的操作和在单实例上释放锁的操作一样，只要执行释放锁的Lua脚本就可以了。这样一来，只要N个Redis实例中的半数以上实例能正常工作，就能保证分布式锁的正常工作了。</p>
+<h2 id="2-31-事务机制：Redis能实现ACID属性吗？"><a href="#2-31-事务机制：Redis能实现ACID属性吗？" class="headerlink" title="2.31 事务机制：Redis能实现ACID属性吗？"></a>2.31 事务机制：Redis能实现ACID属性吗？</h2><p>事务的ACID属性：原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。</p>
+<h3 id="2-31-2-原子性"><a href="#2-31-2-原子性" class="headerlink" title="2.31.2 原子性"></a>2.31.2 原子性</h3><p>在Redis中使用MULTI和EXEC配合使用，完成事务的执行。<br>使用MULTI开启事务后，执行的命令都会暂存在队列中，知道执行EXEC指令，才会执行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#开启事务</span></span><br><span class="line">127.0.0.1:6379&gt; MULTI</span><br><span class="line">OK</span><br><span class="line"><span class="comment">#发送事务中的第一个操作，但是Redis不支持该命令，返回报错信息</span></span><br><span class="line">127.0.0.1:6379&gt; PUT a:stock 5</span><br><span class="line">(error) ERR unknown <span class="built_in">command</span> `PUT`, with args beginning with: `a:stock`, `5`, </span><br><span class="line"><span class="comment">#发送事务中的第二个操作，这个操作是正确的命令，Redis把该命令入队</span></span><br><span class="line">127.0.0.1:6379&gt; DECR b:stock</span><br><span class="line">QUEUED</span><br><span class="line"><span class="comment">#实际执行事务，但是之前命令有错误，所以Redis拒绝执行</span></span><br><span class="line">127.0.0.1:6379&gt; EXEC</span><br><span class="line">(error) EXECABORT Transaction discarded because of previous errors.</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在执行EXEC命令前，客户端发送的操作命令本身就有错误（比如语法错误，使用了不存在的命令），在命令入队时就被Redis实例判断出来了。</li>
+<li>事务操作入队时，命令和操作的数据类型不匹配，但Redis实例没有检查出错误。</li>
+</ul>
+<p>Redis对事务原子性属性的保证情况如下：</p>
+<ol>
+<li>命令入队时就报错，会放弃事务执行，保证原子性；</li>
+<li>命令入队时没报错，实际执行时报错，不保证原子性；</li>
+<li>EXEC命令执行时实例故障，如果开启了AOF日志，可以保证原子性。</li>
+</ol>
+<h3 id="2-31-3-一致性"><a href="#2-31-3-一致性" class="headerlink" title="2.31.3 一致性"></a>2.31.3 一致性</h3><ul>
+<li>命令入队时就报错</li>
+</ul>
+<p>事务本身就会被放弃执行，所以可以保证数据库的一致性。</p>
+<ul>
+<li>命令入队时没报错，实际执行时报错</li>
+</ul>
+<p>有错误的命令不会被执行，正确的命令可以正常执行，也不会改变数据库的一致性。</p>
+<ul>
+<li>EXEC命令执行时实例发生故障</li>
+</ul>
+<p>如果使用了RDB快照，因为RDB快照不会在事务执行时执行，所以，事务命令操作的结果不会被保存到RDB快照中，使用RDB快照进行恢复时，数据库里的数据也是一致的。<br>如果使用了AOF日志，而事务操作还没有被记录到AOF日志时，实例就发生了故障，那么，使用AOF日志恢复的数据库数据是一致的。如果只有部分操作被记录到了AOF日志，我们可以使用redis-check-aof清除事务中已经完成的操作，数据库恢复后也是一致的。</p>
+<h3 id="2-31-4-隔离性"><a href="#2-31-4-隔离性" class="headerlink" title="2.31.4 隔离性"></a>2.31.4 隔离性</h3><ul>
+<li>并发操作在EXEC命令前执行，此时，隔离性的保证要使用WATCH机制来实现，否则隔离性无法保证；</li>
+<li>并发操作在EXEC命令后执行，此时，隔离性可以保证。</li>
+</ul>
+<p>WATCH机制的作用是，在事务执行前，监控一个或多个键的值变化情况，当事务调用EXEC命令执行时，WATCH机制会先检查监控的键是否被其它客户端修改了。如果修改了，就放弃事务执行，避免事务的隔离性被破坏。然后，客户端可以再次执行事务，此时，如果没有并发修改事务数据的操作了，事务就能正常执行，隔离性也得到了保证。</p>
+<ul>
+<li>并发操作在EXEC前执行</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230515165039.png"></p>
+<ul>
+<li>并发操作在EXEC命令之后被服务器端接收并执行。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230515165123.png"></p>
+<h3 id="2-31-5-持久性"><a href="#2-31-5-持久性" class="headerlink" title="2.31.5 持久性"></a>2.31.5 持久性</h3><p>通过日志保证持久性，但是不管是RDB还是AOF都是会有一定的丢失，所以Redis事务的持久性得不到保证。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230515165344.png"></p>
+<h2 id="2-32-Redis主从同步与故障切换"><a href="#2-32-Redis主从同步与故障切换" class="headerlink" title="2.32 Redis主从同步与故障切换"></a>2.32 Redis主从同步与故障切换</h2><ul>
+<li><strong>主从数据不一致</strong></li>
+</ul>
+<p>主从库间的命令复制是异步进行的，所以在网络延迟过高的情况下就会导致客户端读取从库数据时出现不一致情况。<br>解决方法可以监控程序对比主从库复制进度，不让客户端从落后的从库中读取数据。</p>
+<ul>
+<li><strong>读到过期数据</strong></li>
+</ul>
+<p>Redis同时使用了两种策略来删除过期的数据，分别是惰性删除策略和定期删除策略。<br>惰性删除：就是只有客户端触发访问数据时，才会检查数据是否过期。<br>定期删除：Redis定期检查过期的数据，并进行删除。</p>
+<p>惰性删除和定期删除可以同时存在的，惰性删除可以尽量减少CPU资源的使用，但可能会遗留大量过期数在内存中，占用内存资源。</p>
+<blockquote>
+<p>Redis 3.2之前的版本，那么，从库在服务读请求时，并不会判断数据是否过期，而是会返回过期数据。在3.2版本后，Redis做了改进，如果读取的数据已经过期了，从库虽然不会删除，但是会返回空值，这就避免了客户端读到过期数据。所以，在应用主从集群时，尽量使用Redis 3.2及以上版本。</p>
+</blockquote>
+<p>Redis中设置过期时间的命令：</p>
+<ul>
+<li>EXPIRE和PEXPIRE：它们给数据设置的是从命令执行时开始计算的存活时间；</li>
+<li>EXPIREAT和PEXPIREAT：它们会直接把数据的过期时间设置为具体的一个时间点。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230515172414.png"></p>
+<p>在业务应用中可以尽量使用EXPIREAT&#x2F;PEXPIREAT命令，把数据的过期时间设置为具体的时间点，防止主从同步时在从库中执行命令延迟，导致EXPIRE命令设置的过期时间在从库中延后。</p>
+<ul>
+<li><strong>不合理配置项导致的服务挂掉</strong></li>
+</ul>
+<p><strong>protected-mode 配置项</strong>：这个配置项的作用是限定哨兵实例能否被其他服务器访问。当这个配置项设置为yes时，哨兵实例只能在部署的服务器本地进行访问。当设置为no时，其他服务器也可以访问这个哨兵实例。为了防止实例部署在不同的服务器上无法通信，此配置项建议设置为no。</p>
+<p><strong>cluster-node-timeout配置项</strong>：配置项设置了Redis Cluster中实例响应心跳消息的超时时间。<br>当我们在Redis Cluster集群中为每个实例配置了“一主一从”模式时，如果主实例发生故障，从实例会切换为主实例，受网络延迟和切换操作执行的影响，切换时间可能较长，就会导致实例的心跳超时（超出cluster-node-timeout）。实例超时后，就会被Redis Cluster判断为异常。而Redis Cluster正常运行的条件就是，有半数以上的实例都能正常运行。<br>如果执行主从切换的实例超过半数，而主从切换时间又过长的话，就可能有半数以上的实例心跳超时，从而可能导致整个集群挂掉。所以，我建议你将cluster-node-timeout调大些（例如10到20秒）。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230515172911.png"></p>
+<h2 id="2-33-脑裂：一次奇怪的数据丢失"><a href="#2-33-脑裂：一次奇怪的数据丢失" class="headerlink" title="2.33 脑裂：一次奇怪的数据丢失"></a>2.33 脑裂：一次奇怪的数据丢失</h2><p>脑裂就是指在主从集群中同时出现了两个主节点，他们都能接收写请求。脑裂最直接的影响就是客户端不知道应该往那个主节点写入数据。</p>
+<ul>
+<li>是否数据同步出现问题</li>
+</ul>
+<p>在主从集群中发生数据丢失，最常见的原因就是主库的数据还没有同步到从库，结果主库发生了故障，等从库升级为主库后，未同步的数据就丢失了。</p>
+<ul>
+<li>看客户端操作日志，发现脑裂现象</li>
+</ul>
+<p>在排查客户端操作日志时，发现有一个客户端在主从切换后的一段时间内，仍然和原主库通信，并没有和升级的新主库进行交互。这就相当于主从集群中同时有两个主库。</p>
+<ul>
+<li>原主库假故障导致的脑裂</li>
+</ul>
+<p>采用哨兵机制进行主从切换，在超过预设数量的哨兵实例和主库心跳超时，就会把主库判断为客观下线，然后开始执行切换操作，在主库发生某种问题时，无法响应哨兵的心跳，导致被判断为下线，然后就开始主从切换，后边主库问题恢复，又开始处理请求，就导致出现脑裂。如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230516094333.png"></p>
+<ul>
+<li>为什么脑裂导致了数据丢失</li>
+</ul>
+<p>在脑裂发生后，因为主从切换未完成时，旧主库在处理请求，当主从切换完成后，从库升级为新主库，哨兵就会让原主库执行slave of命令，和新主库重新进行全量同步。而在全量同步执行的最后阶段，原主库需要清空本地的数据，加载新主库发送的RDB文件，这样一来，原主库在主从切换期间保存的新写数据就丢失了。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230516094521.png"></p>
+<ul>
+<li>如何应对脑裂问题</li>
+</ul>
+<p>Redis提供了两个配置项来限制主库的请求处理，分别是min-slaves-to-write和min-slaves-max-lag。</p>
+<ul>
+<li>min-slaves-to-write：这个配置项设置了主库能进行数据同步的最少从库数量；</li>
+<li>min-slaves-max-lag：这个配置项设置了主从库间进行数据复制时，从库给主库发送ACK消息的最大延迟（以秒为单位）。</li>
+</ul>
+<p><strong>应对脑裂的方案：</strong> 可以把min-slaves-to-write和min-slaves-max-lag这两个配置项搭配起来使用，分别给它们设置一定的阈值，假设为N和T。这两个配置项组合后的要求是，主库连接的从库中至少有N个从库，和主库进行数据复制时的ACK消息延迟不能超过T秒，否则，主库就不会再接收客户端的请求了。<br>即使原主库是假故障，它在假故障期间也无法响应哨兵心跳，也不能和从库进行同步，自然也就无法和从库进行ACK确认了。这样一来，min-slaves-to-write和min-slaves-max-lag的组合要求就无法得到满足，原主库就会被限制接收客户端请求，客户端也就不能在原主库中写入新数据了。<br>等到新主库上线时，就只有新主库能接收和处理客户端请求，此时，新写的数据会被直接写到新主库中。而原主库会被哨兵降为从库，即使它的数据被清空了，也不会有新数据丢失。</p>
+<blockquote>
+<p>就是通过配置限制，可以防止出现两个主库在处理写请求。</p>
+</blockquote>
+<p><strong>配置示例：</strong> 假设我们将min-slaves-to-write设置为1，把min-slaves-max-lag设置为12s，把哨兵的down-after-milliseconds设置为10s，主库因为某些原因卡住了15s，导致哨兵判断主库客观下线，开始进行主从切换。同时，因为原主库卡住了15s，没有一个从库能和原主库在12s内进行数据复制，原主库也无法接收客户端请求了。这样一来，主从切换完成后，也只有新主库能接收请求，不会发生脑裂，也就不会发生数据丢失的问题了。</p>
+<p><strong>使用建议：</strong> 假设从库有K个，可以将min-slaves-to-write设置为K&#x2F;2+1（如果K等于1，就设为1），将min-slaves-max-lag设置为十几秒（例如10～20s），在这个配置下，如果有一半以上的从库和主库进行的ACK消息延迟超过十几秒，我们就禁止主库接收客户端写请求。</p>
+<p><strong>出错示例：</strong> 假设将 min-slaves-to-write 设置为 1，min-slaves-max-lag 设置为 15s，哨兵的 down-after-milliseconds 设置为 10s，哨兵主从切换需要 5s。主库因为某些原因卡住了 12s，此时，还会发生脑裂吗？主从切换完成后，数据会丢失吗？<br><strong>答：</strong> 主库卡住 12s，达到了哨兵设定的切换阈值，所以哨兵会触发主从切换。但哨兵切换的时间是 5s，也就是说哨兵还未切换完成，主库就会从阻塞状态中恢复回来，而且也没有触发 min-slaves-max-lag 阈值，所以主库在哨兵切换剩下的 3s 内，依旧可以接收客户端的写操作，如果这些写操作还未同步到从库，哨兵就把从库提升为主库了，那么此时也会出现脑裂的情况，之后旧主库降级为从库，重新同步新主库的数据，新主库也会发生数据丢失。</p>
+<blockquote>
+<p>但此方案也不是完全能保证数据不丢失，只能尽量减少数据的丢失。</p>
+</blockquote>
+<h2 id="2-35"><a href="#2-35" class="headerlink" title="2.35"></a>2.35</h2><h2 id="2-36-Redis支撑秒杀场景"><a href="#2-36-Redis支撑秒杀场景" class="headerlink" title="2.36 Redis支撑秒杀场景"></a>2.36 Redis支撑秒杀场景</h2><p>秒杀场景分为三个阶段：</p>
+<ol>
+<li>秒杀活动开始前</li>
+</ol>
+<p>用户会不断刷新商品详情页，这会导致详情页的瞬时请求量剧增。可以使用CDN或者浏览器缓存把静态化的元素缓存起来，这样大量的请求就不会到达服务器端。</p>
+<ol start="2">
+<li>秒杀开始</li>
+</ol>
+<p>会出现大量用户点击商品详情页，产生大量的并发请求查询库存，一旦某个请求查询到有库存，紧接着系统就会进行库存扣减。然后，系统会生成实际订单，并进行后续处理，例如订单支付和物流服务。如果请求查不到库存，就会返回。用户通常会继续点击秒杀按钮，继续查询库存。<br>因为每个秒杀请求都会查询库存，而请求只有查到有库存余量后，后续的库存扣减和订单处理才会被执行。所以，这个阶段中最大的并发压力都在库存查验操作上。<br>查验库存如果有剩余就会进行库存扣减，所以这两个操作是原子操作，否则会出现超售情况。后边的订单处理等一系列流程相对请求量就低很多，可以使用数据库。</p>
+<ol start="3">
+<li>秒杀结束</li>
+</ol>
+<p>可能还会有部分用户刷新商品详情页，尝试等待有其他用户退单。而已经成功下单的用户会刷新订单详情，跟踪订单的进展。不过，这个阶段中的用户请求量已经下降很多了，服务器端一般都能支撑。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230516103104.png"></p>
+<ul>
+<li><strong>Redis的哪些方法可以支撑秒杀场景？</strong></li>
+</ul>
+<ol>
+<li><strong>支持高并发：</strong> Redis本身高速处理请求的特性就可以支持高并发。而且，如果有多个秒杀商品，我们也可以使用切片集群，用不同的实例保存不同商品的库存，这样就避免，使用单个实例导致所有的秒杀请求都集中在一个实例上的问题了。不过，需要注意的是，当使用切片集群时，我们要先用CRC算法计算不同秒杀商品key对应的Slot，然后，我们在分配Slot和实例对应关系时，才能把不同秒杀商品对应的Slot分配到不同实例上保存。</li>
+<li><strong>保证库存查验和库存扣减原子性执行</strong>：可以使用Redis的原子操作或是分布式锁这两个功能特性来支撑了。</li>
+</ol>
+<ul>
+<li><strong>基于原子操作支撑秒杀场景</strong></li>
+</ul>
+<p>因为涉及库存查验和库存扣减两个操作，可以使用lua脚本实现原子操作。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#获取商品库存信息            </span><br><span class="line"><span class="keyword">local</span> counts = redis.call(<span class="string">&quot;HMGET&quot;</span>, KEYS[<span class="number">1</span>], <span class="string">&quot;total&quot;</span>, <span class="string">&quot;ordered&quot;</span>);</span><br><span class="line">#将总库存转换为数值</span><br><span class="line"><span class="keyword">local</span> total = <span class="built_in">tonumber</span>(counts[<span class="number">1</span>])</span><br><span class="line">#将已被秒杀的库存转换为数值</span><br><span class="line"><span class="keyword">local</span> ordered = <span class="built_in">tonumber</span>(counts[<span class="number">2</span>])  </span><br><span class="line">#如果当前请求的库存量加上已被秒杀的库存量仍然小于总库存量，就可以更新库存         </span><br><span class="line"><span class="keyword">if</span> ordered + k &lt;= total <span class="keyword">then</span></span><br><span class="line">    #更新已秒杀的库存量</span><br><span class="line">    redis.call(<span class="string">&quot;HINCRBY&quot;</span>,KEYS[<span class="number">1</span>],<span class="string">&quot;ordered&quot;</span>,k)                              </span><br><span class="line">    <span class="keyword">return</span> k;  </span><br><span class="line"><span class="keyword">end</span>               </span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>客户端会根据脚本的返回值，来确定秒杀是成功还是失败了。如果返回值是k，就是成功了；如果是0，就是失败。</p>
+<ul>
+<li><strong>基于分布式锁来支撑秒杀场景</strong></li>
+</ul>
+<p>使用分布式锁来支撑秒杀场景的具体做法是，先让客户端向Redis申请分布式锁，只有拿到锁的客户端才能执行库存查验和库存扣减。这样一来，大量的秒杀请求就会在争夺分布式锁时被过滤掉。而且，库存查验和扣减也不用使用原子操作了，因为多个并发客户端只有一个客户端能够拿到锁，已经保证了客户端并发访问的互斥性。</p>
+<p><strong>注意：</strong> 在使用分布式锁时，客户端需要先向Redis请求锁，只有请求到了锁，才能进行库存查验等操作，这样一来，客户端在争抢分布式锁时，大部分秒杀请求本身就会因为抢不到锁而被拦截。</p>
+<p><strong>建议</strong>：可以使用切片集群中的不同实例来分别保存分布式锁和商品库存信息。使用这种保存方式后，秒杀请求会首先访问保存分布式锁的实例。如果客户端没有拿到锁，这些客户端就不会查询商品库存，这就可以减轻保存库存信息实例的压力了。</p>
+<ul>
+<li><strong>秒杀场景的其他处理事项：</strong></li>
+</ul>
+<ol>
+<li><strong>前端静态页面的设计</strong>。秒杀页面上能静态化处理的页面元素，我们都要尽量静态化，这样可以充分利用CDN或浏览器缓存服务秒杀开始前的请求。</li>
+<li><strong>请求拦截和流控</strong>。在秒杀系统的接入层，对恶意请求进行拦截，避免对系统的恶意攻击，例如使用黑名单禁止恶意IP进行访问。如果Redis实例的访问压力过大，为了避免实例崩溃，我们也需要在接入层进行限流，控制进入秒杀系统的请求数量。</li>
+<li><strong>库存信息过期时间处理</strong>。Redis中保存的库存信息其实是数据库的缓存，为了避免缓存击穿问题，我们不要给库存信息设置过期时间。</li>
+<li><strong>数据库订单异常处理</strong>。如果数据库没能成功处理订单，可以增加订单重试功能，保证订单最终能被成功处理。</li>
+</ol>
+<h2 id="2-37"><a href="#2-37" class="headerlink" title="2.37"></a>2.37</h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/02%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%AE%9E%E8%B7%B5/">https://baihlup.github.io/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/02%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%AE%9E%E8%B7%B5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/tags/Redis/">Redis</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/01%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E8%AF%A6%E8%A7%A3/" title="Redis 核心技术详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Redis 核心技术详解</div></div></a></div><div class="next-post pull-right"><a href="/2024/03/04/220%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/223%20-%20Go%20&amp;%20Python/10%20-%20Go--%E8%BF%9B%E9%98%B6%E7%AF%87/" title="Go--进阶篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">Go--进阶篇</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/01%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E8%AF%A6%E8%A7%A3/" title="Redis 核心技术详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-10</div><div class="title">Redis 核心技术详解</div></div></a></div><div><a href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/242%20-%20MySQL/03%20-%20MySQL%20%E9%94%81%E6%9C%BA%E5%88%B6/" title="MySQL 锁机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-10</div><div class="title">MySQL 锁机制</div></div></a></div><div><a href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/242%20-%20MySQL/02%20-%20MySQL%20%E4%BA%8B%E5%8A%A1%E6%9C%BA%E5%88%B6/" title="MySQL 事务机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-10</div><div class="title">MySQL 事务机制</div></div></a></div><div><a href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/242%20-%20MySQL/01%20-%20MySQL%20%E7%B4%A2%E5%BC%95%E8%AF%A6%E8%A7%A3/" title="MySQL 索引详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-10</div><div class="title">MySQL 索引详解</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">个人笔记迁移中ing....</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AE%9E%E8%B7%B5%E7%AF%87"><span class="toc-number">1.</span> <span class="toc-text">2 实践篇</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-11%E2%80%9C%E4%B8%87%E9%87%91%E6%B2%B9%E2%80%9D%E7%9A%84String%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%A5%BD%E7%94%A8%E4%BA%86%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">2.11“万金油”的String，为什么不好用了？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-11-1-string%E7%B1%BB%E5%9E%8B%E5%A6%82%E4%BD%95%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E7%9A%84"><span class="toc-number">1.1.1.</span> <span class="toc-text">2.11.1 string类型如何保存数据的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-11-2-%E9%80%89%E6%8B%A9%E8%8A%82%E7%9C%81%E5%86%85%E5%AD%98%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.2.</span> <span class="toc-text">2.11.2 选择节省内存的数据结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-12-%E6%9C%89%E4%B8%80%E4%BA%BF%E4%B8%AAkeys%E8%A6%81%E7%BB%9F%E8%AE%A1%EF%BC%8C%E4%BD%BF%E7%94%A8Redis%E5%AE%9E%E7%8E%B0%E7%BB%9F%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">2.12 有一亿个keys要统计，使用Redis实现统计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-12-1-%E8%81%9A%E5%90%88%E7%BB%9F%E8%AE%A1"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.12.1 聚合统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-12-2-%E6%8E%92%E5%BA%8F%E7%BB%9F%E8%AE%A1"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.12.2 排序统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-12-3-%E4%BA%8C%E5%80%BC%E7%8A%B6%E6%80%81%E7%BB%9F%E8%AE%A1"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.12.3 二值状态统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-12-4-%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1"><span class="toc-number">1.2.4.</span> <span class="toc-text">2.12.4 基数统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-12-5-%E6%80%BB%E7%BB%93"><span class="toc-number">1.2.5.</span> <span class="toc-text">2.12.5 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-13-GEO%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E8%BF%98%E5%8F%AF%E4%BB%A5%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%90%97%EF%BC%9F"><span class="toc-number">1.3.</span> <span class="toc-text">2.13 GEO是什么？还可以定义新的数据类型吗？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-13-1-GEO%E7%9A%84%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84"><span class="toc-number">1.3.1.</span> <span class="toc-text">2.13.1 GEO的底层结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-13-2-GeoHash%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.13.2 GeoHash的编码方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-13-3-%E5%A6%82%E4%BD%95%E6%93%8D%E4%BD%9CGEO%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.3.3.</span> <span class="toc-text">2.13.3 如何操作GEO类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-13-4-%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-number">1.3.4.</span> <span class="toc-text">2.13.4 如何自定义数据类型？***</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-14-%E5%9C%A8Redis%E4%B8%AD%E4%BF%9D%E5%AD%98%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE"><span class="toc-number">1.4.</span> <span class="toc-text">2.14 在Redis中保存时间序列数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-14-1-%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE%E7%9A%84%E8%AF%BB%E5%86%99%E7%89%B9%E7%82%B9"><span class="toc-number">1.4.1.</span> <span class="toc-text">2.14.1 时间序列数据的读写特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-14-2-%E5%9F%BA%E4%BA%8EHash%E5%92%8CSorted-Set%E4%BF%9D%E5%AD%98%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE"><span class="toc-number">1.4.2.</span> <span class="toc-text">2.14.2 基于Hash和Sorted Set保存时间序列数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-14-3-%E5%9F%BA%E4%BA%8ERedisTimeSeries%E6%A8%A1%E5%9D%97%E4%BF%9D%E5%AD%98%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE"><span class="toc-number">1.4.3.</span> <span class="toc-text">2.14.3 基于RedisTimeSeries模块保存时间序列数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-15-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E8%80%83%E9%AA%8C%EF%BC%9ARedis%E6%9C%89%E5%93%AA%E4%BA%9B%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9F"><span class="toc-number">1.5.</span> <span class="toc-text">2.15 消息队列的考验：Redis有哪些解决方案？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-15-1-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E6%B6%88%E6%81%AF%E5%AD%98%E5%8F%96%E9%9C%80%E6%B1%82"><span class="toc-number">1.5.1.</span> <span class="toc-text">2.15.1 消息队列的消息存取需求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-15-2-%E5%9F%BA%E4%BA%8EList%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.5.2.</span> <span class="toc-text">2.15.2 基于List的消息队列解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-15-3-%E5%9F%BA%E4%BA%8EStreams%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.5.3.</span> <span class="toc-text">2.15.3 基于Streams的消息队列解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-15-4-%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.4.</span> <span class="toc-text">2.15.4 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-16-%E5%BC%82%E6%AD%A5%E6%9C%BA%E5%88%B6%EF%BC%9A%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E9%98%BB%E5%A1%9E%EF%BC%9F"><span class="toc-number">1.6.</span> <span class="toc-text">2.16 异步机制：如何避免单线程模型的阻塞？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-16-1-Redis%E5%AE%9E%E4%BE%8B%E6%9C%89%E5%93%AA%E4%BA%9B%E9%98%BB%E5%A1%9E%E7%82%B9%EF%BC%9F"><span class="toc-number">1.6.1.</span> <span class="toc-text">2.16.1 Redis实例有哪些阻塞点？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-16-2-%E9%82%A3%E4%BA%9B%E9%98%BB%E5%A1%9E%E7%82%B9%E5%8F%AF%E4%BB%A5%E5%BC%82%E6%AD%A5%E6%89%A7%E8%A1%8C"><span class="toc-number">1.6.2.</span> <span class="toc-text">2.16.2 那些阻塞点可以异步执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-16-3-%E5%BC%82%E6%AD%A5%E7%9A%84%E5%AD%90%E7%BA%BF%E7%A8%8B%E6%9C%BA%E5%88%B6"><span class="toc-number">1.6.3.</span> <span class="toc-text">2.16.3 异步的子线程机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-18-%E6%B3%A2%E5%8A%A8%E7%9A%84%E5%93%8D%E5%BA%94%E5%BB%B6%E8%BF%9F%EF%BC%9A%E5%A6%82%E4%BD%95%E5%BA%94%E5%AF%B9%E5%8F%98%E6%85%A2%E7%9A%84Redis%EF%BC%9F"><span class="toc-number">1.7.</span> <span class="toc-text">2.18 波动的响应延迟：如何应对变慢的Redis？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-25-%E7%BC%93%E5%AD%98%E5%BC%82%E5%B8%B8%EF%BC%88%E4%B8%8A%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">1.8.</span> <span class="toc-text">2.25 缓存异常（上）：如何解决缓存和数据库的数据不一致问题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-26-%E7%BC%93%E5%AD%98%E5%BC%82%E5%B8%B8%EF%BC%88%E4%B8%8B%EF%BC%89%EF%BC%9A%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E7%A9%BF%E9%80%8F%E9%9A%BE%E9%A2%98%EF%BC%9F"><span class="toc-number">1.9.</span> <span class="toc-text">2.26 缓存异常（下）：如何解决缓存雪崩、击穿、穿透难题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-27-%E7%BC%93%E5%AD%98%E8%A2%AB%E6%B1%A1%E6%9F%93%E4%BA%86%EF%BC%8C%E8%AF%A5%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-number">1.10.</span> <span class="toc-text">2.27 缓存被污染了，该怎么办？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-28-Pika-%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ESSD%E5%AE%9E%E7%8E%B0%E5%A4%A7%E5%AE%B9%E9%87%8FRedis%EF%BC%9F"><span class="toc-number">1.11.</span> <span class="toc-text">2.28 Pika-如何基于SSD实现大容量Redis？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-29-%E6%97%A0%E9%94%81%E7%9A%84%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C%EF%BC%9ARedis%E5%A6%82%E4%BD%95%E5%BA%94%E5%AF%B9%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE%EF%BC%9F"><span class="toc-number">1.12.</span> <span class="toc-text">2.29 无锁的原子操作：Redis如何应对并发访问？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-30-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%9F"><span class="toc-number">1.13.</span> <span class="toc-text">2.30 如何使用Redis实现分布式锁？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-30-1-%E5%9F%BA%E4%BA%8E%E5%8D%95%E4%B8%AARedis%E8%8A%82%E7%82%B9%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">1.13.1.</span> <span class="toc-text">2.30.1 基于单个Redis节点实现分布式锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-30-2-%E5%9F%BA%E4%BA%8E%E5%A4%9A%E4%B8%AARedis%E8%8A%82%E7%82%B9%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E9%9D%A0%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">1.13.2.</span> <span class="toc-text">2.30.2 基于多个Redis节点实现高可靠的分布式锁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-31-%E4%BA%8B%E5%8A%A1%E6%9C%BA%E5%88%B6%EF%BC%9ARedis%E8%83%BD%E5%AE%9E%E7%8E%B0ACID%E5%B1%9E%E6%80%A7%E5%90%97%EF%BC%9F"><span class="toc-number">1.14.</span> <span class="toc-text">2.31 事务机制：Redis能实现ACID属性吗？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-31-2-%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-number">1.14.1.</span> <span class="toc-text">2.31.2 原子性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-31-3-%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">1.14.2.</span> <span class="toc-text">2.31.3 一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-31-4-%E9%9A%94%E7%A6%BB%E6%80%A7"><span class="toc-number">1.14.3.</span> <span class="toc-text">2.31.4 隔离性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-31-5-%E6%8C%81%E4%B9%85%E6%80%A7"><span class="toc-number">1.14.4.</span> <span class="toc-text">2.31.5 持久性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-32-Redis%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E4%B8%8E%E6%95%85%E9%9A%9C%E5%88%87%E6%8D%A2"><span class="toc-number">1.15.</span> <span class="toc-text">2.32 Redis主从同步与故障切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-33-%E8%84%91%E8%A3%82%EF%BC%9A%E4%B8%80%E6%AC%A1%E5%A5%87%E6%80%AA%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%A2%E5%A4%B1"><span class="toc-number">1.16.</span> <span class="toc-text">2.33 脑裂：一次奇怪的数据丢失</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-35"><span class="toc-number">1.17.</span> <span class="toc-text">2.35</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-36-Redis%E6%94%AF%E6%92%91%E7%A7%92%E6%9D%80%E5%9C%BA%E6%99%AF"><span class="toc-number">1.18.</span> <span class="toc-text">2.36 Redis支撑秒杀场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-37"><span class="toc-number">1.19.</span> <span class="toc-text">2.37</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/261%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E6%9C%AA%E5%91%BD%E5%90%8D/" title="Untitled">Untitled</a><time datetime="2024-03-10T08:11:31.421Z" title="Created 2024-03-10 08:11:31">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/242%20-%20MySQL/03%20-%20MySQL%20%E9%94%81%E6%9C%BA%E5%88%B6/" title="MySQL 锁机制">MySQL 锁机制</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/242%20-%20MySQL/02%20-%20MySQL%20%E4%BA%8B%E5%8A%A1%E6%9C%BA%E5%88%B6/" title="MySQL 事务机制">MySQL 事务机制</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/242%20-%20MySQL/01%20-%20MySQL%20%E7%B4%A2%E5%BC%95%E8%AF%A6%E8%A7%A3/" title="MySQL 索引详解">MySQL 索引详解</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/240%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/243%20-%20Redis/01%20-%20Redis%20%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E8%AF%A6%E8%A7%A3/" title="Redis 核心技术详解">Redis 核心技术详解</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
