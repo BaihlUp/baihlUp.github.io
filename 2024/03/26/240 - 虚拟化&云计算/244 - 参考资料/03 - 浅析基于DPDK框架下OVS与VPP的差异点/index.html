@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【转载】浅析基于DPDK框架下OVS与VPP的差异点 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1 概述Data Plane Development Kit简称DPDK，是一套将从网卡收上来的数据包直接映射到用户空间的开发套件，基于此许多大公司都搭建了自己的业务应用框架，如虚拟交换机、虚拟路由器等。其中影响比较大的就是OVS和VPP，本文从这两个系统的性能表现及开发难度两个维度进行详细分析，给出作者对这两个业务框架的一点认识，希望能给学习这两个框架的人有所帮助。 1.1 DPDK简介DPDK">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【转载】浅析基于DPDK框架下OVS与VPP的差异点">
+<meta property="og:url" content="https://baihlup.github.io/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="1 概述Data Plane Development Kit简称DPDK，是一套将从网卡收上来的数据包直接映射到用户空间的开发套件，基于此许多大公司都搭建了自己的业务应用框架，如虚拟交换机、虚拟路由器等。其中影响比较大的就是OVS和VPP，本文从这两个系统的性能表现及开发难度两个维度进行详细分析，给出作者对这两个业务框架的一点认识，希望能给学习这两个框架的人有所帮助。 1.1 DPDK简介DPDK">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg">
+<meta property="article:published_time" content="2024-03-26T00:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-28T06:20:15.460Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="DPDK">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【转载】浅析基于DPDK框架下OVS与VPP的差异点',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-28 06:20:15'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">12</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">【转载】浅析基于DPDK框架下OVS与VPP的差异点</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-03-26T00:00:00.000Z" title="Created 2024-03-26 00:00:00">2024-03-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-03-28T06:20:15.460Z" title="Updated 2024-03-28 06:20:15">2024-03-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%99%9A%E6%8B%9F%E5%8C%96-%E4%BA%91%E8%AE%A1%E7%AE%97/">虚拟化&amp;云计算</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="【转载】浅析基于DPDK框架下OVS与VPP的差异点"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h1><p>Data Plane Development Kit简称DPDK，是一套将从网卡收上来的数据包直接映射到用户空间的开发套件，基于此许多大公司都搭建了自己的业务应用框架，如虚拟交换机、虚拟路由器等。其中影响比较大的就是OVS和VPP，本文从这两个系统的性能表现及开发难度两个维度进行详细分析，给出作者对这两个业务框架的一点认识，希望能给学习这两个框架的人有所帮助。</p>
+<h2 id="1-1-DPDK简介"><a href="#1-1-DPDK简介" class="headerlink" title="1.1 DPDK简介"></a>1.1 DPDK简介</h2><p>DPDK原本是基于 Intel 处理器架构下，提供库函数和驱动支持用户空间高效数据包处理的开源套件，即DPDK绕过了系统的内核协议栈对报文的处理过程，报文的收发与处理在用户空间实现。因此对于内核而言，DPDK的工作进程就是一个普通的用户态进程。DPDK的编译、连接和加载方式也跟普通程序没有什么差别。DPDK的这种特性区别于以通用性设计为目的的Linux系统，DPDK专注于高性能的处理网络应用中的数据包。现在这个套件也支持ARM及Power 8。</p>
+<p>DPDK的典型框架如下图所示：</p>
+<p><img src="https://s.secrss.com/anquanneican/c26cd2d46122eeba33f9b520848368e0.jpg"></p>
+<p><em>图 1 DPDK架构简图</em></p>
+<p>从上图可以看出，DPDK将网卡收上来的报文跳过Linux Kernel，直接映射到用户空间并提供了库函数及驱动来支持用户进程对报文的控制。</p>
+<h2 id="1-2-OVS简介"><a href="#1-2-OVS简介" class="headerlink" title="1.2 OVS简介"></a>1.2 OVS简介</h2><p>OVS是Open vSwitch的简称，这是一个多核虚拟交换机平台框架，支持标准的管理接口，支持扩展的可编程接口，支持第三方的控制接入，开源Apache 2许可。</p>
+<p>OVS由 Nicira Networks开发，主要由可移植的C语言实现。OVS支持包括Xen&#x2F;XenServer、 KVM和VirtualBox等的多种Linux虚拟化技术。</p>
+<p>OVS主要用于虚拟机环境，作为一个虚拟交换机。在这种虚拟化的环境中，一个虚拟交换机主要有两个作用：传递虚拟机之间的流量，以及实现虚拟机和外界网络的通信。</p>
+<p>OVS内核模块实现了多个“DataPath”（类似于Bridge），每个都可以有多个“vPorts”（类似于桥内的Port）。每个DataPath也通过关联一下流表（flow table）来设置操作，而这些流表中的流都是用户空间在数据包头和元数据的基础上映射的关键信息，一般的操作都是将数据包转发到另一个vPort上。当一个数据包到达一个vPort，内核模块所做的处理是提取其流的关键信息并在流表中查找这些关键信息。当有一个匹配的流时它执行对应的操作。如果没有匹配，它会将数据包送到用户空间的处理队列中（作为处理的一部分，用户空间可能会设置一个流用于以后碰到相同类型的数据包可以在内核中执行操作）。下图为OVS的架构图：</p>
+<p><img src="https://s.secrss.com/anquanneican/f14ce7dd358d5a6539743b8215753ff8.jpg"></p>
+<p><em>图 2 OVS的架构图</em></p>
+<p>1. <strong>ovs-vswitchd模块</strong>：OVS守护进程，OVS的核心部件，实现交换功能，和Linux内核兼容模块一起，实现基于流的交换（flow-based switching）。它和上层 controller 通信遵从 OPENFLOW 协议，它与 ovsdb-server 通信使用 OVSDB 协议，它和内核模块通过netlink通信，它支持多个独立的 datapath，它通过更改flow table 实现了绑定和VLAN等功能。<br>2. <strong>ovsdb-server模块</strong>：轻量级的数据库服务，主要保存了整个OVS 的配置信息，包括Ports，交换内容，VLAN等等。ovs-vswitchd 会根据数据库中的配置信息处理。它与 manager 和 ovs-vswitchd 交换信息使用了OVSDB(JSON-RPC)的方式。<br>3. <strong>ovs-dpctl模块****：</strong>一个工具，用来配置交换机内核模块，可以控制转发规则<br>4. <strong>ovs-vsctl模块****：</strong>主要是获取或者更改ovs-vswitchd 的配置信息，此工具操作的时候会更新ovsdb-server 中的数据库。<br>5. <strong>ovs-appctl模块：</strong>主要是向OVS 守护进程发送命令的，一般用不上。<br>6. <strong>ovsdbmonitor模块：</strong>GUI 工具来显示ovsdb-server 中数据信息。<br>7. <strong>ovs-controller模块：</strong>一个简单的OpenFlow 控制器<br>8. <strong>ovs-ofctl模块：</strong>用来控制OVS 作为OpenFlow 交换机工作时候的流表内容。</p>
+<h2 id="1-3-VPP简介"><a href="#1-3-VPP简介" class="headerlink" title="1.3 VPP简介"></a>1.3 VPP简介</h2><p>VPP是Vector Packet Processing的简称。据传VPP是Cisco 2002年开发的商用代码。提到VPP，不得不提到FD.io。Linux基金会于2016年2月11号创建了FD.io项目。Cisco后来将VPP代码的开源版本加入了该项目，目前VPP已成为该项目的核心。VPP运行于用户空间，支持多种收包方式，这其中也包括DPDK。</p>
+<p>VPP有两个关键特性：</p>
+<p>框架可扩展。</p>
+<p>成熟的交换&#x2F;路由功能。</p>
+<p>VPP官方给出的特性列表如下：</p>
+<p><img src="https://s.secrss.com/anquanneican/46fb6b8b192d8d2ae9c62f29eb359b0d.jpg"></p>
+<p><em>图 3 VPP当前支持的特性列表</em></p>
+<p>从上图可以看出，VPP支持的特性非常丰富，包括典型的IPv4和IPv6协议栈，VPN、NAT，VxLAN等交换机和路由器具体的特性。</p>
+<p>而VPP是通过graph node串联起来形成一条datapath来处理报文，类似于freebsd的netgraph。通过插件的形式引入新的graph node或者重新排列报文的graph node。将插件添加到插件目录中，运行程序的时候就会自动加载插件。另外插件也可以根据硬件情况通过某个node直接连接硬件进行加速。VPP平台可以用于构建任何类型的报文处理应用。比如负载均衡、防火墙、IDS、主机栈。也可以是一个组合，比如给负载均衡添加一个vSwitch。其运行图如下：</p>
+<p><img src="https://s.secrss.com/anquanneican/1426ca576812f1b7bd5a2f410c7c28d9.jpg"></p>
+<p><em>图 4 VPP运行图</em></p>
+<h1 id="2-开发难度对比"><a href="#2-开发难度对比" class="headerlink" title="2 开发难度对比"></a>2 开发难度对比</h1><p>OVS和VPP都可以采用DPDK的收发包框架，那么两者对于开发人员来讲，如何上手呢？哪个更容易呢？</p>
+<h2 id="2-1-OVS简易开发流程"><a href="#2-1-OVS简易开发流程" class="headerlink" title="2.1 OVS简易开发流程"></a>2.1 OVS简易开发流程</h2><p>目前Ovs的最新发行版版本为v2.7.0，根据Ovs的官方文档，由于Qemu早期版本不支持vhost-usertype，所以qemu版本必须在v2.1以上。虽然qemu版本更新很快，但是我们测试机器采用的是Centos7.1系统，Centos官方升级包中支持的qemu版本较低，所以我们使用了符合要求的较低版本Qemuv2.2以防止出现新的问题。Qemu编译安装时间比较长，需要提前去qemu官网下载对应版本，并安装。</p>
+<p><strong>Step1:下载Ovs和Dpdk相关版本</strong></p>
+<p>wget<a target="_blank" rel="noopener" href="http://openvswitch.org/releases/openvswitch-2.5.0.tar.gz">http://openvswitch.org/releases/openvswitch-2.5.0.tar.gz</a><br>wget<a target="_blank" rel="noopener" href="http://www.dpdk.org/browse/dpdk/snapshot/dpdk-16.04.tar.gz">http://www.dpdk.org/browse/dpdk/snapshot/dpdk-16.04.tar.gz</a></p>
+<p><strong>Step2:清理环境，</strong>因为Ovs+Dpdk，需要Ovs在编译时link到Dpdk的lib库，所以如果环境原来已经安装有Ovs，也需要先卸载掉，重新编译安装。</p>
+<p><strong>Step3:编译Dpdk</strong></p>
+<p>修改配置文件config&#x2F;common_linuxapp，这里我们测试vhost模式，所以需要把下面两个配置项，配置为yes。<br>CONFIG_RTE_BUILD_COMBINE_LIBS&#x3D;y<br>CONFIG_RTE_LIBRTE_VHOST&#x3D;y</p>
+<p><strong>Step 4:安装Dpdk</strong></p>
+<p>新建一个安装目录 mkdir -p &#x2F;usr&#x2F;src&#x2F;dpdk<br>make installT&#x3D;x86_64-native-linuxapp-gcc DESTDIR&#x3D;&#x2F;usr&#x2F;src&#x2F;dpdk</p>
+<p><strong>Step 5:编译相关模块</strong></p>
+<p>cd &#x2F;home&#x2F;dpdk-16.04&#x2F;rte_vhost&#x2F;eventfd_link<br>make</p>
+<p><strong>Step 6:安装ovs</strong></p>
+<p>.&#x2F;boot.sh<br>.&#x2F;configure –with-dpdk&#x3D;&#x2F;home&#x2F; dpdk-16.04&#x2F;x86_64-native-linuxapp-gcc CFLAGS&#x3D;”-g -O2 -Wno-cast-align”<br>make &amp;&amp; make install</p>
+<p><strong>Step7:安装相关内核模块</strong></p>
+<p>modprobe uio<br>insmod &#x2F;home&#x2F;dpdk-16.04&#x2F;x86_64-native-linuxapp-gcc&#x2F;kmod&#x2F;igb_uio.ko<br>insmod &#x2F;home&#x2F;dpdk-16.04&#x2F;lib&#x2F;librte_vhost&#x2F;eventfd_link&#x2F;eventfd_link.ko</p>
+<h2 id="2-2-VPP简易开发流程"><a href="#2-2-VPP简易开发流程" class="headerlink" title="2.2 VPP简易开发流程"></a>2.2 VPP简易开发流程</h2><p>在本文中，三个系统命名csp2s22c03，csp2s22c04和net2s22c05使用。csp2s22c03安装了VPP 的系统用于转发数据包，而系统csp2s22c04和系统net2s22c05则用于传递流量。这三个系统都配备了英特尔®至强®处理器E5-2699 v4 @ 2.20 GHz，两个插槽（每个插槽22个内核），并运行64位Ubuntu * 16.04 LTS。英特尔®以太网聚合网络适配器XL710 10&#x2F;40 GbE用于连接这些系统。有关配置图，请参见图5和图6。</p>
+<p><img src="https://s.secrss.com/anquanneican/c1eab69ce87d34ab7bb5a03492b5405b.png"></p>
+<p><em>图 5 VPP在主机上运行，</em></p>
+<p>该主机通过40 GbE NIC连接到其他两个系统</p>
+<p><img src="https://s.secrss.com/anquanneican/6d74759f75d7873a7ddc225f34abc33a.png"></p>
+<p><em>图 6 TRex流量生成器将程序包发送到运行VPP的主机</em></p>
+<p><strong>&gt;&gt;&gt;</strong></p>
+<h3 id="2-2-1-生成FD-io-VPP二进制文件"><a href="#2-2-1-生成FD-io-VPP二进制文件" class="headerlink" title="2.2.1 生成FD.io VPP二进制文件"></a>2.2.1 生成FD.io VPP二进制文件</h3><p>本节中的说明描述了如何从FD.io构建VPP软件包。如果您想改用Debian * VPP软件包，请跳至下一部分。<br>使用中的管理员特权帐户csp2s22c03，我们将下载稳定版本的VPP（本教程中使用的版本为17.04），然后导航到该build-root目录以构建映像：</p>
+<p><img src="https://s.secrss.com/anquanneican/0ef8ffd7e87862a0f70f1f2a7278faab.png"></p>
+<p>要使用调试符号构建映像：</p>
+<p><img src="https://s.secrss.com/anquanneican/c57d27db8b8f750d5fb4026c5bc99fe1.png"></p>
+<p>配置VPP之后，可以fdio.1704使用src&#x2F;vpp&#x2F;conf&#x2F;startup.conf配置文件从目录运行VPP二进制文件：</p>
+<p><img src="https://s.secrss.com/anquanneican/57cf004ec77d48595bb9d0c25086b9bc.png"></p>
+<h3 id="2-2-2-编译Debian-VPP软件包"><a href="#2-2-2-编译Debian-VPP软件包" class="headerlink" title="2.2.2 编译Debian VPP软件包"></a>2.2.2 编译Debian VPP软件包</h3><p>如果您更喜欢使用Debian VPP软件包，请按照以下说明进行构建：<br><img src="https://s.secrss.com/anquanneican/785a00f051acf010645ad4cb26737bf3.png"></p>
+<p>在此输出中：</p>
+<ul>
+<li>vpp是数据包引擎</li>
+<li>vpp-api-java是Java 绑定模块</li>
+<li>vpp-api-lua是Lua 绑定模块</li>
+<li>vpp-api-python是Python 绑定模块</li>
+<li>vpp-dbg是VPP的调试符号版本</li>
+<li>vpp-dev是开发支持（标头和库）</li>
+<li>vpp-lib是VPP运行时库</li>
+<li>vpp-plugins是插件模块</li>
+</ul>
+<p>接下来，安装Debian VPP软件包。至少应安装VPP，vpp-lib和vpp-plugins软件包。我们将它们安装在机器上csp2s22c03：</p>
+<p><img src="https://s.secrss.com/anquanneican/8c48dd024bc345b5aa652a070ac35841.png"></p>
+<p>验证VPP软件包是否已成功安装：</p>
+<p><img src="https://s.secrss.com/anquanneican/c994f9663a374d59235094911382a803.png"></p>
+<h3 id="2-2-3-配置VPP"><a href="#2-2-3-配置VPP" class="headerlink" title="2.2.3 配置VPP"></a>2.2.3 配置VPP</h3><p>在安装过程中，将创建两个配置文件：</p>
+<p>&#x2F;etc&#x2F;sysctl.d&#x2F;80-vpp.conf和&#x2F;etc&#x2F;vpp&#x2F;startup.conf&#x2F;startup.conf。</p>
+<p>该&#x2F;etc&#x2F;sysctl.d&#x2F;80-vpp.conf配置文件用于建立庞大的网页。</p>
+<p>该&#x2F;etc&#x2F;vpp&#x2F;startup.conf&#x2F;startup.conf配置文件用于启动VPP。</p>
+<h1 id="3-性能对比"><a href="#3-性能对比" class="headerlink" title="3 性能对比"></a>3 性能对比</h1><p>熟悉了OVS和VPP各自的基本开发流程，那么对于数据包处理来讲，最关心的性能在这两个架构下有什么样的表现？</p>
+<h4 id="3-1-DPDK性能"><a href="#3-1-DPDK性能" class="headerlink" title="3.1 DPDK性能"></a>3.1 DPDK性能</h4><p>下图是DPDK官方网站上测试的原始DPDK的包转发性能：</p>
+<p><img src="https://s.secrss.com/anquanneican/3842bbf9446c5a981692899aa8424a3d.jpg"></p>
+<p>从上图我们可以看出DPDK在基于Intel Xeon处理器的E5-2695的表现还是非常不错的，物理网卡总吞吐为40G的情况下，64字节小包有不俗的表现。</p>
+<h2 id="3-2-OVS性能"><a href="#3-2-OVS性能" class="headerlink" title="3.2 OVS性能"></a>3.2 OVS性能</h2><p><img src="https://s.secrss.com/anquanneican/888f415619df67e6733aff2138c41cf2.png"></p>
+<p>intel的实验《Intel_ONP_Release_2.1_Performance_Test_Report_Rev1.0》，测出的数据和文档基本吻合。在ovs里配置流表和不配置流表，转发效果区别很大。默认流表：正常启动ovs，不做流表配置</p>
+<p>配置流表：ovs-ofctl del-flows br-bond_virt （删除默认流表）<br>ovs-ofctl add-flow br-bond_virt in_port&#x3D;1,dl_type&#x3D;0x800,idle_timeout&#x3D;0,action&#x3D;output:2<br>ovs-ofctl add-flow br-bond_virt in_port&#x3D;3,dl_type&#x3D;0x800,idle_timeout&#x3D;0,action&#x3D;output:1</p>
+<p>命令中的port编号解释：1代表dpdk物理口，2代表进入vm的tap&#x2F;vhostuser，3代表vm转出来的tap&#x2F;vhostuser，由于实验环境只有一个物理口，所以数据进出都是同一个物理口。<br>vm接收数据包实验，pc发包1400万pps</p>
+<p><strong>实验1</strong>：pc-&gt;nic-&gt;nic-&gt;ovs-&gt;tap-&gt;vm 配置流表和默认流表vm接收都是80万pps左右，差距不大<br><strong>实验2</strong>：pc-&gt;nic-&gt;nic-&gt;ovs+dpdk-&gt;vhostuser-&gt;vm 默认流表时，vm收包90万pps，配置流表600万pps<br>ovs+dpdk看转发效率可以使用ovs-appctl dpif-netdev&#x2F;pmd-stats-show，查看每个数据包的cpu周期，配置流表后，每个数据包大概是400个cpu周期，默认流表一般是几千个cpu周期。</p>
+<h2 id="3-3-VPP性能"><a href="#3-3-VPP性能" class="headerlink" title="3.3 VPP性能"></a>3.3 VPP性能</h2><p>下图是在Haswell x86 架构的E5-2698v3 2x16C 2.3GHz上测试，图中显示了12口10GE，16核，ipv4转发：</p>
+<p><img src="https://s.secrss.com/anquanneican/e6fbb61a9f6c87d6b34892803ad63169.jpg"></p>
+<h2 id="3-4-OVS和VPP性能对比"><a href="#3-4-OVS和VPP性能对比" class="headerlink" title="3.4 OVS和VPP性能对比"></a>3.4 OVS和VPP性能对比</h2><p><img src="https://s.secrss.com/anquanneican/d378d788c093729f1308fbe4a30ac48f.jpg"></p>
+<p><strong>从上图可以看出：</strong></p>
+<ol>
+<li>由于EMC的大小问题当流表超过8192时，OVS的扩展性就表现的不是很好了。</li>
+<li>经过NEANTC的调试，VPP接近线速。</li>
+<li>VPP架构实现了加速的承诺，vxLAN&#x2F;NSH在SFC的VTEP下。</li>
+<li>但由于样本采集有限，数据可能还有待进一步完善。</li>
+</ol>
+<h1 id="4-结论"><a href="#4-结论" class="headerlink" title="4 结论"></a>4 结论</h1><p><img src="https://s.secrss.com/anquanneican/d763cad91e447038968fedf575493b45.jpg"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/">https://baihlup.github.io/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DPDK/">DPDK</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/03/25/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/285%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20Linux%20RCU%20%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/" title="【转载】Linux RCU 原理剖析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">【转载】Linux RCU 原理剖析</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2024/03/10/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/242%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96/01%20-%20DPDK%20%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA/" title="DPDK 深入浅出"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-10</div><div class="title">DPDK 深入浅出</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">个人笔记迁移中ing....</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">1 概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-DPDK%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 DPDK简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-OVS%E7%AE%80%E4%BB%8B"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 OVS简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-VPP%E7%AE%80%E4%BB%8B"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 VPP简介</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%BC%80%E5%8F%91%E9%9A%BE%E5%BA%A6%E5%AF%B9%E6%AF%94"><span class="toc-number">2.</span> <span class="toc-text">2 开发难度对比</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-OVS%E7%AE%80%E6%98%93%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 OVS简易开发流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-VPP%E7%AE%80%E6%98%93%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 VPP简易开发流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-%E7%94%9F%E6%88%90FD-io-VPP%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 生成FD.io VPP二进制文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-%E7%BC%96%E8%AF%91Debian-VPP%E8%BD%AF%E4%BB%B6%E5%8C%85"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 编译Debian VPP软件包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-3-%E9%85%8D%E7%BD%AEVPP"><span class="toc-number">2.2.3.</span> <span class="toc-text">2.2.3 配置VPP</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="toc-number">3.</span> <span class="toc-text">3 性能对比</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-DPDK%E6%80%A7%E8%83%BD"><span class="toc-number">3.0.0.1.</span> <span class="toc-text">3.1 DPDK性能</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-OVS%E6%80%A7%E8%83%BD"><span class="toc-number">3.1.</span> <span class="toc-text">3.2 OVS性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-VPP%E6%80%A7%E8%83%BD"><span class="toc-number">3.2.</span> <span class="toc-text">3.3 VPP性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-OVS%E5%92%8CVPP%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="toc-number">3.3.</span> <span class="toc-text">3.4 OVS和VPP性能对比</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%BB%93%E8%AE%BA"><span class="toc-number">4.</span> <span class="toc-text">4 结论</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/" title="【转载】浅析基于DPDK框架下OVS与VPP的差异点">【转载】浅析基于DPDK框架下OVS与VPP的差异点</a><time datetime="2024-03-26T00:00:00.000Z" title="Created 2024-03-26 00:00:00">2024-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/25/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/285%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20Linux%20RCU%20%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/" title="【转载】Linux RCU 原理剖析">【转载】Linux RCU 原理剖析</a><time datetime="2024-03-25T00:00:00.000Z" title="Created 2024-03-25 00:00:00">2024-03-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/18/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/284%20-%20%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98/02%20-%20%E7%B3%BB%E7%BB%9F%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E8%AF%A6%E8%A7%A3/" title="系统性能调优详解">系统性能调优详解</a><time datetime="2024-03-18T00:00:00.000Z" title="Created 2024-03-18 00:00:00">2024-03-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/230%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/232%20-%20MySQL/03%20-%20MySQL%20%E9%94%81%E6%9C%BA%E5%88%B6/" title="MySQL 锁机制">MySQL 锁机制</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20Istio%20%E4%B8%AD%E7%9A%84%E6%B5%81%E9%87%8F%E5%8A%AB%E6%8C%81%E6%9C%BA%E5%88%B6/" title="Istio 中的流量劫持机制">Istio 中的流量劫持机制</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

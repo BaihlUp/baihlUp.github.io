@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Kubernetes中的Calico网络 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[toc] 1 介绍Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。下边实践一下Calico网络的两种模式：  IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发 BGP：直接  2 环境部署在Kuberntes环境里部署calico网络，下载calico.yaml安装脚本如下： 12345678910#!&#x2F;b">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes中的Calico网络">
+<meta property="og:url" content="https://baihlup.github.io/2023/09/18/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/241%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="[toc] 1 介绍Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。下边实践一下Calico网络的两种模式：  IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发 BGP：直接  2 环境部署在Kuberntes环境里部署calico网络，下载calico.yaml安装脚本如下： 12345678910#!&#x2F;b">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg">
+<meta property="article:published_time" content="2023-09-18T16:27:41.000Z">
+<meta property="article:modified_time" content="2024-03-28T06:20:15.460Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Calico">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2023/09/18/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/241%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kubernetes中的Calico网络',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-28 06:20:15'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">12</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Kubernetes中的Calico网络</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-09-18T16:27:41.000Z" title="Created 2023-09-18 16:27:41">2023-09-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-03-28T06:20:15.460Z" title="Updated 2024-03-28 06:20:15">2024-03-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%99%9A%E6%8B%9F%E5%8C%96-%E4%BA%91%E8%AE%A1%E7%AE%97/">虚拟化&amp;云计算</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Kubernetes中的Calico网络"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>[toc]</p>
+<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>Calico网络的大概思路，即不走Overlay网络，不引入另外的网络性能损耗，而是将转发全部用三层网络的路由转发来实现。<br>下边实践一下Calico网络的两种模式：</p>
+<ul>
+<li>IPIP：就是对IP的封装，通过tunnel的方式，进行路由转发</li>
+<li>BGP：直接</li>
+</ul>
+<h1 id="2-环境部署"><a href="#2-环境部署" class="headerlink" title="2 环境部署"></a>2 环境部署</h1><p>在Kuberntes环境里部署calico网络，下载<a target="_blank" rel="noopener" href="https://github.com/chronolaw/k8s_study/blob/master/calico/calico.yaml">calico.yaml</a><br>安装脚本如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#</span><br><span class="line"># wget https://projectcalico.docs.tigera.io/manifests/calico.yaml</span><br><span class="line"></span><br><span class="line"># preload cni calico</span><br><span class="line">docker pull calico/cni:v3.23.1</span><br><span class="line">docker pull calico/node:v3.23.1</span><br><span class="line">docker pull calico/kube-controllers:v3.23.1</span><br><span class="line"></span><br><span class="line">kubectl apply -f calico.yaml</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409142459.png" alt="20230409142459"></p>
+<h2 id="3-IPIP模式"><a href="#3-IPIP模式" class="headerlink" title="3 IPIP模式"></a>3 IPIP模式</h2><h3 id="3-1-测试环境"><a href="#3-1-测试环境" class="headerlink" title="3.1 测试环境"></a>3.1 测试环境</h3><p>为了模拟两个POD跨node通信，我们创建两个pod，分别部署在master和node节点。下边以两个nginx的pod为例：<br>在master节点上部署：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-master-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">nodeSelector:</span></span><br><span class="line">        <span class="attr">kubernetes.io/hostname:</span> <span class="string">baihl-master</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:alpine</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">      <span class="attr">tolerations:</span> </span><br><span class="line">      <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line">        <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line">        <span class="attr">operator:</span> <span class="string">Exists</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Pod中增加容忍master节点的node-role.kubernetes.io&#x2F;master:NoSchedule 污点，否则Pod无法在master节点上运行。</p>
+</blockquote>
+<p>node节点上也部署一下nginx，记得把tolerations删掉。</p>
+<p>查看两个pod的执行情况：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143036.png" alt="20230409143036"><br>两个pod分别运行在mster和node节点上，ip地址分别为10.10.40.129和10.10.194.134。</p>
+<p>在master节点上的pod1中执行ping node节点的pod2：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143451.png" alt="20230409143451"><br>网络互通性没有问题。</p>
+<h3 id="3-2-ping包网络转发"><a href="#3-2-ping包网络转发" class="headerlink" title="3.2 ping包网络转发"></a>3.2 ping包网络转发</h3><p>在master节点上的pod1怎么ping通的node节点上的pod2，分析整个网络转发过程，可以从头开始看，先看ping是怎么从pod1中出去的，在pod1中查看路由信息：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409143833.png" alt="20230409143833"><br>根据路由表信息，ping 10.10.194.134，应该匹配到第一条路由，去往任何网络都先到网关169.254.1.1，从eth0网卡出去。</p>
+<p>然后我们看下master节点上的路由信息：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144135.png" alt="20230409144135"><br>当数据包到达master节点时，会匹配到红色框住的路由，去往10.10.194.192&#x2F;26网段的数据包，都走到tunl0上，并且网关是192.168.170.138（node节点IP）。所以数据包就通过tunl0到达了node节点。</p>
+<p>数据包到达了node节点，看下node节点的路由信息：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409144703.png" alt="20230409144703"><br>数据包到达node节点后会匹配上上边红线框的路由，到达10.10.194.134的数据包都走calie1e27109044。<br>calie1e27109044是veth pair的一端，另一端就是10.10.194.134的pod2，可以验证下，在pod2中使用ethtool命令查看：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150453.png" alt="20230409150453"><br>在pod2中执行ethtool命令报错，原因应该是pod中没有此命令，或者执行权限不够。下边使用nsenter命令实现在主机上调试容器。步骤如下：</p>
+<ol>
+<li>首先获取pod所在容器的id</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150751.png" alt="20230409150751"></p>
+<ol start="2">
+<li>根据容器ID，查看容器进程</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409150912.png" alt="20230409150912"><br>注意：因为容器是运行在node节点上的，要在node节点上执行以上命令，可以看到获取到的PID为535135。</p>
+<ol start="3">
+<li>使用nsenter命令进入进程的名字空间</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@baihl-node:/home/baihl# nsenter -t 535135 -n</span><br><span class="line">root@baihl-node:/home/baihl# ethtool -S eth0</span><br><span class="line">NIC statistics:</span><br><span class="line">     peer_ifindex: 71</span><br></pre></td></tr></table></figure>
+<p>可以看到，pod2中eth0网卡的另一端设备号是71，在node节点上查看编号为71的网卡就是calie1e27109044：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409151347.png" alt="20230409151347"><br>到此为止，在node上的路由表明，发送到calie1e27109044的数据其实就是发送到pod2网卡中，ping包就到达了目的地。</p>
+<p>下边是整个网络的结构图：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153955.png" alt="20230409153955"></p>
+<p>在master节点进行抓包分析，ping的数据包：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409153349.png" alt="20230409153349"><br>打开上边的一个ICMP包，可以看到数据包有5层，其中有两个IP层，分别是pod之间的网络和主机之间的网络封装。</p>
+<h2 id="4-BGP模式"><a href="#4-BGP模式" class="headerlink" title="4 BGP模式"></a>4 BGP模式</h2><h3 id="4-1-测试环境"><a href="#4-1-测试环境" class="headerlink" title="4.1 测试环境"></a>4.1 测试环境</h3><p>在安装calico网络时，默认安装是IPIP网络。calico.yaml文件中，将CALICO_IPV4POOL_IPIP的值修改成 “off”，就能够替换成BGP网络。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CALICO_IPV4POOL_IPIP</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;off&quot;</span></span><br></pre></td></tr></table></figure>
+<p>修改完成后重新部署。<br>使用BGP模式后，首先变化是节点上不再有tunl0设备：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155716.png" alt="20230409155716"></p>
+<p>同样重新在master和node节点部署两个pod。如下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155352.png" alt="20230409155352"><br>两个pod的ip地址分别为10.10.40.129和10.10.194.128。<br>同样的操作在pod1 10.10.40.129中ping pod2的10.10.194.128：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155514.png" alt="20230409155514"></p>
+<h3 id="4-2-ping网络转发"><a href="#4-2-ping网络转发" class="headerlink" title="4.2 ping网络转发"></a>4.2 ping网络转发</h3><p>pod1中ping pod2首先pod1中的路由表：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409155805.png" alt="20230409155805"></p>
+<p>根据pod1中的路由信息，ping包通过eth0网卡到master节点。master节点上根据路由信息，到10.10.194.128的数据包匹配到下边红框中的路由，直接发送到了192.168.170.138（node节点），从ens33网卡出去。</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160033.png" alt="20230409160033"><br>node节点上的路由信息如下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160227.png" alt="20230409160227"><br>ping包到达node节点，匹配上红框中的路由信息，直接发送到了pod2的veth pair的一端，数据就直接到了pod2的网卡。<br>如果ping包回应pod1的 10.10.40.129，则在node节点上匹配到：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160444.png" alt="20230409160444"><br>直接到达了master节点192.168.170.137，后边的流程不再赘述。</p>
+<p>同样下表在master上抓包看一下：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409160906.png" alt="20230409160906"></p>
+<p>通过上边的流程发现，BGP的模式不再基于IPIP进行封装，也没有了tunl0设备做转发，而是通过路由表，直接转到了节点的网卡上转发出去。</p>
+<p>BGP模式下的整个网络的结构图：</p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230409161220.png" alt="20230409161220"></p>
+<h3 id="4-3-VXLAN模式"><a href="#4-3-VXLAN模式" class="headerlink" title="4.3 VXLAN模式"></a>4.3 VXLAN模式</h3><p>在IP层上边又包含了二层网路结构<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2023/20230414155625.png" alt="20230414155625"></p>
+<h2 id="5-两种模式对比"><a href="#5-两种模式对比" class="headerlink" title="5 两种模式对比"></a>5 两种模式对比</h2><p>IPIP网络：需要tunl0设备封装数据，形成隧道，承载流量，需要tunl0设备封装效率略低。<br>BGP模式：使用路由引导流量转发，比IPIP效率更高。</p>
+<p>本文参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/goldsunshine/p/10701242.html">https://www.cnblogs.com/goldsunshine/p/10701242.html</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2023/09/18/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/241%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/">https://baihlup.github.io/2023/09/18/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/241%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes%E4%B8%AD%E7%9A%84Calico%E7%BD%91%E7%BB%9C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Kubernetes/">Kubernetes</a><a class="post-meta__tags" href="/tags/Calico/">Calico</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/10/16/210%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/213%20-%20Go%20&amp;%20Python/01%20-%20Python--%E5%9F%BA%E7%A1%80%E7%AF%87/" title="Python编程语言--基础篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Python编程语言--基础篇</div></div></a></div><div class="next-post pull-right"><a href="/2023/09/16/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/241%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes-v1.26.1%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/" title="Kubernetes-v1.26.1部署指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">Kubernetes-v1.26.1部署指南</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/09/16/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&%E4%BA%91%E8%AE%A1%E7%AE%97/241%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Kubernetes-v1.26.1%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/" title="Kubernetes-v1.26.1部署指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-16</div><div class="title">Kubernetes-v1.26.1部署指南</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">32</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">个人笔记迁移中ing....</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">1 介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="toc-number">2.</span> <span class="toc-text">2 环境部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-IPIP%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">3 IPIP模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">2.1.1.</span> <span class="toc-text">3.1 测试环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ping%E5%8C%85%E7%BD%91%E7%BB%9C%E8%BD%AC%E5%8F%91"><span class="toc-number">2.1.2.</span> <span class="toc-text">3.2 ping包网络转发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-BGP%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">4 BGP模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">2.2.1.</span> <span class="toc-text">4.1 测试环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-ping%E7%BD%91%E7%BB%9C%E8%BD%AC%E5%8F%91"><span class="toc-number">2.2.2.</span> <span class="toc-text">4.2 ping网络转发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-VXLAN%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.2.3.</span> <span class="toc-text">4.3 VXLAN模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-number">2.3.</span> <span class="toc-text">5 两种模式对比</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/" title="【转载】浅析基于DPDK框架下OVS与VPP的差异点">【转载】浅析基于DPDK框架下OVS与VPP的差异点</a><time datetime="2024-03-26T00:00:00.000Z" title="Created 2024-03-26 00:00:00">2024-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/25/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/285%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20Linux%20RCU%20%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/" title="【转载】Linux RCU 原理剖析">【转载】Linux RCU 原理剖析</a><time datetime="2024-03-25T00:00:00.000Z" title="Created 2024-03-25 00:00:00">2024-03-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/18/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/284%20-%20%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98/02%20-%20%E7%B3%BB%E7%BB%9F%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E8%AF%A6%E8%A7%A3/" title="系统性能调优详解">系统性能调优详解</a><time datetime="2024-03-18T00:00:00.000Z" title="Created 2024-03-18 00:00:00">2024-03-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/230%20-%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AF%87%E7%AB%A0/232%20-%20MySQL/03%20-%20MySQL%20%E9%94%81%E6%9C%BA%E5%88%B6/" title="MySQL 锁机制">MySQL 锁机制</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20Istio%20%E4%B8%AD%E7%9A%84%E6%B5%81%E9%87%8F%E5%8A%AB%E6%8C%81%E6%9C%BA%E5%88%B6/" title="Istio 中的流量劫持机制">Istio 中的流量劫持机制</a><time datetime="2024-03-10T00:00:00.000Z" title="Created 2024-03-10 00:00:00">2024-03-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
