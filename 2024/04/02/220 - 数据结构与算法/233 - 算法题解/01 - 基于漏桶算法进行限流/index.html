@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基于漏桶算法进行限流 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1 速率限制OpenResty 官方的 lua-resty-limit-traffic 的模块，里面有三种限速的策略。 1.1 resty.limit.req 模块基于 漏桶 算法实现的请求速率限制。 1.2 resty.limit.count 模块基于 固定窗口 实现请求的速率限制，如 单位时间内确保累计的请求数量不超过一个极限值。 1.3 resty.limit.conn 模块提供请求并发级别">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于漏桶算法进行限流">
+<meta property="og:url" content="https://baihlup.github.io/2024/04/02/220%20-%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/233%20-%20%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/01%20-%20%E5%9F%BA%E4%BA%8E%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="1 速率限制OpenResty 官方的 lua-resty-limit-traffic 的模块，里面有三种限速的策略。 1.1 resty.limit.req 模块基于 漏桶 算法实现的请求速率限制。 1.2 resty.limit.count 模块基于 固定窗口 实现请求的速率限制，如 单位时间内确保累计的请求数量不超过一个极限值。 1.3 resty.limit.conn 模块提供请求并发级别">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg">
+<meta property="article:published_time" content="2024-04-02T00:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-02T05:04:25.092Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="算法题解">
+<meta property="article:tag" content="流量控制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2024/04/02/220%20-%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/233%20-%20%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/01%20-%20%E5%9F%BA%E4%BA%8E%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '基于漏桶算法进行限流',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-02 05:04:25'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">40</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">基于漏桶算法进行限流</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-04-02T00:00:00.000Z" title="Created 2024-04-02 00:00:00">2024-04-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-04-02T05:04:25.092Z" title="Updated 2024-04-02 05:04:25">2024-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="基于漏桶算法进行限流"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="1-速率限制"><a href="#1-速率限制" class="headerlink" title="1 速率限制"></a>1 速率限制</h1><p>OpenResty 官方的 lua-resty-limit-traffic 的模块，里面有三种限速的策略。</p>
+<h2 id="1-1-resty-limit-req-模块"><a href="#1-1-resty-limit-req-模块" class="headerlink" title="1.1 resty.limit.req 模块"></a>1.1 resty.limit.req 模块</h2><p>基于 漏桶 算法实现的请求速率限制。</p>
+<h2 id="1-2-resty-limit-count-模块"><a href="#1-2-resty-limit-count-模块" class="headerlink" title="1.2 resty.limit.count 模块"></a>1.2 resty.limit.count 模块</h2><p>基于 固定窗口 实现请求的速率限制，如 单位时间内确保累计的请求数量不超过一个极限值。</p>
+<h2 id="1-3-resty-limit-conn-模块"><a href="#1-3-resty-limit-conn-模块" class="headerlink" title="1.3 resty.limit.conn 模块"></a>1.3 resty.limit.conn 模块</h2><p>提供请求并发级别限制并根据额外延迟进行调整。</p>
+<h1 id="2-跨机器速率限制"><a href="#2-跨机器速率限制" class="headerlink" title="2 跨机器速率限制"></a>2 跨机器速率限制</h1><p>lua-resty-redis-ratelimit 通过把状态保存到 Redis，可实现多个Nginx示例状态共享，与 resty.limit.req 模块类似，也是基于漏桶算法对平均请求速率进行限制。</p>
+<h2 id="2-1-原理"><a href="#2-1-原理" class="headerlink" title="2.1 原理"></a>2.1 原理</h2><p>借助于 Redis Lua Script 机制 ，Redis 有一个支持写 Lua 脚本的功能，这个脚本能够让一些操作在 Redis 执行的时候保证原子性，依赖这个机制，把一次状态的变更用 Lua Script 就能够完全原子性地在 Redis 里面做完。<br>同时，该模块支持在整个集群层⾯禁⽌某个非法⽤用户一段时间，可实现全局自动拉⿊功能。因为是全局共享，一旦全网有一个客户触发了设置的请求频率限制，我们可以在整个集群内瞬间把他拉黑几个小时。<br>当然这个模块是有代价的，而且代价也比较大，因为 Nginx 和 Redis 交互需要网络 IO，会带来一定延迟开销，仅适合请求量不大，但需要非常精确限制全局请求速率或单位统计时间跨度非常大的场景。<br>当然，这个模块也可以做一些自己的优化，不一定所有的状态都需要跟 Redis 同步，可以根据自己的业务情况做一些局部计算，然后定时做全局同步，牺牲一些精确性和及时性，这些都可以去抉择，这边只是多提供了一个手段。</p>
+<p><strong>漏桶算法示意图：</strong></p>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240402111705.png"><br>如上图，一个水桶，水滴一滴一滴往下滴，我们希望水往下滴的速度尽可能是恒定的，这样下游能够承载的处理能力是比较健康的。</p>
+<h2 id="2-2-代码实现"><a href="#2-2-代码实现" class="headerlink" title="2.2 代码实现"></a>2.2 代码实现</h2><p>现在是每次来一个请求时在Redis中执行的计算，包括的传入参数如下：</p>
+<ul>
+<li>KEYS[1] ：请求唯一标识（如 客户端IP）</li>
+<li>ARGV[1]：限制速率 r&#x2F;s</li>
+<li>ARGV[2]：允许突发流量（延迟）</li>
+<li>ARGV[3]：当前时间</li>
+<li>ARGV[4]：恢复正常状态之前的延迟时间，在此期间，请求始终被拒绝（封禁时长）</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> key = KEYS[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">local</span> rate, burst = <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>]), <span class="built_in">tonumber</span>(ARGV[<span class="number">2</span>])</span><br><span class="line"><span class="keyword">local</span> now, duration = <span class="built_in">tonumber</span>(ARGV[<span class="number">3</span>]), <span class="built_in">tonumber</span>(ARGV[<span class="number">4</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> excess, last, forbidden = <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;GET&#x27;</span>, key)</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> res <span class="keyword">and</span> <span class="built_in">type</span>(res) == <span class="string">&quot;string&quot;</span> <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">local</span> v = cjson.decode(res)</span><br><span class="line">    <span class="keyword">if</span> v <span class="keyword">and</span> #v &gt; <span class="number">2</span> <span class="keyword">then</span></span><br><span class="line">        excess, last, forbidden = v[<span class="number">1</span>], v[<span class="number">2</span>], v[<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> forbidden == <span class="number">1</span> <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="number">3</span>, excess&#125; <span class="comment">-- FORBIDDEN</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">local</span> ms = <span class="built_in">math</span>.<span class="built_in">abs</span>(now - last)</span><br><span class="line">    excess = excess - rate * ms / <span class="number">1000</span> + <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> excess &lt; <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">        excess = <span class="number">0</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> excess &gt; burst <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">if</span> duration &gt; <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">            <span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;SET&#x27;</span>, key,</span><br><span class="line">                                    cjson.encode(&#123;excess, now, <span class="number">1</span>&#125;))</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">                <span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;EXPIRE&#x27;</span>, key, duration)</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">                <span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="number">2</span>, excess&#125; <span class="comment">-- BUSY</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;SET&#x27;</span>, key, cjson.encode(&#123;excess, now, <span class="number">0</span>&#125;))</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;EXPIRE&#x27;</span>, key, <span class="number">60</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> &#123;<span class="number">1</span>, excess&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>摘取以上实现中的核心代码：</strong></p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> ms = <span class="built_in">math</span>.<span class="built_in">abs</span>(now - last)</span><br><span class="line">excess = excess - rate * ms / <span class="number">1000</span> + <span class="number">1000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> excess &lt; <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">	excess = <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> excess &gt; burst <span class="keyword">then</span></span><br><span class="line">	<span class="keyword">if</span> duration &gt; <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">		<span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;SET&#x27;</span>, key,</span><br><span class="line">								cjson.encode(&#123;excess, now, <span class="number">1</span>&#125;))</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">			<span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">local</span> res = redis.<span class="built_in">pcall</span>(<span class="string">&#x27;EXPIRE&#x27;</span>, key, duration)</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">type</span>(res) == <span class="string">&quot;table&quot;</span> <span class="keyword">and</span> res.err <span class="keyword">then</span></span><br><span class="line">			<span class="keyword">return</span> &#123;err=res.err&#125;</span><br><span class="line">		<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &#123;<span class="number">2</span>, excess&#125; <span class="comment">-- BUSY</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>excess 表示上一次超出的水滴数（延迟通过），一开始是 0 。先计算 上次请求到当前请求的时间间隔 ms，单位为毫秒，<code>ms/1000</code>转换为 秒，<code>rate * ms / 1000</code> 表示上次请求到当前时间间隔水滴往下滴的数量。<code>excess - rate * ms / 1000</code> 就是当前剩下的水滴数量，如果大于 0，表示超过速率限制，如果 设置了burst（突发流量），则返回此请求的等待处理时间 <code>excess / rate</code> ，若 excess 超过了 burst 则直接返回 BUSY。<br>在<code>excess = excess - rate * ms / 1000 + 1000</code> 中 <code>+ 1000</code> 是为了定义一个极小速率 0.001r&#x2F;s，即极小的请求刻度是 0.001 个请求。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2024/04/02/220%20-%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/233%20-%20%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/01%20-%20%E5%9F%BA%E4%BA%8E%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81/">https://baihlup.github.io/2024/04/02/220%20-%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/233%20-%20%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/01%20-%20%E5%9F%BA%E4%BA%8E%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/">算法题解</a><a class="post-meta__tags" href="/tags/%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6/">流量控制</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/03/29/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/242%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96/03%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF%E7%AC%94%E8%AE%B0/" title="虚拟化技术笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">虚拟化技术笔记</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">40</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">个人笔记迁移中ing....</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E9%80%9F%E7%8E%87%E9%99%90%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">1 速率限制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-resty-limit-req-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 resty.limit.req 模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-resty-limit-count-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 resty.limit.count 模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-resty-limit-conn-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 resty.limit.conn 模块</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E8%B7%A8%E6%9C%BA%E5%99%A8%E9%80%9F%E7%8E%87%E9%99%90%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">2 跨机器速率限制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 代码实现</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/02/220%20-%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/233%20-%20%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/01%20-%20%E5%9F%BA%E4%BA%8E%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81/" title="基于漏桶算法进行限流">基于漏桶算法进行限流</a><time datetime="2024-04-02T00:00:00.000Z" title="Created 2024-04-02 00:00:00">2024-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/29/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/242%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96/03%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF%E7%AC%94%E8%AE%B0/" title="虚拟化技术笔记">虚拟化技术笔记</a><time datetime="2024-03-29T00:00:00.000Z" title="Created 2024-03-29 00:00:00">2024-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/29/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/04%20-%20DPDK%E4%B9%8B%E5%A4%9A%E9%98%9F%E5%88%97%E7%BD%91%E5%8D%A1%E6%B5%8B%E8%AF%95/" title="DPDK之多队列网卡测试">DPDK之多队列网卡测试</a><time datetime="2024-03-29T00:00:00.000Z" title="Created 2024-03-29 00:00:00">2024-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/26/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/244%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/03%20-%20%E6%B5%85%E6%9E%90%E5%9F%BA%E4%BA%8EDPDK%E6%A1%86%E6%9E%B6%E4%B8%8BOVS%E4%B8%8EVPP%E7%9A%84%E5%B7%AE%E5%BC%82%E7%82%B9/" title="【转载】浅析基于DPDK框架下OVS与VPP的差异点">【转载】浅析基于DPDK框架下OVS与VPP的差异点</a><time datetime="2024-03-26T00:00:00.000Z" title="Created 2024-03-26 00:00:00">2024-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/25/280%20-%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/285%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20Linux%20RCU%20%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/" title="【转载】Linux RCU 原理剖析">【转载】Linux RCU 原理剖析</a><time datetime="2024-03-25T00:00:00.000Z" title="Created 2024-03-25 00:00:00">2024-03-25</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
