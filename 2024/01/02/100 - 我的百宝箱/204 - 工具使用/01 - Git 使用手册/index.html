@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Git 使用手册 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0 参考资料 一文让你了解如何为 Git 设置代理  1 Git 基本使用1.1 配置 Git使用Git的第一件事就是设置你的名字和email,这些就是你在提交commit时的签名，每次提交记录里都会包含这些信息。使用git config命令进行配置： 12345678910git config --global user.name “BaihlUp”git config --global use">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 使用手册">
+<meta property="og:url" content="https://baihlup.github.io/2024/01/02/100%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/01%20-%20Git%20%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="0 参考资料 一文让你了解如何为 Git 设置代理  1 Git 基本使用1.1 配置 Git使用Git的第一件事就是设置你的名字和email,这些就是你在提交commit时的签名，每次提交记录里都会包含这些信息。使用git config命令进行配置： 12345678910git config --global user.name “BaihlUp”git config --global use">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg">
+<meta property="article:published_time" content="2024-01-02T00:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-27T08:22:35.435Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2024/01/02/100%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/01%20-%20Git%20%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Git 使用手册',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-05-27 08:22:35'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">43</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">36</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">14</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Git 使用手册</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-01-02T00:00:00.000Z" title="Created 2024-01-02 00:00:00">2024-01-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-05-27T08:22:35.435Z" title="Updated 2024-05-27 08:22:35">2024-05-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Git 使用手册"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="0-参考资料"><a href="#0-参考资料" class="headerlink" title="0 参考资料"></a>0 参考资料</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://ericclose.github.io/git-proxy-config.html">一文让你了解如何为 Git 设置代理</a></li>
+</ol>
+<h1 id="1-Git-基本使用"><a href="#1-Git-基本使用" class="headerlink" title="1 Git 基本使用"></a>1 Git 基本使用</h1><h2 id="1-1-配置-Git"><a href="#1-1-配置-Git" class="headerlink" title="1.1 配置 Git"></a>1.1 配置 Git</h2><p>使用Git的第一件事就是设置你的名字和email,这些就是你在提交commit时的签名，每次提交记录里都会包含这些信息。使用git config命令进行配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name “BaihlUp”</span><br><span class="line">git config --global user.email “2677443264.com”</span><br><span class="line">git config --global credential.helper store <span class="comment">#保存登陆信息，以后不用每次都输入密码</span></span><br><span class="line"><span class="built_in">cat</span> ~/.git-credentials <span class="comment">#登陆票证信息</span></span><br><span class="line">git config --global push.default <span class="string">&quot;current&quot;</span> <span class="comment">#设置每次默认push的分支为当前分支</span></span><br><span class="line"></span><br><span class="line">如果使用ssh则：ssh-keygen -t rsa -C <span class="string">&quot;邮箱&quot;</span></span><br><span class="line">[root@baihl testWaf]<span class="comment"># git push origin dev</span></span><br><span class="line">Username <span class="keyword">for</span> <span class="string">&#x27;https://github.com&#x27;</span>: BaihlUp</span><br><span class="line">Password <span class="keyword">for</span> <span class="string">&#x27;https://BaihlUp@github.com&#x27;</span>: 填Github Token</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-设置代理"><a href="#1-2-设置代理" class="headerlink" title="1.2 设置代理"></a>1.2 设置代理</h2><ul>
+<li>全局代理</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.proxy &lt;protocol&gt;://&lt;host&gt;:&lt;port&gt;</span><br><span class="line">git config --global http.proxy http://127.0.0.1:7890</span><br><span class="line">git config --global https.proxy http://127.0.0.1:7890</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>为指定域名设置代理<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.&lt;url&gt;.proxy &lt;protocol&gt;://&lt;host&gt;:&lt;port&gt;</span><br><span class="line"><span class="comment">#为指定域名gitHub.com设置代理</span></span><br><span class="line">git config --global http.https://github.com.proxy http://127.0.0.1:7890</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="2-Git-常用操作"><a href="#2-Git-常用操作" class="headerlink" title="2 Git 常用操作"></a>2 Git 常用操作</h1><h2 id="2-1-Git-常用命令"><a href="#2-1-Git-常用命令" class="headerlink" title="2.1 Git 常用命令"></a>2.1 Git 常用命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> url ：复制仓库</span><br><span class="line">git diff ：如果修改的文件没有加入缓存区，则显示出修改文件和缓存区的差异</span><br><span class="line">git add file1 file2 file3 ：把文件加入到缓存区</span><br><span class="line">git status</span><br><span class="line">git diff --cached ：查看缓存区和本地仓库的差异</span><br><span class="line">git commit -m “提交记录” ：提交缓存区的内容到本地仓库</span><br><span class="line">git commit -a -m <span class="string">&quot;add 3 files&quot;</span> ：直接把修改添加到缓存区并且提交</span><br><span class="line">git <span class="built_in">rm</span> ：删除文件后自动将已删除文件添加到缓存区</span><br><span class="line">git init ：初始化本地仓库</span><br><span class="line">git remote add origin 远程仓库地址</span><br><span class="line">git push -u origin master 推送本地仓库到远程仓库</span><br><span class="line">git remote show origin 显示远程仓库信息</span><br><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2-2-Git-分支操作"><a href="#2-2-Git-分支操作" class="headerlink" title="2.2 Git 分支操作"></a>2.2 Git 分支操作</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">git branch 分支名 ：创建分支</span><br><span class="line">git branch 分支1 分支2 ：基于分支2创建一个分支1</span><br><span class="line">git checkout -b 分支名 创建分支并切换到分支</span><br><span class="line">git merge -m <span class="string">&quot;合并记录&quot;</span> 分支名 合并分支</span><br><span class="line">git branch -d 分支名 删除指定分支</span><br><span class="line">git branch -d只能删除那些已经被当前分支的合并的分支. 如果你要强制删除某个分支的话就用</span><br><span class="line">git branch –D 强制删除某个分支</span><br><span class="line">git push origin --delete Chapater6 可以删除远程分支Chapater6</span><br><span class="line">git reset --hard HEAD 回到合并之前的状态</span><br><span class="line">git reset --hard ORIG_HEAD 撤销已经提交的合并</span><br><span class="line">git branch -f 分支 HEAD~1 把分支强制移动到HEAD的父节点</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-Git日志"><a href="#2-3-Git日志" class="headerlink" title="2.3 Git日志"></a>2.3 Git日志</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> 查看提交记录</span><br><span class="line">git <span class="built_in">log</span> --<span class="built_in">stat</span> 详细的提交记录</span><br><span class="line">不同的显示<span class="built_in">log</span>的方式：</span><br><span class="line">git <span class="built_in">log</span> --pretty=oneline</span><br><span class="line">git <span class="built_in">log</span> --pretty=short</span><br><span class="line">git <span class="built_in">log</span> --graph --pretty=oneline 显示提交线路图</span><br><span class="line">git <span class="built_in">log</span> --reverse 逆向显示所有<span class="built_in">log</span></span><br><span class="line">git <span class="built_in">log</span> --pretty=format:<span class="string">&#x27;%h : %s&#x27;</span> --topo-order --graph 按拓扑顺序显示（子提交在父提交前）</span><br><span class="line">git reset：恢复版本</span><br><span class="line">git diff 分支1 分支2 ：比较两个分支的差异</span><br><span class="line">git diff 分支名 ：查看当前分支和指定分支的差异</span><br><span class="line">git diff 分支名 文件名 ：查看当前分支指定文件和指定分支的差异</span><br><span class="line">git diff 分支名 --<span class="built_in">stat</span> ：统计两个分支那些文件被改动</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4-其他操作"><a href="#2-4-其他操作" class="headerlink" title="2.4 其他操作"></a>2.4 其他操作</h2><ul>
+<li>Git分布式工作流程（Git公共仓库）</li>
+</ul>
+<p>如果多人在同一台电脑上工作，仓库未与远程仓库关联，当前工作项目为&#x2F;home&#x2F;shiyanlou&#x2F;gitproject :<br>克隆本地仓库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp/</span><br><span class="line">git <span class="built_in">clone</span> /home/shiyanlou/gitproject myrepo 把本机的一个已有git仓库克隆过来</span><br><span class="line">如果在myrepo中做修改，并提交到本地仓库，如果把myrepo的修改同步到gitproject呢？</span><br><span class="line"><span class="built_in">cd</span> /home/shiyanlou/gitproject</span><br><span class="line">git pull /tmp/myhrepo master</span><br></pre></td></tr></table></figure>
+
+
+<p>如果经常修改远程分支，可以定义缩写：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote add myrepo /tmp/myrepo</span><br><span class="line">git config --get remote.origin.url 查看本地仓库的远程仓库地址</span><br></pre></td></tr></table></figure>
+
+
+<p>Git标签</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git tag 标签名 <span class="built_in">hash</span>值</span><br><span class="line">git tag -a stable-1 8c315325 -m <span class="string">&quot;stable-1&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>git 根据tag创建分支</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch &lt;new-branch-name&gt; &lt;tag-name&gt; 会根据tag创建新的分支</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>Git忽略到某些文件</li>
+</ul>
+<p>在项目的根目录下创建.gitignore文件，文件中以<code>#</code>开始的行为注释</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">foo.txt ：忽略掉文件名为foo.txt的文件</span><br><span class="line">*.html ：忽略掉所有生成的html文件</span><br><span class="line">!foo.html ：foo.html例外</span><br><span class="line">*.[oa] ：忽略掉所有的.o 和 .a文件</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>Git rebase操作<br>例如现在有个分支mywork，如果想让mywork分支合入远程origin，但是不带commit历史信息，可以使用git rebase操作如下：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout mywork</span><br><span class="line">git rebase origin</span><br></pre></td></tr></table></figure>
+
+<p>这个命令会把mywork分支里的每个提交取消掉，并且把他们临时保存为补丁（这些补丁存放在.git&#x2F;rebase目录中），然后把mywork分支更新到最新的origin分支，最后把保存的这些补丁应用到mywork分支上。<br>在rebase的过程中可能出现冲突，需要解决冲突，然后用git add命令去更新这些内容的索引，然后执行<br>git rebase –continue继续应用余下的补丁。如果想终止rebase的行动，可以执行git rebase –abort</p>
+<p>Git修复操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD^ 清空所有未提交的内容，不包括untracked files（未加入版本控制的文件）</span><br><span class="line">git checkout -- file 把file从HEAD中签出，并且把它恢复成未修改时的样子</span><br><span class="line">git revert HEAD 撤销最近的一个提交</span><br><span class="line">git commit --amend 修改最近一次提交的<span class="built_in">log</span>信息</span><br></pre></td></tr></table></figure>
+
+
+<p>维护GIT</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git gc 压缩历史信息节约磁盘和内存空间</span><br><span class="line">git fsck 运行一些仓库的一致性检查</span><br></pre></td></tr></table></figure>
+
+
+<p>找回丢失的对象</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git stash save <span class="string">&quot;message&quot;</span> 保存当前仓库未提交的改动</span><br><span class="line">git stash list 查看刚才保存的</span><br><span class="line">git stash clear 清空stash</span><br><span class="line">git fsck --lost-found 找回刚才的删除</span><br><span class="line">git show 哈希值 ：指定找回的哈希值，查看对应的内容</span><br><span class="line">git merge 哈希值 ：被找回的内容合并到当前分支</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">git branch -D cool_branch 删除分支</span><br><span class="line">git fsck --lost-found 找回刚才删除分支里面的提交对象</span><br><span class="line">git show 哈希值 ： 查看一个找到的对象的内容</span><br><span class="line">git rebase 哈希值 ：把对象的内容合并到当前分支</span><br><span class="line"></span><br><span class="line">git reset --hard HEAD^ ：恢复到上上次提交的状态</span><br><span class="line">git fsck --lost-found 把刚才的删除提交给找回来</span><br><span class="line">git merge 哈希值 ：把删除提价合并</span><br></pre></td></tr></table></figure>
+
+
+<p>创建子模块<br>在主仓下创建一个仓库，在主仓下执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add 子仓库路径 子仓库名</span><br></pre></td></tr></table></figure>
+
+<p>子模块会加入主仓下gitmodules文件中</p>
+<p>在主仓下更新子仓库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git whatchanged 每次修改的文件列表</span><br><span class="line">git whatchanged --<span class="built_in">stat</span> 每次修改的文件列表, 及文件修改的统计</span><br><span class="line">git show 显示最后一次的文件改变的具体内容</span><br><span class="line">git show -5 显示最后 5 次的文件改变的具体内容</span><br><span class="line">git show commitid 显示某个 commitid 改变的具体内容</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2024/01/02/100%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/01%20-%20Git%20%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/">https://baihlup.github.io/2024/01/02/100%20-%20%E6%88%91%E7%9A%84%E7%99%BE%E5%AE%9D%E7%AE%B1/204%20-%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/01%20-%20Git%20%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Git/">Git</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/01/04/250%20-%20%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;%E5%A4%A7%E6%95%B0%E6%8D%AE/258%20-%20%E5%A4%A7%E6%95%B0%E6%8D%AE/01%20-%20Flink%20%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/" title="Flink 基础教程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Flink 基础教程</div></div></a></div><div class="next-post pull-right"><a href="/2023/12/22/210%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/214%20-%20Java%20&amp;%20Lua/01%20-%20Java--%E5%9F%BA%E7%A1%80%E7%AF%87/" title="Java--基础篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">Java--基础篇</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">43</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">36</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">14</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">个人笔记迁移中ing....</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.</span> <span class="toc-text">0 参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Git-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">1 Git 基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E9%85%8D%E7%BD%AE-Git"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 配置 Git</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 设置代理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Git-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">2 Git 常用操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Git-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 Git 常用命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-Git-%E5%88%86%E6%94%AF%E6%93%8D%E4%BD%9C"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 Git 分支操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-Git%E6%97%A5%E5%BF%97"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 Git日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E5%85%B6%E4%BB%96%E6%93%8D%E4%BD%9C"><span class="toc-number">3.4.</span> <span class="toc-text">2.4 其他操作</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/05/27/000%20-%20Inbox/%E7%81%AB%E5%B1%B1%E4%BA%91waf/" title="Untitled">Untitled</a><time datetime="2024-05-27T08:22:35.435Z" title="Created 2024-05-27 08:22:35">2024-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/03/210%20-%20%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/217%20-%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/01%20-%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/" title="设计模式之设计原则">设计模式之设计原则</a><time datetime="2024-04-03T00:00:00.000Z" title="Created 2024-04-03 00:00:00">2024-04-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/02/220%20-%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/233%20-%20%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/01%20-%20%E5%9F%BA%E4%BA%8E%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81/" title="基于漏桶算法进行限流">基于漏桶算法进行限流</a><time datetime="2024-04-02T00:00:00.000Z" title="Created 2024-04-02 00:00:00">2024-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/29/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/242%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96/03%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF%E7%AC%94%E8%AE%B0/" title="虚拟化技术笔记">虚拟化技术笔记</a><time datetime="2024-03-29T00:00:00.000Z" title="Created 2024-03-29 00:00:00">2024-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/29/240%20-%20%E8%99%9A%E6%8B%9F%E5%8C%96&amp;%E4%BA%91%E8%AE%A1%E7%AE%97/249%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/04%20-%20DPDK%E4%B9%8B%E5%A4%9A%E9%98%9F%E5%88%97%E7%BD%91%E5%8D%A1%E6%B5%8B%E8%AF%95/" title="DPDK之多队列网卡测试">DPDK之多队列网卡测试</a><time datetime="2024-03-29T00:00:00.000Z" title="Created 2024-03-29 00:00:00">2024-03-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
