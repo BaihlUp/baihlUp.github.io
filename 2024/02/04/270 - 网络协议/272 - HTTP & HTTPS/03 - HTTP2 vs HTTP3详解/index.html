@@ -1,0 +1,325 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HTTP2 vs HTTP3详解 | 梦之痕</title><meta name="author" content="梦之痕"><meta name="copyright" content="梦之痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1 HTTP2 特性概览1.1 头部压缩在HTTP&#x2F;1中使用头部字段“Content-Encoding”指定Body的编码方式，比如用gzip压缩来节约带宽，但是报文的头部却被无视，没有针对优化手段。有时候，比如GET请求，Body很小，就几十字节，但头部字段却多达上百字节。 在HTTP&#x2F;2中使用头部压缩手段对头部进行优化，使用的是“HPACK”算法，在客户端和服务器两端建立“">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP2 vs HTTP3详解">
+<meta property="og:url" content="https://baihlup.github.io/2024/02/04/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/272%20-%20HTTP%20&%20HTTPS/03%20-%20HTTP2%20vs%20HTTP3%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="梦之痕">
+<meta property="og:description" content="1 HTTP2 特性概览1.1 头部压缩在HTTP&#x2F;1中使用头部字段“Content-Encoding”指定Body的编码方式，比如用gzip压缩来节约带宽，但是报文的头部却被无视，没有针对优化手段。有时候，比如GET请求，Body很小，就几十字节，但头部字段却多达上百字节。 在HTTP&#x2F;2中使用头部压缩手段对头部进行优化，使用的是“HPACK”算法，在客户端和服务器两端建立“">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg">
+<meta property="article:published_time" content="2024-02-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-10T01:40:39.753Z">
+<meta property="article:author" content="梦之痕">
+<meta property="article:tag" content="HTTP2">
+<meta property="article:tag" content="HTTP3">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://baihlup.github.io/2024/02/04/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/272%20-%20HTTP%20&amp;%20HTTPS/03%20-%20HTTP2%20vs%20HTTP3%E8%AF%A6%E8%A7%A3/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HTTP2 vs HTTP3详解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-10 01:40:39'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">43</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">15</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="梦之痕"><span class="site-name">梦之痕</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">HTTP2 vs HTTP3详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-02-04T16:00:00.000Z" title="Created 2024-02-04 16:00:00">2024-02-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-09-10T01:40:39.753Z" title="Updated 2024-09-10 01:40:39">2024-09-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">网络协议</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="HTTP2 vs HTTP3详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="1-HTTP2-特性概览"><a href="#1-HTTP2-特性概览" class="headerlink" title="1 HTTP2 特性概览"></a>1 HTTP2 特性概览</h1><h2 id="1-1-头部压缩"><a href="#1-1-头部压缩" class="headerlink" title="1.1 头部压缩"></a>1.1 头部压缩</h2><p>在HTTP&#x2F;1中使用头部字段“Content-Encoding”指定Body的编码方式，比如用gzip压缩来节约带宽，但是报文的头部却被无视，没有针对优化手段。有时候，比如GET请求，Body很小，就几十字节，但头部字段却多达上百字节。</p>
+<p>在HTTP&#x2F;2中使用头部压缩手段对头部进行优化，使用的是“HPACK”算法，在客户端和服务器两端建立“字典”，用索引号表示重复的字符串，还釆用哈夫曼编码来压缩整数和字符串，可以达到50%~90%的高压缩率。</p>
+<p>“HPACK”算法是专门为压缩HTTP头部定制的算法，与gzip、zlib等压缩算法不同，它是一个“有状态”的算法，需要客户端和服务器各自维护一份“索引表”，也可以说是“字典”（这有点类似brotli），压缩和解压缩就是查表和更新表的操作。<br>为了方便管理和压缩，HTTP&#x2F;2废除了原有的起始行概念，把起始行里面的请求方法、URI、状态码等统一转换成了头字段的形式，并且给这些“不是头字段的头字段”起了个特别的名字——“伪头字段”（pseudo-header fields）。<br>为了与“真头字段”区分开来，这些“伪头字段”会在名字前加一个“:”，比如“:authority” “:method” “:status”，分别表示的是域名、请求方法和状态码。<br>HTTP报文头全都是“Key-Value”形式的字段，于是HTTP&#x2F;2就为一些最常用的头字段定义了一个只读的“静态表”（Static Table）。</p>
+<ul>
+<li><p><strong>下列表格列出“静态表“的一部分：</strong><br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205111609.png"></p>
+</li>
+<li><p><strong>但如果表里只有Key没有Value，或者是自定义字段根本找不到该怎么办呢？</strong><br>这就要用到“动态表”（Dynamic Table），它添加在静态表后面，结构相同，但会在编码解码的时候随时更新。<br>比如说，第一次发送请求时的“user-agent”字段长是一百多个字节，用哈夫曼压缩编码发送之后，客户端和服务器都更新自己的动态表，添加一个新的索引号“65”。那么下一次发送的时候就不用再重复发那么多字节了，只要用一个字节发送编号就好。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205111703.png"><br>随着在HTTP&#x2F;2连接上发送的报文越来越多，两边的“字典”也会越来越丰富，最终每次的头部字段都会变成一两个字节的代码，原来上千字节的头用几十个字节就可以表示了，压缩效果比gzip要好得多。</p>
+</li>
+</ul>
+<h2 id="1-2-二进制格式"><a href="#1-2-二进制格式" class="headerlink" title="1.2 二进制格式"></a>1.2 二进制格式</h2><p>在HTTP&#x2F;1中使用的纯文本形式，容易出现多义性，比如大小写、空白字符等，程序处理时使用复杂的状态机，效率低，还麻烦。<br>而二进制里只有“0”和“1”，可以严格规定字段大小、顺序、标志位等格式，“对就是对，错就是错”，解析起来没有歧义，实现简单，而且体积小、速度快，做到“内部提效”。<br>HTTP&#x2F;2的二进制格式参考了TCP协议的部分特性，把原来的“Header+Body”的消息“打散”为数个小片的二进制“帧”（Frame），用“HEADERS”帧存放头数据、“DATA”帧存放实体数据。HTTP&#x2F;2数据分帧后“Header+Body”的报文结构就完全消失了，协议看到的只是一个个的“碎片”。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205110823.png"><br>头部数据压缩之后，HTTP&#x2F;2就要把报文拆成二进制的帧准备发送。HTTP&#x2F;2的帧结构有点类似TCP的段或者TLS里的记录，但报头很小，只有9字节。二进制的格式也保证了不会有歧义，而且使用位运算能够非常简单高效地解析。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205111845.png"></p>
+<ol>
+<li>帧开头是3个字节的长度（但不包括头的9个字节），默认上限是2^14，最大是2^24，也就是说HTTP&#x2F;2的帧通常不超过16K，最大是16M。</li>
+<li><strong>帧类型</strong>：大致可以分成数据帧和控制帧两类，HEADERS帧和DATA帧属于数据帧，存放的是HTTP报文，而SETTINGS、PING、PRIORITY等则是用来管理流的控制帧。</li>
+<li><strong>帧标志</strong>：可以保存8个标志位，携带简单的控制信息。常用的标志位有END_HEADERS表示头数据结束，相当于HTTP&#x2F;1里头后的空行（“\r\n”），END_STREAM表示单方向数据发送结束（即EOS，End of Stream），相当于HTTP&#x2F;1里Chunked分块结束标志（“0\r\n\r\n”）。</li>
+<li><strong>流标识符</strong>：也就是帧所属的“流”，接收方使用它就可以从乱序的帧里识别出具有相同流ID的帧序列，按顺序组装起来就实现了虚拟的“流”。流标识符虽然有4个字节，但最高位被保留不用，所以只有31位可以使用，也就是说，流标识符的上限是2^31，大约是21亿。</li>
+</ol>
+<p><strong>下面给一个帧的实例：</strong><br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205111926.png"><br>在这个帧里，开头的三个字节是“00010a”，表示数据长度是266字节。<br>帧类型是1，表示HEADERS帧，负载（payload）里面存放的是被HPACK算法压缩的头部信息。<br>标志位是0x25，转换成二进制有3个位被置1。PRIORITY表示设置了流的优先级，END_HEADERS表示这一个帧就是完整的头数据，END_STREAM表示单方向数据发送结束，后续再不会有数据帧（即请求报文完毕，不会再有DATA帧&#x2F;Body数据）。<br>最后4个字节的流标识符是整数1，表示这是客户端发起的第一个流，后面的响应数据帧也会是这个ID，也就是说在stream[1]里完成这个请求响应。</p>
+<h2 id="1-3-虚拟的“流”"><a href="#1-3-虚拟的“流”" class="headerlink" title="1.3 虚拟的“流”"></a>1.3 虚拟的“流”</h2><p>为了把二进制的消息在目的地更好的组装起来，HTTP2 定义了“流”（stream）的概念，它是二进制帧的双向传输序列，同一个消息往返的帧会被分配一个唯一的流 ID，可以想象它是一个虚拟的“数据流”，在里面流动的是一个串有先后顺序的数据帧，这些帧按照次序组装起来就是HTTP&#x2F;1里的请求报文和响应报文。<br>因为“流”是虚拟的，实际上并不存在，所以HTTP&#x2F;2就可以在一个TCP连接上用“流”同时发送多个“碎片化”的消息，这就是常说的“多路复用”（ Multiplexing）——多个往返通信都复用一个连接来处理。<br>在“流”的层面上看，消息是一些有序的“帧”序列，而在“连接”的层面上看，消息却是乱序收发的“帧”。多个请求&#x2F;响应之间没有了顺序关系，不需要排队等待，也就不会再出现“队头阻塞”问题，降低了延迟，大幅度提高了连接的利用率。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205111235.png"></p>
+<p>为了更好地利用连接，加大吞吐量，HTTP&#x2F;2还添加了一些控制帧来管理虚拟的“流”，实现了优先级和流量控制，这些特性也和TCP协议非常相似。<br>HTTP&#x2F;2还在一定程度上改变了传统的“请求-应答”工作模式，服务器不再是完全被动地响应请求，也可以新建“流”主动向客户端发送消息。比如，在浏览器刚请求HTML的时候就提前把可能会用到的JS、CSS文件发给客户端，减少等待的延迟，这被称为“服务器推送”（Server Push，也叫Cache Push）。<br>HTTP&#x2F;2使用虚拟的“流”传输消息，解决了困扰多年的“队头阻塞”问题，同时实现了“多路复用”，提高连接的利用率。<br>下边示例，在Wireshark抓包里，就有“0、1、3”一共三个流，实际上就是分配了三个流ID号，把这些帧按编号分组，再排一下队，就成了流。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205112212.png"><br>在概念上，一个HTTP&#x2F;2的流就等同于一个HTTP&#x2F;1里的“请求-应答”。在HTTP&#x2F;1里一个“请求-响应”报文来回是一次HTTP通信，在HTTP&#x2F;2里一个流也承载了相同的功能。<br><strong>下边整理下 HTTP&#x2F;2 的流的特点，如下：</strong></p>
+<ol>
+<li>流是可并发的，一个HTTP&#x2F;2连接上可以同时发出多个流传输数据，也就是并发多请求，实现“多路复用”；</li>
+<li>客户端和服务器都可以创建流，双方互不干扰；</li>
+<li>流是双向的，一个流里面客户端和服务器都可以发送或接收数据帧，也就是一个“请求-应答”来回；</li>
+<li>流之间没有固定关系，彼此独立，但流内部的帧是有严格顺序的；</li>
+<li>流可以设置优先级，让服务器优先处理，比如先传HTML&#x2F;CSS，后传图片，优化用户体验；</li>
+<li>流ID不能重用，只能顺序递增，客户端发起的ID是奇数，服务器端发起的ID是偶数；</li>
+<li>在流上发送“RST_STREAM”帧可以随时终止流，取消接收或发送；</li>
+<li>第0号流比较特殊，不能关闭，也不能发送数据帧，只能发送控制帧，用于流量控制。</li>
+</ol>
+<p><strong>下边示例展示了无序的帧是如何依据流ID重组成流的：</strong><br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205112516.png"></p>
+<p><strong>根据以上 HTTP&#x2F;2的 特性，可以整理出以下结论：</strong></p>
+<ol>
+<li>最开始的时候流都是“空闲”（idle）状态，也就是“不存在”，可以理解成是待分配的“号段资源”。</li>
+<li>当客户端发送HEADERS帧后，有了流ID，流就进入了“打开”状态，两端都可以收发数据，然后客户端发送一个带“END_STREAM”标志位的帧，流就进入了“半关闭”状态。这个半关闭状态，意味着客户端的请求数据已经发送完了，需要接受响应数据，而服务器端也知道请求数据接收完毕，之后就要内部处理，再发送响应数据。</li>
+<li>响应数据发送完了，也带上一个“END_STREAM”标志位，表示数据发送完毕，这样流两端就都进入了“关闭”状态，流就结束了。</li>
+<li>流id不能重用，所以流的生命周期就是HTTP&#x2F;1里的一次完整的“请求-应答”，流关闭就是一次通信结束。下次再发送数据需要开一个新流。</li>
+</ol>
+<p><strong>流的状态切换：</strong><br>HTTP&#x2F;2 流状态转换图如下：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205154257.png"></p>
+<ol>
+<li>最开始的时候流都是“空闲”（idle）状态，也就是“不存在”，可以理解是待分配的“号段资源”。</li>
+<li>当客户端发送HEADERS帧后，有了流ID，流就进入了“打开”状态，两端都可以收发数据，然后客户端发送一个带“END_STREAM”标志位的帧，流就进入了“半关闭”状态。这个半关闭状态，意味着客户端的请求数据已经发送完了，需要接受响应数据，而服务器端也知道请求数据接收完毕，之后就要内部处理，再发送响应数据。</li>
+<li>响应数据发送完了，也带上一个“END_STREAM”标志位，表示数据发送完毕，这样流两端就都进入了“关闭”状态，流就结束了。</li>
+<li>流ID不能重用，所以流的生命周期就是HTTP&#x2F;1里的一次完整的“请求-应答”，流关闭就是一次通信结束。下次再发送数据需要开一个新流。</li>
+</ol>
+<h2 id="1-4-协议栈"><a href="#1-4-协议栈" class="headerlink" title="1.4 协议栈"></a>1.4 协议栈</h2><ul>
+<li>协议栈对比</li>
+</ul>
+<p>下边的图对比了 HTTP&#x2F;1、HTTPS和HTTP&#x2F;2 的协议栈，可以清晰地看到，HTTP&#x2F;2是建立在“HPack”“Stream”“TLS1.2”基础之上的，比HTTP&#x2F;1、HTTPS复杂了一些。<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205112933.png"></p>
+<p>虽然上图中HTTP&#x2F;2是建立在TLS上的，但HTTP&#x2F;2其实也支持使用明文传输，不过格式还是二进制只是没有加密。为了区分“加密”和“明文”这两个不同的版本，HTTP&#x2F;2协议定义了两个字符串标识符：“h2”表示加密的HTTP&#x2F;2，“h2c”表示明文的HTTP&#x2F;2，多出的那个字母“c”的意思是“clear text”。</p>
+<ul>
+<li>连接前言</li>
+</ul>
+<p>由于HTTP&#x2F;2“事实上”是基于TLS，所以在正式收发数据之前，会有TCP握手和TLS握手，TLS握手成功之后，客户端必须要发送一个“连接前言”（connection preface），用来确认建立HTTP&#x2F;2连接。<br>这个“连接前言”是标准的HTTP&#x2F;1请求报文，使用纯文本的ASCII码格式，请求方法是特别注册的一个关键字“PRI”，全文只有24个字节：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n</span><br></pre></td></tr></table></figure>
+<p>只要服务器收到这个“有魔力的字符串”，就知道客户端在TLS上想要的是HTTP&#x2F;2协议，而不是其他别的协议，后面就会都使用HTTP&#x2F;2的数据格式。<br>抓包看的话，如下：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205113253.png"></p>
+<h1 id="2-HTTP3-特性概览"><a href="#2-HTTP3-特性概览" class="headerlink" title="2 HTTP3 特性概览"></a>2 HTTP3 特性概览</h1><h2 id="2-1-HTTP-2-vs-HTTP-3"><a href="#2-1-HTTP-2-vs-HTTP-3" class="headerlink" title="2.1 HTTP&#x2F;2 vs HTTP&#x2F;3"></a>2.1 HTTP&#x2F;2 vs HTTP&#x2F;3</h2><p>HTTP2协议虽然大幅提升了HTTP&#x2F;1.1的性能，然而，基于TCP实现的HTTP2遗留下3个问题：</p>
+<ul>
+<li>有序字节流引出的 队头阻塞（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Head-of-line_blocking">Head-of-line blocking</a>），使得HTTP2的多路复用能力大打折扣；</li>
+<li>TCP与TLS叠加了握手时延，建连时长还有1倍的下降空间；</li>
+<li>基于TCP四元组确定一个连接，这种诞生于有线网络的设计，并不适合移动状态下的无线网络，这意味着IP地址的频繁变动会导致TCP连接、TLS会话反复握手，成本高昂。</li>
+</ul>
+<p>HTTP3协议解决了这些问题：</p>
+<ul>
+<li>HTTP3基于UDP协议重新定义了连接，在QUIC层实现了无序、并发字节流的传输，解决了队头阻塞问题（包括基于QPACK解决了动态表的队头阻塞）；</li>
+<li>HTTP3重新定义了TLS协议加密QUIC头部的方式，既提高了网络攻击成本，又降低了建立连接的速度（仅需1个RTT就可以同时完成建连与密钥协商）；</li>
+<li>HTTP3 将Packet、QUIC Frame、HTTP3 Frame分离，实现了连接迁移功能，降低了5G环境下高速移动设备的连接维护成本。</li>
+</ul>
+<h2 id="2-2-与-HTTP-2-的异同点"><a href="#2-2-与-HTTP-2-的异同点" class="headerlink" title="2.2 与 HTTP&#x2F;2 的异同点"></a>2.2 与 HTTP&#x2F;2 的异同点</h2><p>HTTP2与HTTP3采用二进制、静态表、动态表与Huffman算法对HTTP Header编码，不只提供了高压缩率，还加快了发送端编码、接收端解码的速度。<br>HTTP2协议基于TCP有序字节流实现，因此应用层的多路复用并不能做到无序地并发，在丢包场景下会出现队头阻塞问题。如下面的动态图片所示，服务器返回的绿色响应由5个TCP报文组成，而黄色响应由4个TCP报文组成，当第2个黄色报文丢失后，即使客户端接收到完整的5个绿色报文，但TCP层不会允许应用进程的read函数读取到最后5个报文，并发成了一纸空谈。<br>当网络繁忙时，丢包概率会很高，多路复用受到了很大限制。因此， HTTP3采用UDP作为传输层协议，重新实现了无序连接，并在此基础上通过有序的QUIC Stream提供了多路复用。</p>
+<h2 id="2-3-连接迁移"><a href="#2-3-连接迁移" class="headerlink" title="2.3 连接迁移"></a>2.3 连接迁移</h2><p>对于当下的HTTP1和HTTP2协议，传输请求前需要先完成耗时1个RTT的TCP三次握手、耗时1个RTT的TLS握手（TLS1.3），由于它们分属内核实现的传输层、openssl库实现的表示层，所以难以合并在一起，如下图所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205155517.png"></p>
+<p>在IoT时代，移动设备接入的网络会频繁变动，从而导致设备IP地址改变。对于通过四元组（源IP、源端口、目的IP、目的端口）定位连接的TCP协议来说，这意味着连接需要断开重连，所以上述2个RTT的建链时延、TCP慢启动都需要重新来过。而HTTP3的QUIC层实现了连接迁移功能，允许移动设备更换IP地址后，只要仍保有上下文信息（比如连接ID、TLS密钥等），就可以复用原连接。<br>在UDP报文头部与HTTP消息之间，共有3层头部，定义连接且实现了Connection Migration主要是在Packet Header中完成的，如下图所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205155552.png"></p>
+<p><strong>这3层Header实现的功能各不相同：</strong></p>
+<ul>
+<li>Packet Header实现了可靠的连接。当UDP报文丢失后，通过Packet Header中的Packet Number实现报文重传。连接也是通过其中的Connection ID字段定义的；</li>
+<li>QUIC Frame Header在无序的Packet报文中，基于QUIC Stream概念实现了有序的字节流，这允许HTTP消息可以像在TCP连接上一样传输；</li>
+<li>HTTP3 Frame Header定义了HTTP Header、Body的格式，以及服务器推送、QPACK编解码流等功能。</li>
+</ul>
+<p>为了进一步提升网络传输效率，Packet Header又可以细分为两种：</p>
+<ul>
+<li>Long Packet Header用于首次建立连接；</li>
+<li>Short Packet Header用于日常传输数据。</li>
+</ul>
+<p>其中，Long Packet Header的格式如下图所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205155706.png"></p>
+<p>建立连接时，连接是由服务器通过Source Connection ID字段分配的，这样，后续传输时，双方只需要固定住Destination Connection ID，就可以在客户端IP地址、端口变化后，绕过UDP四元组（与TCP四元组相同），实现连接迁移功能。下图是Short Packet Header头部的格式，这里就不再需要传输Source Connection ID字段了：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205155805.png"></p>
+<p>上图中的Packet Number是每个报文独一无二的序号，基于它可以实现丢失报文的精准重发。如果通过抓包观察Packet Header，会发现Packet Number被TLS层加密保护了，这是为了防范各类网络攻击的一种设计。下图给出了Packet Header中被加密保护的字段：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205155845.png"></p>
+<p>其中，显示为E（Encrypt）的字段表示被TLS加密过。当然，Packet Header只是描述了最基本的连接信息，其上的Stream层、HTTP消息也是被加密保护的。</p>
+<h2 id="2-4-Stream-解决队头阻塞问题"><a href="#2-4-Stream-解决队头阻塞问题" class="headerlink" title="2.4 Stream 解决队头阻塞问题"></a>2.4 Stream 解决队头阻塞问题</h2><p>解决队头阻塞的方案，就是允许微观上有序发出的Packet报文，在接收端无序到达后也可以应用于并发请求中。<br>在Packet Header之上的QUIC Frame Header，定义了有序字节流Stream，而且Stream之间可以实现真正的并发。HTTP3的Stream，借鉴了HTTP2中的部分概念，所以在讨论QUIC Frame Header格式之前，可以先看看HTTP2中的Stream长成什么样子：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205160104.png"></p>
+<p>每个Stream就像HTTP&#x2F;1中的TCP连接，它保证了承载的HEADERS frame（存放HTTP Header）、DATA frame（存放HTTP Body）是有序到达的，多个Stream之间可以并行传输。在HTTP3中，上图中的HTTP2 frame会被拆解为两层，先来看底层的QUIC Frame。<br>一个Packet报文中可以存放多个QUIC Frame，当然所有Frame的长度之和不能大于PMTUD（Path Maximum Transmission Unit Discovery，这是大于1200字节的值），可以把它与IP路由中的MTU概念对照理解：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205160440.png"></p>
+<p>每个Frame都有明确的类型：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205160505.png"><br>前4个字节的Frame Type字段描述的类型不同，接下来的编码也不相同，下表是各类Frame的16进制Type值：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205160520.png"></p>
+<p>只要分析0x08-0x0f这8种STREAM类型的Frame，就能弄明白Stream流的实现原理，自然也就清楚队头阻塞是怎样解决的了。Stream Frame用于传递HTTP消息，它的格式如下所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205160823.png"></p>
+<p>Stream Frame头部的3个字段，完成了多路复用、有序字节流以及报文段层面的二进制分隔功能，包括：</p>
+<ul>
+<li>Stream ID标识了一个有序字节流。当HTTP Body非常大，需要跨越多个Packet时，只要在每个Stream Frame中含有同样的Stream ID，就可以传输任意长度的消息。多个并发传输的HTTP消息，通过不同的Stream ID加以区别；</li>
+<li>消息序列化后的“有序”特性，是通过Offset字段完成的，它类似于TCP协议中的Sequence序号，用于实现Stream内多个Frame间的累计确认功能；</li>
+<li>Length指明了Frame数据的长度。</li>
+</ul>
+<p>你可能会奇怪，为什么会有8种Stream Frame呢？这是因为0x08-0x0f 这8种类型其实是由3个二进制位组成，它们实现了以下3种 标志位的组合：</p>
+<ul>
+<li>第1位表示是否含有Offset，当它为0时，表示这是Stream中的起始Frame，这也是上图中Offset是可选字段的原因；</li>
+<li>第2位表示是否含有Length字段；</li>
+<li>第3位Fin，表示这是Stream中最后1个Frame，与HTTP2协议Frame帧中的FIN标志位相同。</li>
+</ul>
+<p>Stream数据中并不会直接存放HTTP消息，因为HTTP3还需要实现服务器推送、权重优先级设定、流量控制等功能，所以Stream Data中首先存放了HTTP3 Frame：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205161037.png"></p>
+<p>其中，Length指明了HTTP消息的长度，而Type字段（请注意，低2位有特殊用途，在下边的QPACK章节中会详细介绍）包含了以下类型：</p>
+<ul>
+<li>0x00：DATA帧，用于传输HTTP Body包体；</li>
+<li>0x01：HEADERS帧，通过QPACK 编码，传输HTTP Header头部；</li>
+<li>0x03：CANCEL_PUSH控制帧，用于取消1次服务器推送消息，通常客户端在收到PUSH_PROMISE帧后，通过它告知服务器不需要这次推送；</li>
+<li>0x04：SETTINGS控制帧，设置各类通讯参数；</li>
+<li>0x05：PUSH_PROMISE帧，用于服务器推送HTTP Body前，先将HTTP Header头部发给客户端，流程与HTTP2相似；</li>
+<li>0x07：GOAWAY控制帧，用于关闭连接（注意，不是关闭Stream）；</li>
+<li>0x0d：MAX_PUSH_ID，客户端用来限制服务器推送消息数量的控制帧。</li>
+</ul>
+<p>总结一下，QUIC Stream Frame定义了有序字节流，且多个Stream间的传输没有时序性要求，这样，HTTP消息基于QUIC Stream就实现了真正的多路复用，队头阻塞问题自然就被解决掉了。</p>
+<h2 id="2-5-QPACK-编码解决队头阻塞问题"><a href="#2-5-QPACK-编码解决队头阻塞问题" class="headerlink" title="2.5 QPACK 编码解决队头阻塞问题"></a>2.5 QPACK 编码解决队头阻塞问题</h2><p>与HTTP2中的HPACK编码方式相似，HTTP3中的QPACK也采用了静态表、动态表及Huffman编码：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205161620.png"></p>
+<p>在上图中，GET方法映射为数字2，这是通过客户端、服务器协议实现层的硬编码完成的。在HTTP2中，共有61个静态表项：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205161647.png"></p>
+<p>而在QPACK中，则上升为90多个静态表项，比如Nginx上的ngx_http_v3_static_table数组所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">ngx_http_v3_field_t</span>  ngx_http_v3_static_table[] = &#123;</span><br><span class="line"></span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:authority&quot;</span>),            ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:path&quot;</span>),                 ngx_string(<span class="string">&quot;/&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;age&quot;</span>),                   ngx_string(<span class="string">&quot;0&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-disposition&quot;</span>),   ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-length&quot;</span>),        ngx_string(<span class="string">&quot;0&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cookie&quot;</span>),                ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;date&quot;</span>),                  ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;etag&quot;</span>),                  ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;if-modified-since&quot;</span>),     ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;if-none-match&quot;</span>),         ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;last-modified&quot;</span>),         ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;link&quot;</span>),                  ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;location&quot;</span>),              ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;referer&quot;</span>),               ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;set-cookie&quot;</span>),            ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;CONNECT&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;DELETE&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;GET&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;HEAD&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;OPTIONS&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;POST&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:method&quot;</span>),               ngx_string(<span class="string">&quot;PUT&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:scheme&quot;</span>),               ngx_string(<span class="string">&quot;http&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:scheme&quot;</span>),               ngx_string(<span class="string">&quot;https&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;103&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;200&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;304&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;404&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;503&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;accept&quot;</span>),                ngx_string(<span class="string">&quot;*/*&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;accept&quot;</span>),                ngx_string(<span class="string">&quot;application/dns-message&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;accept-encoding&quot;</span>),       ngx_string(<span class="string">&quot;gzip, deflate, br&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;accept-ranges&quot;</span>),         ngx_string(<span class="string">&quot;bytes&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-headers&quot;</span>), ngx_string(<span class="string">&quot;cache-control&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-headers&quot;</span>), ngx_string(<span class="string">&quot;content-type&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-origin&quot;</span>), ngx_string(<span class="string">&quot;*&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cache-control&quot;</span>),         ngx_string(<span class="string">&quot;max-age=0&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cache-control&quot;</span>),         ngx_string(<span class="string">&quot;max-age=2592000&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cache-control&quot;</span>),         ngx_string(<span class="string">&quot;max-age=604800&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cache-control&quot;</span>),         ngx_string(<span class="string">&quot;no-cache&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cache-control&quot;</span>),         ngx_string(<span class="string">&quot;no-store&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;cache-control&quot;</span>),         ngx_string(<span class="string">&quot;public, max-age=31536000&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-encoding&quot;</span>),      ngx_string(<span class="string">&quot;br&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-encoding&quot;</span>),      ngx_string(<span class="string">&quot;gzip&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;application/dns-message&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;application/javascript&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;application/json&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;application/x-www-form-urlencoded&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;image/gif&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;image/jpeg&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;image/png&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;text/css&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),</span><br><span class="line">          ngx_string(<span class="string">&quot;text/html;charset=utf-8&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),          ngx_string(<span class="string">&quot;text/plain&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-type&quot;</span>),</span><br><span class="line">          ngx_string(<span class="string">&quot;text/plain;charset=utf-8&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;range&quot;</span>),                 ngx_string(<span class="string">&quot;bytes=0-&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;strict-transport-security&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;max-age=31536000&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;strict-transport-security&quot;</span>),</span><br><span class="line">          ngx_string(<span class="string">&quot;max-age=31536000;includesubdomains&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;strict-transport-security&quot;</span>),</span><br><span class="line">          ngx_string(<span class="string">&quot;max-age=31536000;includesubdomains;preload&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;vary&quot;</span>),                  ngx_string(<span class="string">&quot;accept-encoding&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;vary&quot;</span>),                  ngx_string(<span class="string">&quot;origin&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;x-content-type-options&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;nosniff&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;x-xss-protection&quot;</span>),      ngx_string(<span class="string">&quot;1;mode=block&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;100&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;204&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;206&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;302&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;400&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;403&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;421&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;425&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;:status&quot;</span>),               ngx_string(<span class="string">&quot;500&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;accept-language&quot;</span>),       ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-credentials&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;FALSE&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-credentials&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;TRUE&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-headers&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;*&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-methods&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;get&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-methods&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;get, post, options&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-allow-methods&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;options&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-expose-headers&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;content-length&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-request-headers&quot;</span>),</span><br><span class="line">                                           ngx_string(<span class="string">&quot;content-type&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-request-method&quot;</span>), ngx_string(<span class="string">&quot;get&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;access-control-request-method&quot;</span>), ngx_string(<span class="string">&quot;post&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;alt-svc&quot;</span>),               ngx_string(<span class="string">&quot;clear&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;authorization&quot;</span>),         ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;content-security-policy&quot;</span>), ngx_string(<span class="string">&quot;script-src &#x27;none&#x27;;object-src &#x27;none&#x27;;base-uri &#x27;none&#x27;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;early-data&quot;</span>),            ngx_string(<span class="string">&quot;1&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;expect-ct&quot;</span>),             ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;forwarded&quot;</span>),             ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;if-range&quot;</span>),              ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;origin&quot;</span>),                ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;purpose&quot;</span>),               ngx_string(<span class="string">&quot;prefetch&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;server&quot;</span>),                ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;timing-allow-origin&quot;</span>),   ngx_string(<span class="string">&quot;*&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;upgrade-insecure-requests&quot;</span>), ngx_string(<span class="string">&quot;1&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;user-agent&quot;</span>),            ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;x-forwarded-for&quot;</span>),       ngx_string(<span class="string">&quot;&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;x-frame-options&quot;</span>),       ngx_string(<span class="string">&quot;deny&quot;</span>) &#125;,</span><br><span class="line">    &#123; ngx_string(<span class="string">&quot;x-frame-options&quot;</span>),       ngx_string(<span class="string">&quot;sameorigin&quot;</span>) &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对于Huffman以及整数的编码，QPACK与HPACK并无多大不同，但动态表编解码方式差距很大。<br>动态表，就是将未包含在静态表中的Header项，在其首次出现时加入动态表，这样后续传输时仅用1个数字表示，大大提升了编码效率。因此，动态表是天然具备时序性的，如果首次出现的请求出现了丢包，后续请求解码HPACK头部时，一定会被阻塞！</p>
+<ul>
+<li>QPACK是如何解决队头阻塞问题的呢？</li>
+</ul>
+<p>QPACK将动态表的编码、解码独立在单向Stream中传输，仅当单向Stream中的动态表编码成功后，接收端才能解码双向Stream上HTTP消息里的动态表索引。<br>单向指只有一端可以发送消息，双向则指两端都可以发送消息。上一小节的QUIC Stream Frame头部中，其中的Stream ID除了标识Stream外，它的低2位还可以表达以下组合：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205162245.png"></p>
+<p>因此，当Stream ID是0、4、8、12时，这就是客户端发起的双向Stream（HTTP3不支持服务器发起双向Stream），它用于传输HTTP请求与响应。单向Stream有很多用途，所以它在数据前又多出一个Stream Type字段：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205162324.png"></p>
+<p>Stream Type有以下取值：</p>
+<ul>
+<li>0x00：控制Stream，传递各类Stream控制消息；</li>
+<li>0x01：服务器推送消息；</li>
+<li>0x02：用于编码QPACK动态表，比如面对不属于静态表的HTTP请求头部，客户端可以通过这个Stream发送动态表编码；</li>
+<li>0x03：用于通知编码端QPACK动态表的更新结果。<br>由于HTTP3的STREAM之间是乱序传输的，因此，若先发送的编码Stream后到达，双向Stream中的QPACK头部就无法解码，此时传输HTTP消息的双向Stream就会进入Block阻塞状态（两端可以通过控制帧定义阻塞Stream的处理方式）。</li>
+</ul>
+<h2 id="2-6-常见问题"><a href="#2-6-常见问题" class="headerlink" title="2.6 常见问题"></a>2.6 常见问题</h2><h3 id="2-6-1-放大攻击"><a href="#2-6-1-放大攻击" class="headerlink" title="2.6.1 放大攻击"></a>2.6.1 放大攻击</h3><p>放大攻击利用攻击者和目标Web资源之间的带宽差异消耗，当差异消耗经过多次请求被放大时，产生的流量可能导致网络设施中断。通过发送小型请求来导致大规模响应，达到四四两拨千斤的效果。<br>最常见的放大攻击是DNS放大攻击，因为DNS使用的是UDP协议。TCP是面向连接的协议，在交互前需要进行三次握手进行建立连接，服务器可以验证客户端IP地址的合法性，UDP协议由于其无连接性，最容易被用来做放大攻击，HTTP3协议是基于UDP的，所以同样面临此问题。</p>
+<ul>
+<li>解决放大攻击–地址验证功能</li>
+</ul>
+<p>QUIC 针对放大攻击的主要防御措施是验证端点（endpoint）是否能够在其声明的传输地址接收数据包。地址验证在连接建立（connection establishment）期间和连接迁移（connection migration）期间进行。</p>
+<ul>
+<li>连接建立时，为了验证客户端的地址是否是攻击者伪造的，服务端会生成一个令牌（token）并通过重试包（Retry packet）响应给客户端。客户端需要在后续的初始包（Initial packet）带上这个令牌，以便服务端进行地址验证。</li>
+<li>服务端可以在当前连接中通过 NEW_TOKEN 帧预先发布令牌，以便客户端在后续的新连接使用，这是 QUIC 实现 0-RTT 很重要的一个功能。</li>
+<li>当我们的网络路径变化时（比如从蜂窝网络切换到 WIFI），QUIC 提供了连接迁移（connection migration）的功能来避免连接中断。QUIC 通过路径验证（Path Validation）验证网络新地址的可达性（reachability），防止在连接迁移中的地址是攻击者伪造的。</li>
+</ul>
+<h3 id="2-6-2-连接迁移失败"><a href="#2-6-2-连接迁移失败" class="headerlink" title="2.6.2 连接迁移失败"></a>2.6.2 连接迁移失败</h3><p>通过上边可知，通过 Connection ID的使用可以在地址变化的情况下实现连接迁移能力，但是在网络中客户端服务端怎么知道是否要开始连接迁移呢，如下图所示：<br><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205165116.png"></p>
+<p>对于上边的问题有两种方式：</p>
+<ol>
+<li>客户端网络状态发生变化时，主动发出连接迁移</li>
+<li>客户端等待时间超出限制时，使用PING帧来探测连接，告知服务器连接迁移的发生</li>
+</ol>
+<h3 id="2-6-3-连接迁移对LB的影响"><a href="#2-6-3-连接迁移对LB的影响" class="headerlink" title="2.6.3 连接迁移对LB的影响"></a>2.6.3 连接迁移对LB的影响</h3><p>因为在现实网络中引入了负载均衡设备，会导致在连接迁移时，所有依赖五元组 Hash 做转发导致关联 Session 的机制失效。以 LVS 为例，连接迁移后， LVS 依靠五元组寻址会导致寻址的服务器存在不一致。<br>即便 LVS 寻址正确，当报文到达服务器时，如果是多进程的Server(如 Nginx)，内核会根据五元组关联进程，依然会寻址出错。</p>
+<ol>
+<li>在四层或者七层负载均衡上，需要重新设计QUIC LoadBalancer 的机制</li>
+<li>若是QUIC 服务器多进程工作模式上，也需要进行相应的改造</li>
+</ol>
+<p>针对以上问题解决方案思路是：提取出 连接 ID，进行一定的处理。</p>
+<ol>
+<li>四层负载均衡的改造</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205170500.png"></p>
+<p>四层均衡器增加解析 QUIC 建连报文 提取其中的 连接ID，通过把 连接ID与四元组对应起来，实现根据负载均衡。为了避免维护 连接ID 与 四元组的对应关系，可以通过把 连接ID的一部分加入转发路由中，组成转发信息，等请求到达时，根据连接ID 可以直接找到需要转发出去的路由。</p>
+<ol start="2">
+<li>七层负载均衡改造</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205170830.png"></p>
+<p>因为连接ID是在用户态处理，可以使用 ebpf 技术，通过设置 hook 点，解析出连接ID，找到 连接ID 对应的 套接字。</p>
+<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h1><h2 id="3-1-涉及的RFC文档"><a href="#3-1-涉及的RFC文档" class="headerlink" title="3.1 涉及的RFC文档"></a>3.1 涉及的RFC文档</h2><p>基于四元组定义连接并不适用于下一代IoT网络，HTTP3创造出Connection ID概念实现了连接迁移，通过融合传输层、表示层，既缩短了握手时长，也加密了传输层中的绝大部分字段，提升了网络安全性。<br>HTTP3在Packet层保障了连接的可靠性，在QUIC Frame层实现了有序字节流，在HTTP3 Frame层实现了HTTP语义，这彻底解开了队头阻塞问题，真正实现了应用层的多路复用。<br>QPACK使用独立的单向Stream分别传输动态表编码、解码信息，这样乱序、并发传输HTTP消息的Stream既不会出现队头阻塞，也能基于时序性大幅压缩HTTP Header的体积。</p>
+<ul>
+<li>涉及的RFC文档</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/20240205162632.png"></p>
+<h2 id="3-2-HTTP2-和-HTTP3-对比图"><a href="#3-2-HTTP2-和-HTTP3-对比图" class="headerlink" title="3.2 HTTP2 和 HTTP3 对比图"></a>3.2 HTTP2 和 HTTP3 对比图</h2><p><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/Pasted%20image%2020240205162730.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://baihlup.github.io">梦之痕</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://baihlup.github.io/2024/02/04/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/272%20-%20HTTP%20&amp;%20HTTPS/03%20-%20HTTP2%20vs%20HTTP3%E8%AF%A6%E8%A7%A3/">https://baihlup.github.io/2024/02/04/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/272%20-%20HTTP%20&amp;%20HTTPS/03%20-%20HTTP2%20vs%20HTTP3%E8%AF%A6%E8%A7%A3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/HTTP2/">HTTP2</a><a class="post-meta__tags" href="/tags/HTTP3/">HTTP3</a></div><div class="post_share"><div class="social-share" data-image="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/02/04/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/279%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20REUSEADDR%20%E5%92%8CREUSEPORT%20%E5%AF%B9TCP%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%8E%A7%E5%88%B6/" title="REUSEADDR 和REUSEPORT 对TCP连接的控制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">REUSEADDR 和REUSEPORT 对TCP连接的控制</div></div></a></div><div class="next-post pull-right"><a href="/2024/02/04/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/269%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/01%20-%20%E9%83%A8%E7%BD%B2Nginx%E6%90%AD%E5%BB%BAHTTPS%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="部署Nginx搭建HTTPS服务器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">部署Nginx搭建HTTPS服务器</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://raw.githubusercontent.com/BaihlUp/Figurebed/master/2024/41710043961_.pic.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">梦之痕</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">43</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/BaihlUp"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">个人笔记迁移中ing....</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-HTTP2-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88"><span class="toc-number">1.</span> <span class="toc-text">1 HTTP2 特性概览</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%A4%B4%E9%83%A8%E5%8E%8B%E7%BC%A9"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 头部压缩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 二进制格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E8%99%9A%E6%8B%9F%E7%9A%84%E2%80%9C%E6%B5%81%E2%80%9D"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 虚拟的“流”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E5%8D%8F%E8%AE%AE%E6%A0%88"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 协议栈</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-HTTP3-%E7%89%B9%E6%80%A7%E6%A6%82%E8%A7%88"><span class="toc-number">2.</span> <span class="toc-text">2 HTTP3 特性概览</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-HTTP-2-vs-HTTP-3"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 HTTP&#x2F;2 vs HTTP&#x2F;3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E4%B8%8E-HTTP-2-%E7%9A%84%E5%BC%82%E5%90%8C%E7%82%B9"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 与 HTTP&#x2F;2 的异同点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E8%BF%9E%E6%8E%A5%E8%BF%81%E7%A7%BB"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 连接迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-Stream-%E8%A7%A3%E5%86%B3%E9%98%9F%E5%A4%B4%E9%98%BB%E5%A1%9E%E9%97%AE%E9%A2%98"><span class="toc-number">2.4.</span> <span class="toc-text">2.4 Stream 解决队头阻塞问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-QPACK-%E7%BC%96%E7%A0%81%E8%A7%A3%E5%86%B3%E9%98%9F%E5%A4%B4%E9%98%BB%E5%A1%9E%E9%97%AE%E9%A2%98"><span class="toc-number">2.5.</span> <span class="toc-text">2.5 QPACK 编码解决队头阻塞问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">2.6.</span> <span class="toc-text">2.6 常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-1-%E6%94%BE%E5%A4%A7%E6%94%BB%E5%87%BB"><span class="toc-number">2.6.1.</span> <span class="toc-text">2.6.1 放大攻击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-2-%E8%BF%9E%E6%8E%A5%E8%BF%81%E7%A7%BB%E5%A4%B1%E8%B4%A5"><span class="toc-number">2.6.2.</span> <span class="toc-text">2.6.2 连接迁移失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-3-%E8%BF%9E%E6%8E%A5%E8%BF%81%E7%A7%BB%E5%AF%B9LB%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">2.6.3.</span> <span class="toc-text">2.6.3 连接迁移对LB的影响</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">3 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E6%B6%89%E5%8F%8A%E7%9A%84RFC%E6%96%87%E6%A1%A3"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 涉及的RFC文档</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-HTTP2-%E5%92%8C-HTTP3-%E5%AF%B9%E6%AF%94%E5%9B%BE"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 HTTP2 和 HTTP3 对比图</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/22/260%20-%20%E5%90%8E%E7%AB%AF&amp;%E6%9E%B6%E6%9E%84/261%20-%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/02%20-%20%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AE%9E%E6%88%98/" title="Untitled">Untitled</a><time datetime="2024-10-22T07:24:29.685Z" title="Created 2024-10-22 07:24:29">2024-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/28/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/279%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/02%20-%20%E8%AE%B0%E5%BD%95%E8%AE%BF%E9%97%AE%20HTTPS%20%E7%BD%91%E7%AB%99%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98/" title="记录访问 HTTPS 网站报错问题">记录访问 HTTPS 网站报错问题</a><time datetime="2024-09-28T00:00:00.000Z" title="Created 2024-09-28 00:00:00">2024-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/29/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/279%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/06%20-%20%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E4%B8%B2%E8%AE%B2%EF%BC%9A%E7%94%A8%E5%8F%8C%E5%8D%81%E4%B8%80%E7%9A%84%E6%95%85%E4%BA%8B%E4%B8%B2%E8%B5%B7%E7%A2%8E%E7%89%87%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%EF%BC%88%E4%B8%AD%EF%BC%89/" title="Untitled">Untitled</a><time datetime="2024-08-29T08:17:15.548Z" title="Created 2024-08-29 08:17:15">2024-08-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/29/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/279%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/05%20-%20%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E4%B8%B2%E8%AE%B2%EF%BC%9A%E7%94%A8%E5%8F%8C%E5%8D%81%E4%B8%80%E7%9A%84%E6%95%85%E4%BA%8B%E4%B8%B2%E8%B5%B7%E7%A2%8E%E7%89%87%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%EF%BC%88%E4%B8%8A%EF%BC%89/" title="Untitled">Untitled</a><time datetime="2024-08-29T08:17:15.544Z" title="Created 2024-08-29 08:17:15">2024-08-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/29/270%20-%20%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/279%20-%20%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/07%20-%20%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E4%B8%B2%E8%AE%B2%EF%BC%9A%E7%94%A8%E5%8F%8C%E5%8D%81%E4%B8%80%E7%9A%84%E6%95%85%E4%BA%8B%E4%B8%B2%E8%B5%B7%E7%A2%8E%E7%89%87%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%EF%BC%88%E4%B8%8B%EF%BC%89/" title="Untitled">Untitled</a><time datetime="2024-08-29T08:17:15.540Z" title="Created 2024-08-29 08:17:15">2024-08-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 梦之痕</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
